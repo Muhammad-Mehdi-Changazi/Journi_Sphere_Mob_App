@@ -1,14 +1,28 @@
 // LoginScreen.tsx
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import axios from 'axios';
 
 export default function LoginScreen() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   
-  const handleLogin = () => {
-    // Add your login logic here (e.g., API call, validation)
-    console.log('Logging in with:', username, password);
+  const handleLogin = async () => {
+    try {
+      // Make a POST request to the backend login endpoint
+      const response = await axios.post('http://localhost:3000/login', {
+        email,
+        password,
+      });
+      
+      // Handle successful login
+      Alert.alert('Success', response.data.message);
+      console.log('Token:', response.data.token); // You can store the token here
+    } catch (error) {
+      // Handle login error
+      const errorMessage = error.response?.data?.message || 'An error occurred';
+      Alert.alert('Login Failed', errorMessage);
+    }
   };
 
   return (
@@ -18,9 +32,9 @@ export default function LoginScreen() {
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
-          placeholder="Username"
-          value={username}
-          onChangeText={setUsername}
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
           autoCapitalize="none"
         />
         <TextInput
@@ -36,13 +50,6 @@ export default function LoginScreen() {
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Log In</Text>
       </TouchableOpacity>
-
-      <Text style={styles.footerText}>
-        {Platform.select({
-          ios: 'Press cmd + d to open developer tools',
-          android: 'Press cmd + m to open developer tools',
-        })}
-      </Text>
     </View>
   );
 }
@@ -73,11 +80,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     fontSize: 16,
     width: '100%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 2, // For Android shadow effect
   },
   button: {
     backgroundColor: '#007bff',
@@ -92,11 +94,5 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: '600',
-  },
-  footerText: {
-    marginTop: 30,
-    fontSize: 14,
-    color: '#777',
-    textAlign: 'center',
   },
 });

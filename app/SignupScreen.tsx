@@ -11,32 +11,35 @@ export default function SignupScreen() {
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleSignup = async () => {
-    // Reset error message
-    setErrorMessage('');
-    
-    // Check if passwords match
+    setErrorMessage(''); // Clear any previous error
     if (password !== confirmPassword) {
       setErrorMessage("Passwords don't match");
       return;
     }
-    // Prepare the data to be sent
+
     const requestData = {
-      username,
-      email,
-      password,
-    };
+        username: username,
+        email: email,
+        password: password,
+      };      
+
 
     try {
-        const response = await axios.post('http://localhost:6000/signup', requestData, {
-          headers: { 'Content-Type': 'application/json' },
-        });
-        console.log('Response:', response.data);
-      } catch (error) {
-        console.error('Error during signup:', error.message);
-        console.error('Error details:', error);
+      setLoading(true);
+      const response = await axios.post('http://localhost:3000/signup', requestData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.status === 201) {
+        alert('User registered successfully');
+      } else {
+        setErrorMessage('Failed to register user');
       }
-      finally 
-    {
+    } catch (error) {
+      setErrorMessage(error.response?.data?.message || 'Network error');
+    } finally {
       setLoading(false);
     }
   };
@@ -44,8 +47,7 @@ export default function SignupScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.headerText}>Sign Up</Text>
-
-      {/* Input fields */}
+      
       <TextInput
         style={styles.input}
         placeholder="Username"
@@ -78,10 +80,8 @@ export default function SignupScreen() {
         autoCapitalize="none"
       />
 
-      {/* Error message */}
       {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 
-      {/* Signup button */}
       <TouchableOpacity style={styles.button} onPress={handleSignup} disabled={loading}>
         {loading ? (
           <ActivityIndicator size="small" color="#fff" />
@@ -90,7 +90,6 @@ export default function SignupScreen() {
         )}
       </TouchableOpacity>
 
-      {/* Footer text */}
       <Text style={styles.footerText}>
         {Platform.select({
           ios: 'Press cmd + d to open developer tools',
@@ -127,7 +126,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 6,
-    elevation: 2, // For Android shadow effect
+    elevation: 2,
   },
   button: {
     backgroundColor: '#007bff',

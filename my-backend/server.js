@@ -5,10 +5,14 @@ const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-
 const app = express();
-const port = 6000;  // You can change the port number
-app.use(cors());
+const port = 3000;  // You can change the port number
+const corsOptions = {
+    origin: '*',  // Allow all origins for testing
+    credentials: true,
+};
+app.use(cors(corsOptions));
+
 
 // Body parser middleware to handle POST request data
 app.use(bodyParser.json());
