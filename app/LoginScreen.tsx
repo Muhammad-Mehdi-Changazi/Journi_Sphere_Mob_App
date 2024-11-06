@@ -1,11 +1,13 @@
-// LoginScreen.tsx
+// app/LoginScreen.tsx
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import axios from 'axios';
+import { useRouter } from 'expo-router'; // Import useRouter for navigation
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const router = useRouter(); // Use the router to navigate programmatically
   
   const handleLogin = async () => {
     try {
@@ -18,10 +20,12 @@ export default function LoginScreen() {
       // Handle successful login
       Alert.alert('Success', response.data.message);
       console.log('Token:', response.data.token); // You can store the token here
+
+      // Navigate to Home screen
+      router.push('/home'); // This will navigate to the 'Home' screen
     } catch (error) {
-      // Handle login error
-      const errorMessage = error.response?.data?.message || 'An error occurred';
-      Alert.alert('Login Failed', errorMessage);
+      // Handle any login error
+      Alert.alert('Login Failed', 'Invalid email or password');
     }
   };
 

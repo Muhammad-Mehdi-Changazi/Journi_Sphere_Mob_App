@@ -85,6 +85,7 @@ app.post('/login', async (req, res) => {
       'your_secret_key',  // Use an environment variable for the secret key in production
       { expiresIn: '1h' } // Set token expiration time as needed
     );
+    console.log("logging in");
   
     // Send the token to the client
     res.status(200).json({
