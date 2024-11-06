@@ -59,6 +59,37 @@ app.post('/signup', async (req, res) => {
   }
 });
 
+
+app.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    
+    // Check if the email exists
+    const existingUser = await User.findOne({ email });
+    if (!existingUser) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+  
+    // Compare the provided password with the hashed password in the database
+    const isMatch = await bcrypt.compare(password, existingUser.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+  
+    // Generate a JWT token
+    const token = jwt.sign(
+      { userId: existingUser._id, email: existingUser.email },
+      'your_secret_key',  // Use an environment variable for the secret key in production
+      { expiresIn: '1h' } // Set token expiration time as needed
+    );
+  
+    // Send the token to the client
+    res.status(200).json({
+      message: 'Login successful',
+      token,  // Send the token to the client
+    });
+  });
+
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

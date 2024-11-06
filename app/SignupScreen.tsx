@@ -27,26 +27,16 @@ export default function SignupScreen() {
     };
 
     try {
-      // Make the POST request to the backend
-      const response = await axios.post('http://localhost:6000/signup', requestData, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      
-
-      // Check the response status
-      if (response.status === 201) {
-        alert('User registered successfully');
-        // Optionally navigate to another screen or reset the form here
-      } else {
-        setErrorMessage('Failed to register user');
+        const response = await axios.post('http://localhost:6000/signup', requestData, {
+          headers: { 'Content-Type': 'application/json' },
+        });
+        console.log('Response:', response.data);
+      } catch (error) {
+        console.error('Error during signup:', error.message);
+        console.error('Error details:', error);
       }
-    } catch (error) {
-      // Log the error to console and display a user-friendly message
-      console.error('Error during registration:', error);
-      setErrorMessage('An error occurred during registration');
-    } finally {
+      finally 
+    {
       setLoading(false);
     }
   };
