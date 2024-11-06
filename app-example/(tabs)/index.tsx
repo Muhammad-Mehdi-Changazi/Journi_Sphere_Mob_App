@@ -1,11 +1,22 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-
+import React from 'react';
+import { Image, StyleSheet, Platform, View, TouchableOpacity } from 'react-native';
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { useNavigation } from '@react-navigation/native';
 
 export default function HomeScreen() {
+  const navigation = useNavigation();
+
+  const handleLogin = () => {
+    navigation.navigate('LoginScreen');
+  };
+
+  const handleSignup = () => {
+    navigation.navigate('SignupScreen');
+  };
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -19,6 +30,7 @@ export default function HomeScreen() {
         <ThemedText type="title">Welcome!</ThemedText>
         <HelloWave />
       </ThemedView>
+      
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 1: Try it</ThemedText>
         <ThemedText>
@@ -30,22 +42,32 @@ export default function HomeScreen() {
           to open developer tools.
         </ThemedText>
       </ThemedView>
+
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 2: Explore</ThemedText>
         <ThemedText>
           Tap the Explore tab to learn more about what's included in this starter app.
         </ThemedText>
       </ThemedView>
+
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
         <ThemedText>
           When you're ready, run{' '}
           <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
+          <ThemedText type="defaultSemiBold">app</ThemedText> directory.
         </ThemedText>
       </ThemedView>
+
+      {/* Buttons for login and signup */}
+      <View style={styles.buttonsContainer}>
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <ThemedText type="title">Login</ThemedText>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={handleSignup}>
+          <ThemedText type="title">Sign Up</ThemedText>
+        </TouchableOpacity>
+      </View>
     </ParallaxScrollView>
   );
 }
@@ -55,10 +77,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    marginBottom: 20,
   },
   stepContainer: {
     gap: 8,
-    marginBottom: 8,
+    marginBottom: 20,
   },
   reactLogo: {
     height: 178,
@@ -66,5 +89,18 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     position: 'absolute',
+  },
+  buttonsContainer: {
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  button: {
+    backgroundColor: '#007bff',
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 25,
+    marginVertical: 10,
+    width: '80%',
+    alignItems: 'center',
   },
 });
