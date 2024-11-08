@@ -1,10 +1,9 @@
 export type RootStackParamList = {
-  
-    index: undefined; // Home screen doesn't take any parameters
-    LoginScreen: undefined;
-    SignupScreen: undefined;
-    home: undefined;
-    CityScreen: { city: { cityName: string; places: string[] } };
-
-  };
-  
+  index: undefined;
+  LoginScreen: undefined;
+  SignupScreen: undefined;
+  home: undefined;
+  CityScreen: { city: { name: string; places: string[] } };
+  GoogleMap: { placeName: string };  // Type for Google Map screen
+  Reviews: { placeName: string };   // Type for Reviews screen
+};

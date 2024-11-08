@@ -9,6 +9,7 @@ type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'home'>;
 export default function HomeScreen() {
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
+  // List of cities with names and places to pass as parameters
   const cities = [
     { name: 'Lahore', places: ['Badshahi Mosque', 'Shalimar Gardens'] },
     { name: 'Islamabad', places: ['Faisal Mosque', 'Daman-e-Koh'] },
@@ -26,15 +27,14 @@ export default function HomeScreen() {
             key={index}
             style={styles.cityButton}
             onPress={() => {
-              console.log('Navigating to CityScreen with city:', {
-                cityName: city.name,
-                places: city.places,
-              });
+              // Navigate to CityScreen with city parameters
               navigation.navigate('CityScreen', {
-                city: { cityName: city.name, places: city.places }
+                city: {
+                  name: city.name,  // Use 'name' instead of 'cityName' if that’s what the type expects
+                  places: city.places,
+                },
               });
             }}
-
           >
             <Text style={styles.cityText}>{city.name}</Text>
           </TouchableOpacity>
