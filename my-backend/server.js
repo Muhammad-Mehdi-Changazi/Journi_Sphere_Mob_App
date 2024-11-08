@@ -64,6 +64,49 @@ app.post('/signup', async (req, res) => {
 });
 
 
+
+// Review Schema
+const ReviewSchema = new mongoose.Schema({
+  placeName: { type: String, required: true },
+  user: { type: String, required: true },
+  rating: { type: Number, required: true },
+  comment: { type: String, required: true },
+});
+
+const Review = mongoose.model('Review', ReviewSchema);
+
+// fetching reviews
+app.get('/Reviews', async (req, res) => {
+  const { placeName } = req.query;
+  try {
+    const reviews = await Review.find({ placeName });
+    res.json(reviews);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching reviews' });
+  }
+});
+
+// submitting a review
+app.post('/Reviews', async (req, res) => {
+  const { placeName, user, rating, comment } = req.body;
+  const review = new Review({ placeName, user, rating, comment });
+  
+  const token = jwt.sign(
+    { userId: existingUser._id, email: existingUser.email, username: existingUser.username },
+    'your_secret_key',
+    { expiresIn: '1h' }
+  );
+
+
+  try {
+    await review.save();
+    res.status(201).json(review);
+  } catch (error) {
+    res.status(500).json({ error: 'Error saving review' });
+  }
+});
+
+
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
     

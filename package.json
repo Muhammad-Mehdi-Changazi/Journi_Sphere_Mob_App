@@ -16,7 +16,11 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.2",
+<<<<<<< Updated upstream
     "@react-native-community/geolocation": "^3.4.0",
+=======
+    "@react-native-async-storage/async-storage": "^2.0.0",
+>>>>>>> Stashed changes
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/stack": "^6.4.1",
     "axios": "^1.7.7",
@@ -30,10 +34,12 @@
     "expo-status-bar": "~1.12.1",
     "expo-system-ui": "~3.0.7",
     "expo-web-browser": "~13.0.3",
+    "jwt-decode": "^4.0.0",
     "metro": "^0.81.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.74.5",
+    "react-native-async-storage": "^0.0.1",
     "react-native-gesture-handler": "~2.16.1",
     "react-native-maps": "^1.18.2",
     "react-native-reanimated": "~3.10.1",
