@@ -1,13 +1,13 @@
 import React from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, Platform, ImageBackground } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack'; // Import NativeStackNavigationProp
-import { RootStackParamList } from './types'; // Import your type definition
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from './types';
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'index'>; // Specify the navigation type for the 'index' screen
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'index'>;
 
 export default function Index() {
-  const navigation = useNavigation<NavigationProp>(); // Apply the navigation type
+  const navigation = useNavigation<NavigationProp>();
 
   const handleLogin = () => {
     navigation.navigate('LoginScreen');
@@ -18,48 +18,62 @@ export default function Index() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.headerText}>Welcome to Manzil!</Text>
-      <Text style={styles.subtitle}>
-        The best place to plan your trips and discover new destinations.
-      </Text>
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleSignup}>
-          <Text style={styles.buttonText}>Sign Up</Text>
-        </TouchableOpacity>
+    <ImageBackground
+      source={require('../assets/images/BackGroundImageHomeScreen.jpg')}  // Update this with the path to your background image
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <View style={styles.overlay}>
+        <Text style={styles.headerText}>Welcome to Manzil!</Text>
+        <Text style={styles.subtitle}>
+          The best place to plan your trips and discover new destinations.
+        </Text>
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleLogin}>
+            <Text style={styles.buttonText}>Login</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleSignup}>
+            <Text style={styles.buttonText}>Sign Up</Text>
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.footerText}>
+          {Platform.select({
+            ios: 'Press cmd + d to open developer tools',
+            android: 'Press cmd + m to open developer tools',
+          })}
+        </Text>
       </View>
-      <Text style={styles.footerText}>
-        {Platform.select({
-          ios: 'Press cmd + d to open developer tools',
-          android: 'Press cmd + m to open developer tools',
-        })}
-      </Text>
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  background: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  overlay: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    width: '100%',
     padding: 16,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Adjust transparency for text readability
   },
   headerText: {
     fontSize: 32,
     fontWeight: 'bold',
     marginBottom: 20,
-    color: '#333',
+    color: '#fff',
   },
   subtitle: {
     fontSize: 18,
     textAlign: 'center',
     marginBottom: 30,
-    color: '#666',
+    color: '#ccc',
   },
   buttonsContainer: {
     width: '100%',
@@ -82,6 +96,6 @@ const styles = StyleSheet.create({
   footerText: {
     marginTop: 30,
     fontSize: 14,
-    color: '#777',
+    color: '#ccc',
   },
 });

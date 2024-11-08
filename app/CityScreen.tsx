@@ -17,8 +17,9 @@ export default function CityScreen() {
         return <Text>City information is missing.</Text>;
     }
 
-    // Ensure that city.places is defined and is an array
+    // Ensure that city.places and city.food are defined and are arrays
     const places = city.places || [];
+    const food = city.foods || [];
 
     const handleNavigate = (placeName: string) => {
         navigation.navigate('GoogleMap', { placeName }); // Navigate to GoogleMap screen
@@ -28,39 +29,56 @@ export default function CityScreen() {
         navigation.navigate('Reviews', { placeName }); // Navigate to Reviews screen
     };
 
+    const renderItem = (name: string, type: 'Place' | 'Food') => (
+        <View style={styles.card} key={name}> {/* Added key prop here */}
+            <Image
+                source={{ uri: 'https://via.placeholder.com/150' }} // Placeholder image
+                style={styles.placeImage}
+            />
+            <Text style={styles.placeName}>{name}</Text>
+
+            <View style={styles.buttonsContainer}>
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => handleNavigate(name)} // Navigate to Google Maps
+                >
+                    <Text style={styles.buttonText}>Navigate</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => handleCheckReviews(name)} // Navigate to Reviews page
+                >
+                    <Text style={styles.buttonText}>Check Reviews</Text>
+                </TouchableOpacity>
+            </View>
+        </View>
+    );
 
     return (
         <ScrollView style={styles.container}>
             <Text style={styles.cityName}>{`City: ${city.name}`}</Text>
 
-            {places.length === 0 ? (
-                <Text>No places available in this city.</Text>
-            ) : (
-                places.map((place, index) => (
-                    <View key={index} style={styles.card}>
-                        <Image
-                            source={{ uri: 'https://via.placeholder.com/150' }} // Placeholder image
-                            style={styles.placeImage}
-                        />
-                        <Text style={styles.placeName}>{place}</Text>
+            <View style={styles.columnsContainer}>
+                {/* Tourist Sites Column */}
+                <View style={styles.column}>
+                    <Text style={styles.columnTitle}>Tourist Sites</Text>
+                    {places.length === 0 ? (
+                        <Text>No places available in this city.</Text>
+                    ) : (
+                        places.map((place) => renderItem(place, 'Place'))
+                    )}
+                </View>
 
-                        <View style={styles.buttonsContainer}>
-                            <TouchableOpacity
-                                style={styles.button}
-                                onPress={() => handleNavigate(place)} // Navigate to Google Maps
-                            >
-                                <Text style={styles.buttonText}>Navigate</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={styles.button}
-                                onPress={() => handleCheckReviews(place)} // Navigate to Reviews page
-                            >
-                                <Text style={styles.buttonText}>Check Reviews</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                ))
-            )}
+                {/* Food Options Column */}
+                <View style={styles.column}>
+                    <Text style={styles.columnTitle}>Food Options</Text>
+                    {food.length === 0 ? (
+                        <Text>No food options available in this city.</Text>
+                    ) : (
+                        food.map((foodItem) => renderItem(foodItem, 'Food'))
+                    )}
+                </View>
+            </View>
         </ScrollView>
     );
 }
@@ -74,6 +92,20 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 16,
+    },
+    columnsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    column: {
+        flex: 1,
+        marginHorizontal: 8,
+    },
+    columnTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 10,
+        color: '#333',
     },
     card: {
         backgroundColor: '#fff',
@@ -112,4 +144,3 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 });
-
