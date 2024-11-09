@@ -3,7 +3,7 @@ import { View, Text, TextInput, Button, FlatList, StyleSheet } from 'react-nativ
 import axios from 'axios'; 
 import AsyncStorage from '@react-native-async-storage/async-storage'; // "npm install @react-native-async-storage/async-storage" for this
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { RootStackParamList } from '../app/types';
+import { RootStackParamList } from './types';
 
 interface Review {
   id: string;
