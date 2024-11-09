@@ -4,11 +4,12 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-
+//---------------------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------------------
 const app = express();
-const port = 3000;  // You can change the port number
+const port = 3000;  // able to change the port number
 const corsOptions = {
-    origin: '*',  // Allow all origins for testing
+    origin: '*',  
     credentials: true,
 };
 
@@ -26,7 +27,7 @@ mongoose.connect('mongodb+srv://sQpbJkHNcJzho6Pd:sQpbJkHNcJzho6Pd@manzil.gxdiu.m
     .catch(err => console.log('Error connecting to MongoDB:', err));
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
-
+                                              // SIGNUP & LOGIN
 
 // User Schema and Model
 const UserSchema = new mongoose.Schema({
@@ -35,6 +36,7 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: true },
 });
 const User = mongoose.model('User', UserSchema);
+
 
 // Signup Route
 app.post('/signup', async (req, res) => {
@@ -61,7 +63,7 @@ app.post('/signup', async (req, res) => {
   }
 });
 
-
+                              //----------------------------------------------------------//
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
     
@@ -94,8 +96,8 @@ app.post('/login', async (req, res) => {
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
-
-// Review Schema
+                                                // Reviews
+// User's Review Schema
 const ReviewSchema = new mongoose.Schema({
   placeName: { type: String, required: true },
   user: { type: String, required: true },

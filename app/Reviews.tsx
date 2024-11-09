@@ -10,7 +10,7 @@ interface Review {
   comment: string;
 }
 
-//----------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------
 export default function Reviews({ route }: { route: any }) {
   const placeName = route?.params?.placeName || 'Unknown Place';
 
