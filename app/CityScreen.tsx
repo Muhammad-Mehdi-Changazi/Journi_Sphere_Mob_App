@@ -22,31 +22,34 @@ export default function CityScreen() {
     const food = city.foods || [];
 
     const handleNavigate = (placeName: string) => {
-        navigation.navigate('GoogleMap', { placeName }); // Navigate to GoogleMap screen
+        console.log(placeName)
+        navigation.navigate('GoogleMap', {placeName}); // Navigate to GoogleMap screen
     };
 
     const handleCheckReviews = (placeName: string) => {
-        navigation.navigate('Reviews', { placeName }); // Navigate to Reviews screen
+        console.log(placeName); // Debugging: Check if placeName is logged
+        navigation.navigate('Reviews', { placeName }); // Navigate to Reviews page
     };
 
-    const renderItem = (name: string, type: 'Place' | 'Food') => (
-        <View style={styles.card} key={name}> {/* Added key prop here */}
+
+    const renderItem = (placeName: string, type: 'places' | 'foods') => (
+        <View style={styles.card} key={placeName}> {/* Added key prop here */}
             <Image
                 source={{ uri: 'https://via.placeholder.com/150' }} // Placeholder image
                 style={styles.placeImage}
             />
-            <Text style={styles.placeName}>{name}</Text>
+            <Text style={styles.placeName}>{placeName}</Text>
 
             <View style={styles.buttonsContainer}>
                 <TouchableOpacity
                     style={styles.button}
-                    onPress={() => handleNavigate(name)} // Navigate to Google Maps
+                    onPress={() => handleNavigate(placeName)} // Navigate to Google Maps
                 >
                     <Text style={styles.buttonText}>Navigate</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.button}
-                    onPress={() => handleCheckReviews(name)} // Navigate to Reviews page
+                    onPress={() => handleCheckReviews(placeName)} // Navigate to Reviews page
                 >
                     <Text style={styles.buttonText}>Check Reviews</Text>
                 </TouchableOpacity>
@@ -65,7 +68,7 @@ export default function CityScreen() {
                     {places.length === 0 ? (
                         <Text>No places available in this city.</Text>
                     ) : (
-                        places.map((place) => renderItem(place, 'Place'))
+                        places.map((place) => renderItem(place, 'places'))
                     )}
                 </View>
 
@@ -75,7 +78,7 @@ export default function CityScreen() {
                     {food.length === 0 ? (
                         <Text>No food options available in this city.</Text>
                     ) : (
-                        food.map((foodItem) => renderItem(foodItem, 'Food'))
+                        food.map((foodItem) => renderItem(foodItem, 'foods'))
                     )}
                 </View>
             </View>
