@@ -3,12 +3,27 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import axios from 'axios';
 import { useRouter } from 'expo-router'; // Import useRouter for navigation
+import AsyncStorage from '@react-native-async-storage/async-storage'; // npm install @react-native-async-storage/async-storage for this
+
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter(); // Use the router to navigate programmatically
   
+  function decodeJwt(token: string): any {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+          atob(base64)
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+    );
+
+    return JSON.parse(jsonPayload);
+  }
+
   const handleLogin = async () => {
     try {
       // Make a POST request to the backend login endpoint
@@ -17,14 +32,25 @@ export default function LoginScreen() {
         password,
       });
       
-      // Handle successful login
-      Alert.alert('Success', response.data.message);
-      console.log('Token:', response.data.token); // You can store the token here
+      const {token} = response.data;
 
-      // Navigate to Home screen
-      router.push('/home'); // This will navigate to the 'Home' screen
-    } catch (error) {
-      // Handle any login error
+      try {
+        await AsyncStorage.setItem('authToken', token);
+        
+        const decodedToken = decodeJwt(token);  // Use the decode function from Reviews.tsx
+        const username = decodedToken.username;
+
+        await AsyncStorage.setItem('username', username);
+
+        console.log('Login successful, token stored');
+      } 
+      catch (error) {
+        console.error('Error logging in:', error);
+      }
+
+      router.push('/home'); 
+    } 
+    catch (error) {
       Alert.alert('Login Failed', 'Invalid email or password');
     }
   };

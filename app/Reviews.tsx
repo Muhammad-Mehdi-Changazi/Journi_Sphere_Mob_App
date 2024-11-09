@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, FlatList, StyleSheet } from 'react-native';
 import axios from 'axios'; 
-import jwt_decode from 'jwt-decode'; // guys npm install jwt-decode ---> for this to work
 import AsyncStorage from '@react-native-async-storage/async-storage'; // npm install @react-native-async-storage/async-storage for this
 
 interface Review {
@@ -27,38 +26,43 @@ export default function Reviews({ route }: { route: any }) {
     try {
       const response = await axios.get(`http://localhost:3000/Reviews?placeName=${placeName}`);
       setReviews(response.data);
-    } catch (error) {
+    } 
+    
+    catch (error) {
       console.error('Error fetching reviews:', error);
     }
   };
 
   const submitReview = async () => {
-  if (!newReview || rating <= 0) return;
+    if (!newReview || rating <= 0) return;
 
-  // Retrieve the token from AsyncStorage
-  const token = await AsyncStorage.getItem('authToken');
-  if (!token) {
+
+    // Retrieve the token from AsyncStorage
+    const token = await AsyncStorage.getItem('authToken');
+
+    const username = await AsyncStorage.getItem('username');
+
+    if (!token) {
     console.error('User not authenticated');
     return;
-  }
+    }
+    console.log("Username fetched:", username);
 
-  const decodedToken: any = jwt_decode(token);
-  const username = decodedToken.username || 'Guest'; // Default to 'Guest' if no username
-
-  try {
-    await axios.post('http://localhost:3000/Reviews', {
-      placeName,
-      user: username,
-      rating,
-      comment: newReview,
-    });
-
-    setNewReview('');
-    setRating(0);
-    fetchReviews();
-  } catch (error) {
-    console.error('Error submitting review:', error);
-  }
+    try {
+        await axios.post('http://localhost:3000/Reviews', {
+        placeName,
+        user: username,
+        rating,
+        comment: newReview,
+        });
+        //console.log("going into the backend");
+        
+        setNewReview('');
+        setRating(0);
+        fetchReviews();
+    } catch (error) {
+        console.error('Error submitting review:', error);
+    }
 };
 
   return (

@@ -89,13 +89,6 @@ export default function SignupScreen() {
           <Text style={styles.buttonText}>Sign Up</Text>
         )}
       </TouchableOpacity>
-
-      <Text style={styles.footerText}>
-        {Platform.select({
-          ios: 'Press cmd + d to open developer tools',
-          android: 'Press cmd + m to open developer tools',
-        })}
-      </Text>
     </View>
   );
 }
