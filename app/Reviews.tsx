@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, FlatList, StyleSheet } from 'react-native';
 import axios from 'axios'; 
 import AsyncStorage from '@react-native-async-storage/async-storage'; // "npm install @react-native-async-storage/async-storage" for this
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { RootStackParamList } from '../app/types';
 
 interface Review {
   id: string;
@@ -10,9 +12,13 @@ interface Review {
   comment: string;
 }
 
+type CityScreenRouteProp = RouteProp<RootStackParamList, 'Reviews'>;
+
 //--------------------------------------------------------------------------------------------------------------------------
-export default function Reviews({ route }: { route: any }) {
+export default function Reviews() {
+  const route = useRoute<CityScreenRouteProp>();
   const placeName = route?.params?.placeName || 'Unknown Place';
+  console.log("Hello", placeName)
 
   const [reviews, setReviews] = useState<Review[]>([]);
   const [newReview, setNewReview] = useState('');

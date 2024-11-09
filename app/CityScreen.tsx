@@ -4,6 +4,7 @@ import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../app/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
+
 type CityScreenRouteProp = RouteProp<RootStackParamList, 'CityScreen'>;
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -28,7 +29,7 @@ export default function CityScreen() {
 
     const handleCheckReviews = (placeName: string) => {
         console.log(placeName); // Debugging: Check if placeName is logged
-        navigation.navigate('Reviews', { placeName }); // Navigate to Reviews page
+        navigation.navigate('Reviews', {placeName}); // Navigate to Reviews page
     };
 
 
