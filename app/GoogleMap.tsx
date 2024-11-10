@@ -5,7 +5,7 @@ import MapView, { Marker, Polyline } from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
 import axios from 'axios';
 import { RouteProp } from '@react-navigation/native';
-import { RootStackParamList } from '../app/types';
+import { RootStackParamList } from '../app/types/types';
 
 type GoogleMapScreenProps = {
     route: RouteProp<RootStackParamList, 'GoogleMap'>;
