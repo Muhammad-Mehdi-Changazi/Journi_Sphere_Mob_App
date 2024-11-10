@@ -36,12 +36,6 @@ export default function Index() {
             <Text style={styles.buttonText}>Sign Up</Text>
           </TouchableOpacity>
         </View>
-        <Text style={styles.footerText}>
-          {Platform.select({
-            ios: 'Press cmd + d to open developer tools',
-            android: 'Press cmd + m to open developer tools',
-          })}
-        </Text>
       </View>
     </ImageBackground>
   );
@@ -92,10 +86,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#fff',
     fontWeight: '600',
-  },
-  footerText: {
-    marginTop: 30,
-    fontSize: 14,
-    color: '#ccc',
   },
 });

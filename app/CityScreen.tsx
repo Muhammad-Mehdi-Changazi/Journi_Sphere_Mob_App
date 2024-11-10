@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../app/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
+const { width } = Dimensions.get('window');
 
 type CityScreenRouteProp = RouteProp<RootStackParamList, 'CityScreen'>;
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -23,15 +24,14 @@ export default function CityScreen() {
     const food = city.foods || [];
 
     const handleNavigate = (placeName: string) => {
-        console.log(placeName)
-        navigation.navigate('GoogleMap', {placeName}); // Navigate to GoogleMap screen
+        console.log(placeName);
+        navigation.navigate('GoogleMap', { placeName }); // Navigate to GoogleMap screen
     };
 
     const handleCheckReviews = (placeName: string) => {
         console.log(placeName); // Debugging: Check if placeName is logged
-        navigation.navigate('Reviews', {placeName}); // Navigate to Reviews page
+        navigation.navigate('Reviews', { placeName }); // Navigate to Reviews page
     };
-
 
     const renderItem = (placeName: string, type: 'places' | 'foods') => (
         <View style={styles.card} key={placeName}> {/* Added key prop here */}
@@ -52,7 +52,7 @@ export default function CityScreen() {
                     style={styles.button}
                     onPress={() => handleCheckReviews(placeName)} // Navigate to Reviews page
                 >
-                    <Text style={styles.buttonText}>Check Reviews</Text>
+                    <Text style={styles.buttonText}>Reviews</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -139,12 +139,18 @@ const styles = StyleSheet.create({
     },
     button: {
         backgroundColor: '#007BFF',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
+        paddingVertical: width * 0.009,
+        paddingHorizontal: width * 0.003, // Responsive width based on screen size
         borderRadius: 5,
+        flex: 1,
+        marginHorizontal: 2, // To add spacing between buttons
     },
     buttonText: {
         color: '#fff',
         fontWeight: 'bold',
+        textAlign: 'center',
+        fontSize: width * 0.027,
+        marginLeft: 3,
+        marginRight: 3,
     },
 });
