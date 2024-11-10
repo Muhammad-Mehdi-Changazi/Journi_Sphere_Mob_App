@@ -1,25 +1,22 @@
+// app/index.tsx
 import React from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, Platform, ImageBackground } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from './types';
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'index'>;
+import { useRouter } from 'expo-router';
 
 export default function Index() {
-  const navigation = useNavigation<NavigationProp>();
+  const router = useRouter();
 
   const handleLogin = () => {
-    navigation.navigate('LoginScreen');
+    router.push('/LoginScreen'); // Navigate to LoginScreen
   };
 
   const handleSignup = () => {
-    navigation.navigate('SignupScreen');
+    router.push('/SignupScreen'); // Navigate to SignupScreen
   };
 
   return (
     <ImageBackground
-      source={require('../assets/images/BackGroundImageHomeScreen.jpg')}  // Update this with the path to your background image
+      source={require('../assets/images/BackGroundImageHomeScreen.jpg')}
       style={styles.background}
       resizeMode="cover"
     >
@@ -55,7 +52,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     padding: 16,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Adjust transparency for text readability
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   headerText: {
     fontSize: 32,

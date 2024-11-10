@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, FlatList, StyleSheet } from 'react-native';
-import axios from 'axios'; 
-import AsyncStorage from '@react-native-async-storage/async-storage'; // "npm install @react-native-async-storage/async-storage" for this
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { RootStackParamList } from '../app/types';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter, useLocalSearchParams } from 'expo-router'; // Use expo-router imports
+import ProtectedRoute from './components/protectedroute';
 
 interface Review {
   id: string;
@@ -12,66 +12,74 @@ interface Review {
   comment: string;
 }
 
-type ReviewsScreenRouteProp = RouteProp<RootStackParamList, 'Reviews'>;
 
-//--------------------------------------------------------------------------------------------------------------------------
 export default function Reviews() {
-  const route = useRoute<ReviewsScreenRouteProp>();
-  const placeName = route?.params?.placeName || 'Unknown Place';
-  console.log("Hello", placeName)
+  const router = useRouter(); // Use expo-router's useRouter for navigation
+  const { placeName } = useLocalSearchParams<{ placeName: string }>(); // Use useLocalSearchParams for URL params
 
   const [reviews, setReviews] = useState<Review[]>([]);
   const [newReview, setNewReview] = useState('');
   const [rating, setRating] = useState<number>(0);
+  const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {
     fetchReviews();
+    loadUsername();
   }, []);
 
+  // Fetch reviews from the backend
   const fetchReviews = async () => {
     try {
       const response = await axios.get(`http://localhost:3000/Reviews?placeName=${placeName}`);
       setReviews(response.data);
-    } 
-    
-    catch (error) {
+    } catch (error) {
       console.error('Error fetching reviews:', error);
     }
   };
 
+  // Load the username from AsyncStorage
+  const loadUsername = async () => {
+    try {
+      const storedUsername = await AsyncStorage.getItem('username');
+      if (storedUsername) {
+        setUsername(storedUsername);
+        console.log('Loaded username:', storedUsername);
+      }
+    } catch (error) {
+      console.error('Error loading username:', error);
+    }
+  };
+
+  // Submit a new review
   const submitReview = async () => {
-    if (!newReview || rating <= 0) return;
+    if (!newReview || rating <= 0 || !username) return;
 
-
-    // Retrieve the token from AsyncStorage
     const token = await AsyncStorage.getItem('authToken');
 
-    const username = await AsyncStorage.getItem('username');
-
     if (!token) {
-    console.error('User not authenticated');
-    return;
+      console.error('User not authenticated');
+      return;
     }
-    console.log("Username fetched:", username);
 
     try {
-        await axios.post('http://localhost:3000/Reviews', {
+      // Send the review to the backend
+      await axios.post('http://localhost:3000/Reviews', {
         placeName,
         user: username,
         rating,
         comment: newReview,
-        });
-        //console.log("going into the backend");
-        
-        setNewReview('');
-        setRating(0);
-        fetchReviews();
+      });
+
+      setNewReview('');
+      setRating(0);
+      fetchReviews();
     } catch (error) {
-        console.error('Error submitting review:', error);
+      console.error('Error submitting review:', error);
     }
-};
+  };
 
   return (
+    <ProtectedRoute>
     <View style={styles.container}>
       <Text style={styles.header}>Reviews for {placeName}</Text>
       <FlatList
@@ -101,41 +109,38 @@ export default function Reviews() {
       />
       <Button title="Submit" onPress={submitReview} />
     </View>
+    </ProtectedRoute>
   );
 }
 
-
-
-
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    padding: 16 
-},
-  header: { 
-    fontSize: 24, 
-    fontWeight: 'bold', 
-    marginBottom: 16 
-},
-  review: { 
-    padding: 8, 
-    borderBottomWidth: 1, 
-    borderBottomColor: '#ddd' 
-},
-  user: { 
-    fontWeight: 'bold' 
-},
-  subHeader: { 
-    fontSize: 18, 
-    fontWeight: 'bold', 
-    marginTop: 16 
-},
-  input: { 
-    borderColor: '#ccc', 
-    borderWidth: 1, 
-    padding: 8, 
-    marginBottom: 8, 
-    borderRadius: 5 
-},
-
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  header: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  review: {
+    padding: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  user: {
+    fontWeight: 'bold',
+  },
+  subHeader: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 16,
+  },
+  input: {
+    borderColor: '#ccc',
+    borderWidth: 1,
+    padding: 8,
+    marginBottom: 8,
+    borderRadius: 5,
+  },
 });
