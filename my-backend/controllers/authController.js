@@ -6,11 +6,6 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const app = express();
 
-// Allow requests from localhost:8081
-app.use(cors({
-  origin: 'http://localhost:8081',
-}));
-
 // Signup logic
 exports.signup = async (req, res) => {
   const { username, email, password } = req.body;
