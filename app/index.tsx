@@ -1,7 +1,8 @@
 // app/index.tsx
 import React from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, Platform, ImageBackground } from 'react-native';
+import { Text, View, TouchableOpacity, ImageBackground } from 'react-native';
 import { useRouter } from 'expo-router';
+import styles from './styles/index'; // Import styles from styles.ts
 
 export default function Index() {
   const router = useRouter();
@@ -21,10 +22,8 @@ export default function Index() {
       resizeMode="cover"
     >
       <View style={styles.overlay}>
-        <Text style={styles.headerText}>Welcome to Manzil!</Text>
-        <Text style={styles.subtitle}>
-          The best place to plan your trips and discover new destinations.
-        </Text>
+        <Text style={styles.headerText}>MANZIL</Text>
+        <Text style={styles.subtitle}>Plan your Trip the Right Way</Text>
         <View style={styles.buttonsContainer}>
           <TouchableOpacity style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>Login</Text>
@@ -85,3 +84,4 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
+
