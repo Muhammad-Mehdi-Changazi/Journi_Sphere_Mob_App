@@ -12,11 +12,11 @@ interface Review {
   comment: string;
 }
 
-type CityScreenRouteProp = RouteProp<RootStackParamList, 'Reviews'>;
+type ReviewsScreenRouteProp = RouteProp<RootStackParamList, 'Reviews'>;
 
 //--------------------------------------------------------------------------------------------------------------------------
 export default function Reviews() {
-  const route = useRoute<CityScreenRouteProp>();
+  const route = useRoute<ReviewsScreenRouteProp>();
   const placeName = route?.params?.placeName || 'Unknown Place';
   console.log("Hello", placeName)
 
