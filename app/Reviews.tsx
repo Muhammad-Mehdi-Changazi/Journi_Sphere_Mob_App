@@ -12,6 +12,7 @@ interface Review {
   comment: string;
 }
 
+
 export default function Reviews() {
   const router = useRouter(); // Use expo-router's useRouter for navigation
   const { placeName } = useLocalSearchParams<{ placeName: string }>(); // Use useLocalSearchParams for URL params

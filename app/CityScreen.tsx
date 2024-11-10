@@ -1,5 +1,6 @@
 // app/CityScreen.tsx
 import React from 'react';
+
 import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import ProtectedRoute from './components/protectedroute'
@@ -137,4 +138,5 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
+
 });
