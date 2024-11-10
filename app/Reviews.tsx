@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, FlatList, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, FlatList, StyleSheet, Image } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter, useLocalSearchParams } from 'expo-router'; // Use expo-router imports
@@ -10,8 +10,18 @@ interface Review {
   user: string;
   rating: number;
   comment: string;
+  userProfileImage: string; // Adding profile image for the user
 }
 
+const STAR_ICON = "★"; // Star icon for rating
+
+// Function to display star rating
+const renderStars = (rating: number) => {
+  const stars = Array(5).fill(STAR_ICON).map((star, index) =>
+    index < rating ? <Text key={index} style={styles.starFilled}>{star}</Text> : <Text key={index} style={styles.starEmpty}>{star}</Text>
+  );
+  return <View style={styles.ratingContainer}>{stars}</View>;
+};
 
 export default function Reviews() {
   const router = useRouter(); // Use expo-router's useRouter for navigation
@@ -31,7 +41,7 @@ export default function Reviews() {
   const fetchReviews = async () => {
     try {
       const response = await axios.get(`https://test-production-5b7f.up.railway.app/Reviews?placeName=${placeName}`);
-      setReviews(response.data);
+        setReviews(response.data);
     } catch (error) {
       console.error('Error fetching reviews:', error);
     }
@@ -63,7 +73,7 @@ export default function Reviews() {
 
     try {
       // Send the review to the backend
-      await axios.post('http://localhost:3000/Reviews', {
+      await axios.post(`https://test-production-5b7f.up.railway.app/Reviews`, {
         placeName,
         user: username,
         rating,
@@ -80,35 +90,41 @@ export default function Reviews() {
 
   return (
     <ProtectedRoute>
-    <View style={styles.container}>
-      <Text style={styles.header}>Reviews for {placeName}</Text>
-      <FlatList
-        data={reviews}
-        keyExtractor={(review) => review.id}
-        renderItem={({ item }) => (
-          <View style={styles.review}>
-            <Text style={styles.user}>{item.user}</Text>
-            <Text>Rating: {item.rating}</Text>
-            <Text>{item.comment}</Text>
-          </View>
-        )}
-      />
-      <Text style={styles.subHeader}>Add a Review</Text>
-      <TextInput
-        placeholder="Write your review"
-        value={newReview}
-        onChangeText={setNewReview}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Rating (1-5)"
-        value={rating.toString()}
-        onChangeText={(text) => setRating(Number(text))}
-        keyboardType="numeric"
-        style={styles.input}
-      />
-      <Button title="Submit" onPress={submitReview} />
-    </View>
+      <View style={styles.container}>
+        <Text style={styles.header}>Reviews for {placeName}</Text>
+        <FlatList
+          data={reviews}
+          keyExtractor={(review) => review.id}
+          renderItem={({ item }) => (
+            <View style={styles.reviewCard}>
+              <View style={styles.reviewHeader}>
+                <Image
+                  source={{ uri: item.userProfileImage || 'https://via.placeholder.com/40' }}
+                  style={styles.profileImage}
+                />
+                <Text style={styles.userName}>{item.user}</Text>
+              </View>
+              {renderStars(item.rating)}
+              <Text style={styles.comment}>{item.comment}</Text>
+            </View>
+          )}
+        />
+        <Text style={styles.subHeader}>Add a Review</Text>
+        <TextInput
+          placeholder="Write your review"
+          value={newReview}
+          onChangeText={setNewReview}
+          style={styles.input}
+        />
+        <TextInput
+          placeholder="Rating (1-5)"
+          value={rating.toString()}
+          onChangeText={(text) => setRating(Number(text))}
+          keyboardType="numeric"
+          style={styles.input}
+        />
+        <Button title="Submit" onPress={submitReview} />
+      </View>
     </ProtectedRoute>
   );
 }
@@ -122,19 +138,55 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
+    color: '#333',
   },
-  review: {
-    padding: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+  reviewCard: {
+    backgroundColor: '#fff',
+    padding: 16,
+    marginVertical: 8,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
   },
-  user: {
+  reviewHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  profileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 12,
+  },
+  userName: {
     fontWeight: 'bold',
+    fontSize: 16,
+    color: '#333',
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    marginBottom: 8,
+  },
+  starFilled: {
+    color: '#FFD700',
+    fontSize: 18,
+  },
+  starEmpty: {
+    color: '#D3D3D3',
+    fontSize: 18,
+  },
+  comment: {
+    fontSize: 14,
+    color: '#666',
   },
   subHeader: {
     fontSize: 18,
     fontWeight: 'bold',
     marginTop: 16,
+    marginBottom: 8,
   },
   input: {
     borderColor: '#ccc',
