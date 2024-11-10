@@ -26,7 +26,7 @@ export default function SignupScreen() {
 
     try {
       setLoading(true);
-      const response = await axios.post('http://localhost:3000/signup', requestData, {
+      const response = await axios.post('https://test-production-5b7f.up.railway.app/signup', requestData, {
         headers: {
           'Content-Type': 'application/json',
         },

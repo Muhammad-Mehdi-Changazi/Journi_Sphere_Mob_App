@@ -2,7 +2,6 @@
 import React from 'react';
 import { Text, View, TouchableOpacity, ImageBackground } from 'react-native';
 import { useRouter } from 'expo-router';
-//import styles from './styles/index'; // Import styles from styles.ts
 import { StyleSheet } from 'react-native';
 
 export default function Index() {
