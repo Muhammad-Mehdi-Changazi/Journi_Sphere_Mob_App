@@ -38,7 +38,7 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     try {
       // Make a POST request to the backend login endpoint
-      const response = await axios.post('http://localhost:3000/login', {
+      const response = await axios.post('https://test-production-5b7f.up.railway.app/login', {
         email,
         password,
       });
