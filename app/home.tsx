@@ -1,15 +1,12 @@
 // app/HomeScreen.tsx
-import React, { useEffect }from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router'; // Use Expo Router
-import { useAuth } from './contexts/authcontext'
-import ProtectedRoute from './components/protectedroute'
+import ProtectedRoute from './components/protectedroute';
+import styles from './styles/homestyles'; // Import the separate styles file
 
 export default function HomeScreen() {
-    const router = useRouter(); // Use the useRouter hook from Expo Router
-
- 
-
+  const router = useRouter(); // Use the useRouter hook from Expo Router
 
   // List of cities with names and places to pass as parameters
   const cities = [
@@ -77,65 +74,65 @@ export default function HomeScreen() {
 
   return (
     <ProtectedRoute>
-    <View style={styles.container}>
-      <Text style={styles.header}>Popular Cities</Text>
-      <View style={styles.citiesContainer}>
-        {cities.map((city, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.cityButton}
-            onPress={() => {
-              // Navigate to CityScreen using Expo Router
-              router.push({
-                pathname: '/CityScreen',
-                params: {
-                  city: JSON.stringify({
-                    name: city.name,
-                    places: city.places,
-                    foods: city.food,
-                  }),
-                },
-              });
-            }}
-          >
-            <Text style={styles.cityText}>{city.name}</Text>
-          </TouchableOpacity>
-        ))}
+      <View style={styles.container}>
+        <Text style={styles.header}>Popular Cities</Text>
+        <View style={styles.citiesContainer}>
+          {cities.map((city, index) => (
+            <TouchableOpacity
+              key={index}
+              style={styles.cityButton}
+              onPress={() => {
+                router.push({
+                  pathname: '/CityScreen',
+                  params: {
+                    city: JSON.stringify({
+                      name: city.name,
+                      places: city.places,
+                      foods: city.food,
+                    }),
+                  },
+                });
+              }}
+            >
+              <Text style={styles.cityText}>{city.name}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
-    </View>
     </ProtectedRoute>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#fff',
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  citiesContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
-    width: '100%',
-  },
-  cityButton: {
-    width: '40%',
-    padding: 16,
-    marginVertical: 8,
-    backgroundColor: '#eee',
-    alignItems: 'center',
-    borderRadius: 8,
-  },
-  cityText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-});
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     padding: 16,
+//     backgroundColor: '#fff',
+//   },
+//   header: {
+//     fontSize: 24,
+//     fontWeight: 'bold',
+//     marginBottom: 20,
+//   },
+//   citiesContainer: {
+//     flexDirection: 'row',
+//     flexWrap: 'wrap',
+//     justifyContent: 'space-around',
+//     width: '100%',
+//   },
+//   cityButton: {
+//     width: '40%',
+//     padding: 16,
+//     marginVertical: 8,
+//     backgroundColor: '#eee',
+//     alignItems: 'center',
+//     borderRadius: 8,
+//   },
+//   cityText: {
+//     fontSize: 18,
+//     fontWeight: 'bold',
+//   },
+// });
