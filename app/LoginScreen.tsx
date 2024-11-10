@@ -1,28 +1,39 @@
 // app/LoginScreen.tsx
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+} from 'react-native';
 import axios from 'axios';
-import { useRouter } from 'expo-router'; // Import useRouter for navigation
-import AsyncStorage from '@react-native-async-storage/async-storage'; // npm install @react-native-async-storage/async-storage for this
+import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// Function to decode the JWT token manually
+function decodeJwt(token: string): any {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    console.error('Error decoding token:', error);
+    return null;
+  }
+}
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const router = useRouter(); // Use the router to navigate programmatically
-  
-  function decodeJwt(token: string): any {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-          atob(base64)
-          .split('')
-          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-          .join('')
-    );
-
-    return JSON.parse(jsonPayload);
-  }
+  const router = useRouter();
 
   const handleLogin = async () => {
     try {
@@ -31,26 +42,35 @@ export default function LoginScreen() {
         email,
         password,
       });
-      
-      const {token} = response.data;
 
-      try {
-        await AsyncStorage.setItem('authToken', token);
-        
-        const decodedToken = decodeJwt(token);  // Use the decode function from Reviews.tsx
-        const username = decodedToken.username;
+      const { token } = response.data;
 
-        await AsyncStorage.setItem('username', username);
+      // Store the token in AsyncStorage
+      await AsyncStorage.setItem('authToken', token);
 
-        console.log('Login successful, token stored');
-      } 
-      catch (error) {
-        console.error('Error logging in:', error);
+      // Manually decode the token to extract the username
+      const decodedToken = decodeJwt(token);
+
+      if (!decodedToken) {
+        throw new Error('Failed to decode token');
       }
 
-      router.push('/home'); 
-    } 
-    catch (error) {
+      // Extract the username from the decoded token
+      const username = decodedToken.username;
+
+      if (!username) {
+        throw new Error('Username not found in token');
+      }
+
+      // Store the username in AsyncStorage
+      await AsyncStorage.setItem('username', username);
+
+      console.log('Login successful, token and username stored');
+
+      // Navigate to the home screen
+      router.push('/home');
+    } catch (error) {
+      console.error('Error during login:', error);
       Alert.alert('Login Failed', 'Invalid email or password');
     }
   };
@@ -58,7 +78,7 @@ export default function LoginScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.headerText}>Login</Text>
-      
+
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -89,8 +109,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f4f4f4',
     padding: 16,
+    backgroundColor: '#f4f4f4',
   },
   headerText: {
     fontSize: 32,

@@ -30,7 +30,14 @@ exports.login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, existingUser.password);
     if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
-    const token = jwt.sign({ userId: existingUser._id, email: existingUser.email }, 'your_secret_key', { expiresIn: '1h' });
+    // Generate a JWT token including the username
+    const token = jwt.sign(
+      { userId: existingUser._id, email: existingUser.email, username: existingUser.username },
+      'your_secret_key', // Use an environment variable for the secret key in production
+      { expiresIn: '1h' } // Set token expiration time as needed
+    );
+
+    console.log("logging in");
     res.status(200).json({ message: 'Login successful', token });
   } catch (error) {
     res.status(500).json({ message: 'Error logging in', error });

@@ -1,14 +1,12 @@
-import { Stack } from "expo-router";
-import { RootStackParamList } from "./types"; // Import the type
+// app/_layout.tsx
+import React from 'react';
+import { Stack } from 'expo-router';
+import { AuthProvider } from './contexts/authcontext'; // Adjust the import path if necessary
 
 export default function RootLayout() {
   return (
-    <Stack>
-      <Stack.Screen name="index" />
-      <Stack.Screen name="LoginScreen" />
-      <Stack.Screen name="SignupScreen" />
-      <Stack.Screen name="home" />
-
-    </Stack>
+    <AuthProvider> {/* Wrap your entire app with AuthProvider */}
+      <Stack /> {/* This renders the appropriate route/page */}
+    </AuthProvider>
   );
 }
