@@ -3,9 +3,6 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const cors = require('cors');
-const app = express();
-
 // Signup logic
 exports.signup = async (req, res) => {
   const { username, email, password } = req.body;
