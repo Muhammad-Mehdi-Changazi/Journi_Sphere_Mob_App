@@ -1,3 +1,4 @@
+
 // app/GoogleMapScreen.tsx
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
@@ -146,4 +147,3 @@ const styles = StyleSheet.create({
 });
 
 export default GoogleMapScreen;
-
