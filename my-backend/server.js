@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 require('dotenv').config();  // Import dotenv to load environment variables
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 app.use(cors({ origin: '*', credentials: true }));
 app.use(bodyParser.json());

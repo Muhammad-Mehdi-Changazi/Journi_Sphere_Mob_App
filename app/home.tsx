@@ -12,8 +12,8 @@ export default function HomeScreen() {
   const cities = [
     {
       name: 'Lahore',
-      places: ['Badshahi Mosque', 'Shalimar Gardens', 'Lahore Fort', 'Minar-e-Pakistan', 'Wagah Border', 'Anarkali Bazaar', 'Mall Road'],
-      food: ['Phajja Siri Paye', 'Cuckoo\'s Den', 'Butt Karahi', 'Lahore Chatkhara', 'Yasir Broast', 'Food Street Fort Road', 'Bundu Khan'],
+      places: ['Badshahi Mosque', 'Shalamar Garden', 'Lahore Fort', 'Minar-e-Pakistan', 'Wagah (Lahore)', 'Anarkali Bazaar', 'Mall Road (Garhi Shahu)'],
+      food: ['Phajja Siri Paye', 'Cuckoo\'s Den', 'Butt Karahi (Lahore)', 'Lahore Chatkhara', 'Yasir Broast', 'Food Street Fort Road', 'Bundu Khan'],
     },
     {
       name: 'Islamabad',
