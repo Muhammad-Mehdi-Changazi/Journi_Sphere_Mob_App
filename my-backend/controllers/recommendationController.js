@@ -1,0 +1,34 @@
+const axios = require('axios');
+const City = require('../models/city'); // Import your city model
+
+const getRecommendations = async (req, res) => {
+  const { city } = req.query; // City passed as a query parameter
+  try {
+    const location = await City.findOne({ name: city });
+    if (!location) {
+      return res.status(404).send('City not found');
+    }
+
+    const googleApiKey = process.env.GOOGLE_API_KEY; // Use environment variable for Google API key
+    const { lat, lng } = location;
+
+    const hotelsResponse = await axios.get(
+      `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=5000&type=lodging&key=${googleApiKey}`
+    );
+    const restaurantsResponse = await axios.get(
+      `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=5000&type=restaurant&key=${googleApiKey}`
+    );
+
+    res.json({
+      hotels: hotelsResponse.data.results,
+      restaurants: restaurantsResponse.data.results,
+    });
+  } catch (error) {
+    res.status(500).send('Error fetching recommendations');
+  }
+};
+
+// Export the function
+module.exports = {
+  getRecommendations,
+};
