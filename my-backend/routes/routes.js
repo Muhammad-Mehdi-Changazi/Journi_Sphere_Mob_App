@@ -20,6 +20,7 @@ router.get('/:hotel_name', getHotelByName);
 router.post('/', createRoom);
 router.get('/', getRooms);
 router.get('/hotel/:hotel_name', getRoomsByHotel);
+router.get('/api/search',recommendationController.searchPlaces)
 
 
 module.exports = router;

@@ -2,9 +2,10 @@ const City = require('../models/city');
 
 exports.getCities = async (req, res) => {
   try {
-    const cities = await City.find();
-    res.json(cities);
+    const cities = await City.find(); // Fetch all cities
+    res.json(cities); // Return the data with new fields
   } catch (error) {
-    res.status(500).send('Error fetching cities');
+    console.error('Error fetching cities:', error);
+    res.status(500).send('Server error');
   }
 };
