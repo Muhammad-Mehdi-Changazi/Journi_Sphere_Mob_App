@@ -21,7 +21,7 @@ const fetchRecommendations = async (cityName: string) => {
 export default function CityScreen() {
   const router = useRouter();
   const { city } = useLocalSearchParams<{ city: string }>();
-  
+
   const [places, setPlaces] = useState<any[]>([]); // Adjusted to store place objects
   const [foods, setFoods] = useState<any[]>([]); // Adjusted to store food objects
   const [loading, setLoading] = useState<boolean>(true);
@@ -56,18 +56,22 @@ export default function CityScreen() {
     router.push(`/Reviews?placeName=${encodeURIComponent(placeName)}`); // Navigate to Reviews page
   };
 
-  const renderItem = (place: any) => (
+  const handleMakeReservation = (hotelName: string) => {
+    // router.push(`/ReservationScreen?hotelName=${encodeURIComponent(hotelName)}`); // Navigate to ReservationScreen
+  };
+
+  const renderHotelItem = (place: any) => (
     <View style={styles.card} key={place.place_id}>
       <Image
         source={{
-          uri: place.photos && place.photos[0] ? 
+          uri: place.photos && place.photos[0] ?
             `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${place.photos[0].photo_reference}&key=YOUR_GOOGLE_API_KEY`
             : 'https://via.placeholder.com/150', // Fallback image
         }}
         style={styles.placeImage}
       />
       <Text style={styles.placeName}>{place.name}</Text>
-  
+
       <View style={styles.buttonsContainer}>
         <TouchableOpacity style={styles.button} onPress={() => handleNavigate(place.name)}>
           <Text style={styles.buttonText}>Navigate</Text>
@@ -75,10 +79,35 @@ export default function CityScreen() {
         <TouchableOpacity style={styles.button} onPress={() => handleCheckReviews(place.name)}>
           <Text style={styles.buttonText}>Check Reviews</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={() => handleMakeReservation(place.name)}>
+          <Text style={styles.buttonText}>Make Reservation</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
-  
+
+  const renderFoodItem = (food: any) => (
+    <View style={styles.card} key={food.place_id}>
+      <Image
+        source={{
+          uri: food.photos && food.photos[0] ?
+            `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${food.photos[0].photo_reference}&key=YOUR_GOOGLE_API_KEY`
+            : 'https://via.placeholder.com/150', // Fallback image
+        }}
+        style={styles.placeImage}
+      />
+      <Text style={styles.placeName}>{food.name}</Text>
+
+      <View style={styles.buttonsContainer}>
+        <TouchableOpacity style={styles.button} onPress={() => handleNavigate(food.name)}>
+          <Text style={styles.buttonText}>Navigate</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={() => handleCheckReviews(food.name)}>
+          <Text style={styles.buttonText}>Check Reviews</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />;
@@ -100,7 +129,7 @@ export default function CityScreen() {
             {places.length === 0 ? (
               <Text>No hotels available in this city.</Text>
             ) : (
-              places.map((place) => renderItem(place))
+              places.map((place) => renderHotelItem(place))
             )}
           </View>
 
@@ -110,7 +139,7 @@ export default function CityScreen() {
             {foods.length === 0 ? (
               <Text>No restaurants available in this city.</Text>
             ) : (
-              foods.map((foodItem) => renderItem(foodItem))
+              foods.map((foodItem) => renderFoodItem(foodItem))
             )}
           </View>
         </View>

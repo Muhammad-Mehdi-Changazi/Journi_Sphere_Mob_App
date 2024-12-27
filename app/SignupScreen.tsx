@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform, ActivityIndicator } from 'react-native';
 import axios from 'axios';
+import { useRouter } from 'expo-router';
 
 export default function SignupScreen() {
   const [username, setUsername] = useState('');
@@ -10,12 +11,29 @@ export default function SignupScreen() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
+  const router = useRouter();
+
   const handleSignup = async () => {
     setErrorMessage(''); // Clear any previous error
     if (password !== confirmPassword) {
       setErrorMessage("Passwords don't match");
       return;
     }
+
+    // Validate email format
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email)) {
+      setErrorMessage('Invalid email format');
+      return;
+    }
+
+    // Validate password criteria
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      setErrorMessage('Password must have at least 8 characters, one capital letter, and one special character');
+      return;
+    }
+
 
     const requestData = {
         username: username,
@@ -34,10 +52,11 @@ export default function SignupScreen() {
 
       if (response.status === 201) {
         alert('User registered successfully');
+        router.push('/'); // Navigate back
       } else {
         setErrorMessage('Failed to register user');
       }
-    } catch (error) {
+    } catch (error: any) {
       setErrorMessage(error.response?.data?.message || 'Network error');
     } finally {
       setLoading(false);
