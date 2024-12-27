@@ -14,11 +14,11 @@ router.get('/Reviews', reviewController.getReviews);
 router.post('/Reviews', reviewController.createReview);
 router.get('/api/cities', cityController.getCities);
 router.get('/recommendations', recommendationController.getRecommendations)
-router.post('/', createHotel);
-router.get('/', getHotels);
+router.post('/Hotel', createHotel);
+router.get('/Hotels', getHotels);
 router.get('/:hotel_name', getHotelByName);
-router.post('/', createRoom);
-router.get('/', getRooms);
+router.post('/Room', createRoom);
+router.get('/Rooms', getRooms);
 router.get('/hotel/:hotel_name', getRoomsByHotel);
 router.get('/api/search',recommendationController.searchPlaces)
 
