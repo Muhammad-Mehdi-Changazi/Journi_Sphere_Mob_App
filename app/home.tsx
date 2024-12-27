@@ -61,7 +61,7 @@ export default function HomeScreen() {
       <View style={styles.container}>
         {/* Back to Home Button */}
         <TouchableOpacity style={styles.backButton} onPress={resetSearch}>
-          <Icon name="arrow-back-outline" size={24} color="white" />
+          {/* <Icon name="arrow-back-outline" size={24} color="white" /> */}
         </TouchableOpacity>
 
         {/* Search Bar */}

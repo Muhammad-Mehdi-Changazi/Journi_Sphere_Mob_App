@@ -6,5 +6,7 @@ export type RootStackParamList = {
   CityScreen: { city: { name: string; places: string[]; foods: string[]; } };
   GoogleMap: { placeName: string };  // Type for Google Map screen
   Reviews: { placeName: string };   // Type for Reviews screen
+  ReservationScreen: { placeName: string };
+
   
 };

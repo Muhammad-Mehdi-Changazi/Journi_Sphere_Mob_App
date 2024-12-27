@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, ActivityIndicator, Dimensions } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import ProtectedRoute from './components/protectedroute';
 import axios from 'axios';
@@ -26,8 +26,22 @@ export default function CityScreen() {
   const [foods, setFoods] = useState<any[]>([]); // Adjusted to store food objects
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   useEffect(() => {
+    // Set screen size state
+    const updateScreenSize = () => {
+      const screenWidth = Dimensions.get('window').width;
+      setIsSmallScreen(screenWidth < 768); // Adjust this threshold based on your needs
+    };
+
+    // Listen for screen size changes
+    Dimensions.addEventListener('change', updateScreenSize);
+
+    // Initial check for screen size
+    updateScreenSize();
+
+    // Fetch city recommendations
     if (city) {
       const parsedCity = JSON.parse(city);
       const cityName = parsedCity.name;
@@ -46,6 +60,11 @@ export default function CityScreen() {
         setLoading(false);
       });
     }
+
+    // Clean up listener on component unmount
+    return () => {
+      Dimensions.removeEventListener('change', updateScreenSize);
+    };
   }, [city]);
 
   const handleNavigate = (placeName: string) => {
@@ -56,58 +75,62 @@ export default function CityScreen() {
     router.push(`/Reviews?placeName=${encodeURIComponent(placeName)}`); // Navigate to Reviews page
   };
 
-  const handleMakeReservation = (hotelName: string) => {
-    // router.push(`/ReservationScreen?hotelName=${encodeURIComponent(hotelName)}`); // Navigate to ReservationScreen
+  const handleMakeReservation = (placeName: string) => {
+    router.push(`/ReservationScreen?placeName=${encodeURIComponent(placeName)}`); // Navigate to ReservationScreen
   };
 
-  const renderHotelItem = (place: any) => (
-    <View style={styles.card} key={place.place_id}>
-      <Image
-        source={{
-          uri: place.photos && place.photos[0] ?
-            `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${place.photos[0].photo_reference}&key=YOUR_GOOGLE_API_KEY`
-            : 'https://via.placeholder.com/150', // Fallback image
-        }}
-        style={styles.placeImage}
-      />
-      <Text style={styles.placeName}>{place.name}</Text>
+  // Function to render the hotel item
+  const renderHotelItem = (place: any) => {
+    const photoReference = place.photos && place.photos[0]?.photo_reference;
+    const photoUrl = photoReference ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoReference}&key=YOUR_GOOGLE_API_KEY` : 'https://via.placeholder.com/150';
 
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => handleNavigate(place.name)}>
-          <Text style={styles.buttonText}>Navigate</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => handleCheckReviews(place.name)}>
-          <Text style={styles.buttonText}>Check Reviews</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => handleMakeReservation(place.name)}>
-          <Text style={styles.buttonText}>Make Reservation</Text>
-        </TouchableOpacity>
+    return (
+      <View style={styles.card} key={place.place_id}>
+        <Image
+          source={{ uri: photoUrl }}
+          style={styles.placeImage}
+        />
+        <Text style={styles.placeName}>{place.name}</Text>
+
+        <View style={[styles.buttonsContainer, isSmallScreen && styles.buttonsContainerVertical]}>
+          <TouchableOpacity style={styles.button} onPress={() => handleNavigate(place.name)}>
+            <Text style={styles.buttonText}>Navigate</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => handleCheckReviews(place.name)}>
+            <Text style={styles.buttonText}>Check Reviews</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => handleMakeReservation(place.name)}>
+            <Text style={styles.buttonText}>Make Reservation</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
-  const renderFoodItem = (food: any) => (
-    <View style={styles.card} key={food.place_id}>
-      <Image
-        source={{
-          uri: food.photos && food.photos[0] ?
-            `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${food.photos[0].photo_reference}&key=YOUR_GOOGLE_API_KEY`
-            : 'https://via.placeholder.com/150', // Fallback image
-        }}
-        style={styles.placeImage}
-      />
-      <Text style={styles.placeName}>{food.name}</Text>
+  // Function to render the food item
+  const renderFoodItem = (food: any) => {
+    const photoReference = food.photos && food.photos[0]?.photo_reference;
+    const photoUrl = photoReference ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoReference}&key=YOUR_GOOGLE_API_KEY` : 'https://via.placeholder.com/150';
 
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => handleNavigate(food.name)}>
-          <Text style={styles.buttonText}>Navigate</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => handleCheckReviews(food.name)}>
-          <Text style={styles.buttonText}>Check Reviews</Text>
-        </TouchableOpacity>
+    return (
+      <View style={styles.card} key={food.place_id}>
+        <Image
+          source={{ uri: photoUrl }}
+          style={styles.placeImage}
+        />
+        <Text style={styles.placeName}>{food.name}</Text>
+
+        <View style={[styles.buttonsContainer, isSmallScreen && styles.buttonsContainerVertical]}>
+          <TouchableOpacity style={styles.button} onPress={() => handleNavigate(food.name)}>
+            <Text style={styles.buttonText}>Navigate</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => handleCheckReviews(food.name)}>
+            <Text style={styles.buttonText}>Check Reviews</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />;
@@ -122,7 +145,7 @@ export default function CityScreen() {
       <ScrollView style={styles.container}>
         <Text style={styles.cityName}>City: {JSON.parse(city).name}</Text>
 
-        <View style={styles.columnsContainer}>
+        <View style={[styles.columnsContainer, isSmallScreen && styles.columnsContainerVertical]}>
           {/* Tourist Sites Column (Hotels) */}
           <View style={styles.column}>
             <Text style={styles.columnTitle}>Hotels</Text>
@@ -162,6 +185,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  columnsContainerVertical: {
+    flexDirection: 'column',  // Stacks columns vertically on smaller screens
+  },
   column: {
     flex: 1,
     marginHorizontal: 8,
@@ -198,15 +224,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  buttonsContainerVertical: {
+    flexDirection: 'column',  // Align buttons vertically on smaller screens
+    alignItems: 'center',     // Center buttons horizontally
+  },
   button: {
     backgroundColor: '#007BFF',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
+    marginVertical: 5,  // Add spacing between buttons in vertical layout
+    width: 200, // Set a fixed width for the button
+    height: 45, // Set a fixed height for the button
   },
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   loader: {
     flex: 1,
