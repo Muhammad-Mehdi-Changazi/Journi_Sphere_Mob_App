@@ -56,7 +56,7 @@ export default function SignupScreen() {
       } else {
         setErrorMessage('Failed to register user');
       }
-    } catch (error) {
+    } catch (error: any) {
       setErrorMessage(error.response?.data?.message || 'Network error');
     } finally {
       setLoading(false);
