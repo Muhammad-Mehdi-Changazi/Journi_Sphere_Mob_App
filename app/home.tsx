@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, ActivityIndicator, Image, ScrollView, Tex
 import { useRouter } from 'expo-router';
 import ProtectedRoute from './components/protectedroute';
 import axios from 'axios';
+import Icon from 'react-native-vector-icons/Ionicons'; // Importing Ionicons for the arrow
 import styles from './styles/homestyles'; // Import your styles
 
 export default function HomeScreen() {
@@ -27,25 +28,21 @@ export default function HomeScreen() {
     };
     fetchCities();
   }, []);
+
   const handleSearch = async (query: string) => {
     setSearchQuery(query);
     if (query.length >= 3) {
       setSearchLoading(true);
       try {
-        // Call your backend API for the search functionality
-        const response = await axios.get(`http://localhost:3000/api/search`, {
-          params: { query },  // Pass the query to the backend
+        const response = await axios.get('http://localhost:3000/api/search', {
+          params: { query },
         });
-  
-        // Check if there are results and set them
+
         if (response.data.status === 'OK' && response.data.results.length > 0) {
-          console.log('Search Results:', response.data);
-          setSearchResults(response.data.results);  // Set search results from backend
+          setSearchResults(response.data.results);
         } else {
-          console.log("No results found for the query:", query);
-          setSearchResults([]);  // If no results, set empty array
+          setSearchResults([]);
         }
-  
         setSearchLoading(false);
       } catch (error) {
         console.error('Error fetching search results:', error);
@@ -53,10 +50,20 @@ export default function HomeScreen() {
       }
     }
   };
-  
+
+  const resetSearch = () => {
+    setSearchQuery('');
+    setSearchResults([]);
+  };
+
   return (
     <ProtectedRoute>
       <View style={styles.container}>
+        {/* Back to Home Button */}
+        <TouchableOpacity style={styles.backButton} onPress={resetSearch}>
+          <Icon name="arrow-back-outline" size={24} color="white" />
+        </TouchableOpacity>
+
         {/* Search Bar */}
         <View style={styles.searchContainer}>
           <TextInput
@@ -77,17 +84,43 @@ export default function HomeScreen() {
         ) : (
           <ScrollView contentContainerStyle={styles.citiesScrollView}>
             {searchQuery ? (
-              // Display search results if there's a search query
               searchResults.length > 0 ? (
                 searchResults.map((result, index) => (
                   <View key={index} style={styles.cityCard}>
                     <Image
-                      source={{ uri: result.icon }} // Google Places API provides an 'icon' field
+                      source={{ uri: result.icon }}
                       style={styles.cityImage}
                     />
                     <View style={styles.cityInfo}>
                       <Text style={styles.cityName}>{result.name}</Text>
                       <Text style={styles.cityDescription}>{result.formatted_address}</Text>
+
+                      {/* Navigate buttons */}
+                      <View style={styles.searchResultButtonsContainer}>
+                        <TouchableOpacity
+                          style={styles.searchResultButton}
+                          onPress={() => {
+                            router.push({
+                              pathname: '/GoogleMap',
+                              params: { placeName: result.name },
+                            });
+                          }}
+                        >
+                          <Text style={styles.searchResultButtonText}>Navigate</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                          style={styles.searchResultButton}
+                          onPress={() => {
+                            router.push({
+                              pathname: '/Reviews',
+                              params: { placeName: result.name },
+                            });
+                          }}
+                        >
+                          <Text style={styles.searchResultButtonText}>Check Reviews</Text>
+                        </TouchableOpacity>
+                      </View>
                     </View>
                   </View>
                 ))
@@ -95,11 +128,10 @@ export default function HomeScreen() {
                 <Text style={styles.cityDescription}>No results found for "{searchQuery}"</Text>
               )
             ) : (
-              // Display cities if no search query
               cities.map((city, index) => (
                 <View key={index} style={styles.cityCard}>
                   <Image
-                    source={{ uri: city.photoUrl }} // Ensure your API includes a `photoUrl` for each city
+                    source={{ uri: city.photoUrl }}
                     style={styles.cityImage}
                   />
                   <View style={styles.cityInfo}>

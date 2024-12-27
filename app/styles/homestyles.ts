@@ -94,4 +94,42 @@ export default StyleSheet.create({
     fontWeight: '700',
     fontFamily: 'Avenir',
   },
+  searchResultButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 15,
+  },
+  searchResultButton: {
+    backgroundColor: '#007bff',
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 30,
+    alignItems: 'center',
+    flex: 1,
+    marginHorizontal: 5,
+    shadowColor: '#007bff',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  searchResultButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+    fontFamily: 'Avenir',
+  },
+
+  // New back button style
+  backButton: {
+    position: 'absolute',
+    top: 5,
+    left: 6,
+    backgroundColor: '#e0e0e0',
+    borderRadius: 30,
+    padding: 5,
+    elevation: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
