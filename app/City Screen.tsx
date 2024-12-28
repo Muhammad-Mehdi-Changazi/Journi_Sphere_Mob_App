@@ -76,7 +76,7 @@ export default function CityScreen() {
   };
 
   const handleMakeReservation = (placeName: string) => {
-    router.push(`/Make Reservation?placeName=${encodeURIComponent(placeName)}`); // Navigate to ReservationScreen
+    router.push(`/ReservationScreen?placeName=${encodeURIComponent(placeName)}`); // Navigate to ReservationScreen
   };
 
   // Function to render the hotel item
