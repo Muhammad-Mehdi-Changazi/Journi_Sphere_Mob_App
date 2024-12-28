@@ -30,7 +30,9 @@ exports.getHotels = async (req, res) => {
 // Get a hotel by name
 exports.getHotelByName = async (req, res) => {
   try {
-    const { placeName } = req.params; // Retrieve placeName from URL parameters
+    let { placeName } = req.params; 
+    placeName = placeName.trim().replace(/\r?\n|\r/g, '');
+
     const hotel = await Hotel.findOne({ hotel_name: placeName });
 
     if (!hotel) return res.status(404).json({ error: 'Hotel not found' });
@@ -42,6 +44,7 @@ exports.getHotelByName = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 // Get a hotel by admin username
 // Get a hotel by admin username (hotel_name in this case)
