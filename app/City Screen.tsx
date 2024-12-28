@@ -147,6 +147,10 @@ export default function CityScreen() {
 
         <View style={[styles.columnsContainer, isSmallScreen && styles.columnsContainerVertical]}>
           {/* Tourist Sites Column (Hotels) */}
+            {/* links for testing. will be removed later*/}
+            {/* <a href="http://localhost:8081/Hotel">API: All Hotels</a>
+            <a href="http://localhost:8081/hotels/Pearl_Continental_Karachi">API: Pearl Continental Karachi</a> */}
+
           <View style={styles.column}>
             <Text style={styles.columnTitle}>Hotels</Text>
             {places.length === 0 ? (
