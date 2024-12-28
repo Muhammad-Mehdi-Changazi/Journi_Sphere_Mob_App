@@ -2,11 +2,10 @@ export type RootStackParamList = {
   index: undefined;
   LoginScreen: undefined;
   SignupScreen: undefined;
-  home: undefined;
+  Home: undefined;
   CityScreen: { city: { name: string; places: string[]; foods: string[]; } };
   GoogleMap: { placeName: string };  // Type for Google Map screen
   Reviews: { placeName: string };   // Type for Reviews screen
   ReservationScreen: { placeName: string };
-
-  
+  HotelAdmin: { username: string }; // Type for HotelAdmin screen, where username is passed
 };

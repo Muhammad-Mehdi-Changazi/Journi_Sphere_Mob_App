@@ -101,7 +101,7 @@ export default function HomeScreen() {
                           style={styles.searchResultButton}
                           onPress={() => {
                             router.push({
-                              pathname: '/GoogleMap',
+                              pathname: '/Google Map',
                               params: { placeName: result.name },
                             });
                           }}
@@ -143,7 +143,7 @@ export default function HomeScreen() {
                       style={styles.exploreButton}
                       onPress={() => {
                         router.push({
-                          pathname: '/CityScreen',
+                          pathname: '/City Screen',
                           params: {
                             city: JSON.stringify({
                               name: city.name,

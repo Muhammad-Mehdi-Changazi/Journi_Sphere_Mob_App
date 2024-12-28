@@ -5,20 +5,42 @@ const jwt = require('jsonwebtoken');
 
 // Signup logic
 exports.signup = async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, role } = req.body;
+
   try {
+    // Validate the role
+    const validRoles = ['Customer', 'Hotel Management Staff']; // Add more roles if needed
+    if (!validRoles.includes(role)) {
+      return res.status(400).json({ message: 'Invalid role specified' });
+    }
+
+    // Check if the user already exists
     const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ message: 'Email already exists' });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email already exists' });
+    }
 
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ username, email, password: hashedPassword });
 
+    // Create a new user
+    const newUser = new User({
+      username,
+      email,
+      password: hashedPassword,
+      role
+    });
+
+    // Save the user in the database
     await newUser.save();
+
+    // Respond with success
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error creating user', error });
   }
 };
+
 
 // Login logic
 exports.login = async (req, res) => {
@@ -30,16 +52,21 @@ exports.login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, existingUser.password);
     if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
-    // Generate a JWT token including the username
+    // Generate a JWT token including the role
     const token = jwt.sign(
-      { userId: existingUser._id, email: existingUser.email, username: existingUser.username },
+      {
+        userId: existingUser._id,
+        email: existingUser.email,
+        username: existingUser.username,
+        role: existingUser.role
+      },
       'your_secret_key', // Use an environment variable for the secret key in production
-      { expiresIn: '1h' } // Set token expiration time as needed
+      { expiresIn: '1h' }
     );
 
-    console.log("logging in");
-    res.status(200).json({ message: 'Login successful', token });
+    res.status(200).json({ message: 'Login successful', token, role: existingUser.role });
   } catch (error) {
     res.status(500).json({ message: 'Error logging in', error });
   }
 };
+

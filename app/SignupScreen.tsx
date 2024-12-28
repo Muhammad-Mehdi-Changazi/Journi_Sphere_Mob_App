@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
 
@@ -8,51 +15,60 @@ export default function SignupScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [role, setRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const router = useRouter();
 
   const handleSignup = async () => {
-    setErrorMessage(''); // Clear any previous error
+    setErrorMessage('');
+    if (!role) {
+      setErrorMessage('Please select a role');
+      return;
+    }
+
     if (password !== confirmPassword) {
       setErrorMessage("Passwords don't match");
       return;
     }
 
-    // Validate email format
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email)) {
       setErrorMessage('Invalid email format');
       return;
     }
 
-    // Validate password criteria
     const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
     if (!passwordRegex.test(password)) {
-      setErrorMessage('Password must have at least 8 characters, one capital letter, and one special character');
+      setErrorMessage(
+        'Password must have at least 8 characters, one capital letter, and one special character'
+      );
       return;
     }
 
-
     const requestData = {
-        username: username,
-        email: email,
-        password: password,
-      };      
-
+      username: username,
+      email: email,
+      password: password,
+      role: role,
+    };
 
     try {
       setLoading(true);
-      const response = await axios.post('http://localhost:3000/signup', requestData, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await axios.post(
+        'http://localhost:3000/signup',
+        requestData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
       if (response.status === 201) {
         alert('User registered successfully');
-        router.push('/'); // Navigate back
+        router.push('/');
       } else {
         setErrorMessage('Failed to register user');
       }
@@ -66,7 +82,7 @@ export default function SignupScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.headerText}>Sign Up</Text>
-      
+
       <TextInput
         style={styles.input}
         placeholder="Username"
@@ -99,9 +115,52 @@ export default function SignupScreen() {
         autoCapitalize="none"
       />
 
-      {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+      <Text style={styles.roleText}>Sign Up as a</Text>
+      <View style={styles.roleContainer}>
+        <TouchableOpacity
+          style={[
+            styles.roleButton,
+            role === 'Customer' && styles.roleButtonSelected,
+          ]}
+          onPress={() => setRole('Customer')}
+        >
+          <Text
+            style={[
+              styles.roleButtonText,
+              { color: role === 'Customer' ? '#fff' : '#000' },
+            ]}
+          >
+            Customer
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.roleButton,
+            role === 'Hotel Management Staff' &&
+            styles.roleButtonSelected,
+          ]}
+          onPress={() => setRole('Hotel Management Staff')}
+        >
+          <Text
+            style={[
+              styles.roleButtonText,
+              { color: role === 'Hotel Management Staff' ? '#fff' : '#000' },
+            ]}
+          >
+            Hotel Staff
+          </Text>
+        </TouchableOpacity>
+      </View>
 
-      <TouchableOpacity style={styles.button} onPress={handleSignup} disabled={loading}>
+      {errorMessage ? (
+        <Text style={styles.errorText}>{errorMessage}</Text>
+      ) : null}
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleSignup}
+        disabled={loading}
+      >
         {loading ? (
           <ActivityIndicator size="small" color="#fff" />
         ) : (
@@ -140,6 +199,30 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 2,
   },
+  roleText: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 10,
+    color: '#333',
+  },
+  roleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  roleButton: {
+    backgroundColor: '#e0e0e0',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginHorizontal: 10,
+  },
+  roleButtonSelected: {
+    backgroundColor: '#007bff',
+  },
+  roleButtonText: {
+    fontWeight: '600',
+  },
   button: {
     backgroundColor: '#007bff',
     paddingVertical: 12,
@@ -153,12 +236,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: '600',
-  },
-  footerText: {
-    marginTop: 30,
-    fontSize: 14,
-    color: '#777',
-    textAlign: 'center',
   },
   errorText: {
     color: 'red',

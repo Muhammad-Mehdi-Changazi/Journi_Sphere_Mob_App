@@ -54,8 +54,8 @@ export default function ReservationScreen() {
 
     // Room images
     const roomImages = {
-        'Single Bed': require('./../assets/images/SingleBed.jpeg'),
-        'Double Bed': require('./../assets/images/DoubleBed.jpeg'),
+        'Single Bed': require('../assets/images/SingleBed.jpeg'),
+        'Double Bed': require('../assets/images/DoubleBed.jpeg'),
         'King Suite': require('../assets/images/KingSuite.jpeg'),
         'Queen Suite': require('../assets/images/QueenSuite.jpeg'),
     };

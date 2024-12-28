@@ -8,7 +8,7 @@ export default function Index() {
   const router = useRouter();
 
   const handleLogin = () => {
-    router.push('/LoginScreen'); // Navigate to LoginScreen
+    router.push('/Login'); // Navigate to LoginScreen
   };
 
   const handleSignup = () => {
