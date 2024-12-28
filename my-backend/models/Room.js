@@ -6,6 +6,7 @@ const roomSchema = new mongoose.Schema({
   available: { type: Boolean, required: true },
   duplicates: { type: Number, required: true }, // Number of rooms available for this type
   num_booked: { type: Number, required: true }, // Number of booked rooms
+  room_number: { type: String, required: true },
   hotel: { type: mongoose.Schema.Types.ObjectId, ref: 'Hotel', required: true }, // Reference to Hotel schema
 });
 
