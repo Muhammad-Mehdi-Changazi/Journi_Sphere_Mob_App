@@ -4,9 +4,20 @@ const bodyParser = require('body-parser');
 const Routes = require('./routes/routes');
 const mongoose = require('mongoose');
 require('dotenv').config();  // Import dotenv to load environment variables
-
+const http = require('http'); 
+const socketIo = require('socket.io');
 const app = express();
 const port = process.env.PORT;
+
+const server = http.createServer(app); // Create an HTTP server instance
+
+const io = socketIo(server); // Pass the server instance to Socket.IO
+
+io.on('connection', (socket) => {
+  console.log('Socket.IO connection established');
+  // Handle Socket.IO connections here
+});
+
 
 app.use(cors({ origin: '*', credentials: true }));
 app.use(bodyParser.json());

@@ -3,9 +3,9 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Keyboa
 import axios from 'axios';
 import { useLocalSearchParams } from 'expo-router';
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
-import { io } from 'socket.io-client';
+import  io from 'socket.io-client';
 
-const socket = io('http://localhost:3000'); // Connect to the Socket.IO server
+let socket;
 
 export default function ReservationScreen() {
     const { placeName } = useLocalSearchParams<{ placeName: string }>();
@@ -17,6 +17,22 @@ export default function ReservationScreen() {
     const [roomType, setRoomType] = useState('');
     const [errors, setErrors] = useState({ name: '', email: '', phone: '' });
     const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        socket = io('http://localhost:3000'); // Connect to the Socket.IO server
+
+        socket.on('connect', () => {
+            console.log('Connected to Socket.IO server');
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Disconnected from Socket.IO server');
+        });
+
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
 
     useEffect(() => {
         const fetchHotelDetails = async () => {
@@ -49,7 +65,7 @@ export default function ReservationScreen() {
         };
 
         // Emit the reservation details to the server
-        socket.emit('new-reservation', reservationDetails);
+        socket.emit('reservation-updated', reservationDetails);
 
         console.log('Reservation Details:', reservationDetails);
 

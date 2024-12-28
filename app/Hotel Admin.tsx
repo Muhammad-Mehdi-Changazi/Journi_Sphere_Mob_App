@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Button } from 'react-native';
 import axios from 'axios';
 import { useLocalSearchParams } from 'expo-router';
-import { io } from 'socket.io-client';
+import  io  from 'socket.io-client';
 
-const socket = io('http://localhost:3000'); // Connect to Socket.IO server
-
+let socket;
 export default function HotelAdmin() {
     const { username } = useLocalSearchParams<{ username: string }>();
     const [hotelDetails, setHotelDetails] = useState(null);
@@ -14,6 +13,22 @@ export default function HotelAdmin() {
     const [editedRoom, setEditedRoom] = useState(null);
     const [reservationRequests, setReservationRequests] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        socket = io('http://localhost:3000'); // Connect to Socket.IO server
+
+        socket.on('connect', () => {
+            console.log('Connected to Socket.IO server');
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Disconnected from Socket.IO server');
+        });
+
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
 
     useEffect(() => {
         const fetchHotelDetails = async () => {
@@ -32,20 +47,23 @@ export default function HotelAdmin() {
         };
 
         const fetchReservationRequests = async () => {
-            try {
-                const response = await axios.get(`http://localhost:3000/api/reservations/requests/${username}`);
-                setReservationRequests(response.data.requests);
-            } catch (err) {
-                console.error('Failed to fetch reservation requests', err);
-            }
-        };
+        try {
+            const response = await axios.get(`http://localhost:3000/api/reservations/requests/${username}`);
+            setReservationRequests((prevRequests) => [...prevRequests, ...response.data.requests]);
+        } catch (err) {
+            console.error('Failed to fetch reservation requests', err);
+        }};
 
         fetchHotelDetails();
         fetchReservationRequests();
 
         // Listen for real-time reservation updates
         socket.on('reservation-updated', (reservation) => {
-            setReservationRequests((prevRequests) => [...prevRequests, reservation]);
+        try {
+                setReservationRequests((prevRequests) => [...prevRequests, reservation]);
+            } catch (err) {
+                console.error('Error handling reservation update', err);
+            }        
         });
 
         return () => {
