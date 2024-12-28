@@ -42,15 +42,19 @@ exports.signup = async (req, res) => {
 };
 
 
-// Login logic
+/// Login logic without bcrypt
 exports.login = async (req, res) => {
   const { email, password } = req.body;
   try {
     const existingUser = await User.findOne({ email });
-    if (!existingUser) return res.status(400).json({ message: 'Invalid credentials' });
+    if (!existingUser) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
 
-    const isMatch = await bcrypt.compare(password, existingUser.password);
-    if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+    // Compare plaintext passwords directly
+    if (password !== existingUser.password) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
 
     // Generate a JWT token including the role
     const token = jwt.sign(
@@ -58,7 +62,7 @@ exports.login = async (req, res) => {
         userId: existingUser._id,
         email: existingUser.email,
         username: existingUser.username,
-        role: existingUser.role
+        role: existingUser.role,
       },
       'your_secret_key', // Use an environment variable for the secret key in production
       { expiresIn: '1h' }
@@ -69,4 +73,3 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: 'Error logging in', error });
   }
 };
-
