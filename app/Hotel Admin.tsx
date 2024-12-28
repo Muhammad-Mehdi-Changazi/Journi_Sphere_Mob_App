@@ -25,6 +25,7 @@ export default function HotelAdmin() {
                 setLoading(false);
             } catch (err) {
                 setError(err.response?.data?.error || err.message);
+                setLoading(false);
             }
         };
 
@@ -40,6 +41,12 @@ export default function HotelAdmin() {
         fetchHotelDetails();
         fetchReservationRequests();
     }, [username]);
+
+    useEffect(() => {
+        if (hotelDetails) {
+            console.log(hotelDetails.rooms); // Check if rooms data is available
+        }
+    }, [hotelDetails]);
 
     const handleEditRoom = async (roomId) => {
         try {
@@ -74,7 +81,7 @@ export default function HotelAdmin() {
 
     return (
         <ScrollView style={styles.container}>
-            <Text style={styles.header}>{username}!</Text>
+            <Text style={styles.header}>Welcome, {username}!</Text>
 
             {/* Tab Navigation */}
             <View style={styles.tabs}>
@@ -89,6 +96,14 @@ export default function HotelAdmin() {
                 </TouchableOpacity>
             </View>
 
+            {/* Hotel Information */}
+            <View style={styles.section}>
+                <Text style={styles.sectionHeader}>Hotel Information</Text>
+                <Text style={styles.text}>Hotel Name: <Text style={styles.bold}>{hotelDetails.hotel_name}</Text></Text>
+                <Text style={styles.text}>Location: {`${hotelDetails.location.address}, ${hotelDetails.location.city}, ${hotelDetails.location.country}`}</Text>
+                <Text style={styles.text}>Description: {hotelDetails.description}</Text>
+            </View>
+
             {/* Rooms Tab */}
             {activeTab === 'rooms' && (
                 <View style={styles.section}>
@@ -97,12 +112,14 @@ export default function HotelAdmin() {
                         hotelDetails.rooms.map((room, index) => (
                             <View key={index} style={styles.roomCard}>
                                 <Text style={styles.roomHeader}>Room {room.room_number}</Text>
-                                <Text style={styles.text}>Type: {room.type}</Text>
+                                <Text style={styles.text}>Type: {room.room_type}</Text>
                                 <Text style={styles.text}>Capacity: {room.capacity}</Text>
                                 <Text style={styles.text}>Price: ${room.price}</Text>
-                                <Text style={[styles.text, room.status === 'available' ? styles.available : styles.notAvailable]}>
-                                    Status: {room.status}
+                                <Text style={[styles.text, room.available ? styles.available : styles.notAvailable]}>
+                                    Status: {room.available ? 'Available' : 'Not Available'}
                                 </Text>
+                                <Text style={styles.text}>Duplicates: {room.duplicates}</Text>
+                                <Text style={styles.text}>Booked: {room.num_booked}</Text>
                             </View>
                         ))
                     ) : (
@@ -212,6 +229,9 @@ const styles = StyleSheet.create({
         color: '#555',
         marginBottom: 6,
     },
+    bold: {
+        fontWeight: 'bold',
+    },
     available: {
         color: 'green',
     },
@@ -262,4 +282,3 @@ const styles = StyleSheet.create({
         color: 'red',
     },
 });
-
