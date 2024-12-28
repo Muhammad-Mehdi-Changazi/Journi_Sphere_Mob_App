@@ -33,17 +33,9 @@ export default function HotelAdmin() {
             }
         };
 
-        const fetchReservationRequests = async () => {
-            try {
-                const response = await axios.get(`http://localhost:3000/api/reservations/requests/${placeName}`);
-                setReservationRequests(response.data.requests);
-            } catch (err) {
-                console.error('Failed to fetch reservation requests', err);
-            }
-        };
 
         fetchHotelDetails();
-        fetchReservationRequests();
+
     }, [placeName]);
 
     const handleReservation = () => {
