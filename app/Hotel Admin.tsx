@@ -106,13 +106,13 @@ export default function HotelAdmin() {
                             <View key={index} style={styles.roomCard}>
                                 <Text style={styles.roomHeader}>Room {room.room_number}</Text>
                                 <Text style={styles.text}>Type: {room.room_type}</Text>
-                                <Text style={styles.text}>Capacity: {room.capacity}</Text>
+                                {/* <Text style={styles.text}>Capacity: {room.capacity}</Text> */}
                                 <Text style={styles.text}>Price: ${room.price}</Text>
                                 <Text style={[styles.text, room.available ? styles.available : styles.notAvailable]}>
                                     Status: {room.available ? 'Available' : 'Not Available'}
                                 </Text>
-                                <Text style={styles.text}>Duplicates: {room.duplicates}</Text>
-                                <Text style={styles.text}>Booked: {room.num_booked}</Text>
+                                {/* <Text style={styles.text}>Duplicates: {room.duplicates}</Text> */}
+                                {/* <Text style={styles.text}>Booked: {room.num_booked}</Text> */}
                             </View>
                         ))
                     ) : (
@@ -150,13 +150,13 @@ export default function HotelAdmin() {
                         value={editedRoom?.room_number || ''}
                         onChangeText={(text) => setEditedRoom({ ...editedRoom, room_number: text })}
                     />
-                    <TextInput
+                    {/* <TextInput
                         style={styles.input}
                         placeholder="Capacity"
                         keyboardType="number-pad"
                         value={editedRoom?.capacity || ''}
                         onChangeText={(text) => setEditedRoom({ ...editedRoom, capacity: text })}
-                    />
+                    /> */}
                     <TextInput
                         style={styles.input}
                         placeholder="Price"
