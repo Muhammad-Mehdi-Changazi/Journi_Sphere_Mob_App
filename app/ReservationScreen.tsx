@@ -1,51 +1,50 @@
-import React, { useState, useEffect } from 'react';
-import {View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, ScrollView, KeyboardAvoidingView,Platform,} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Button, KeyboardAvoidingView, Platform, Image, Alert } from 'react-native';
+import axios from 'axios';
 import { useLocalSearchParams } from 'expo-router';
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
-import axios from 'axios';
 
-export default function ReservationScreen() {
+export default function HotelAdmin() {
     const { placeName } = useLocalSearchParams<{ placeName: string }>();
-    const [hotelData, setHotelData] = useState<any>(null); 
-    
+    const [hotelDetails, setHotelDetails] = useState<{ rooms: any[] } | null>(null);
+    const [error, setError] = useState<string | null>(null);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
-    const [roomType, setRoomType] = useState('Single Bed');
+    const [roomType, setRoomType] = useState('');
     const [errors, setErrors] = useState({ name: '', email: '', phone: '' });
-    const [rooms, setRooms] = useState([]);
-
-    const [isHotelFound, setIsHotelFound] = useState(false); 
+    const [reservationRequests, setReservationRequests] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-    const fetchHotelData = async () => {
-        try {
-            const response = await axios.get(`http://localhost:3000/api/hotels/${placeName}`);  
-            if (response.status === 200) {
-                setHotelData(response.data); // Store hotel data in state
-                setRooms(response.data.rooms);
-                setIsHotelFound(true); 
+        const fetchHotelDetails = async () => {
+            try {
+                if (!placeName) {
+                    throw new Error('placeName is missing.');
+                }
+
+                // Fetch hotel details from the backend
+                const response = await axios.get(`http://localhost:3000/api/hotels/admin/${placeName}`);
+                setHotelDetails(response.data.hotel);
+                setLoading(false);
+            } catch (err) {
+                setError(err.response?.data?.error || err.message);
+                setLoading(false);
             }
-        } catch (error) {
-            setIsHotelFound(false); // Hotel not found
-            console.log('Hotel not found:', error);
-        }
-    };
+        };
 
-    if (placeName) {
-        fetchHotelData();
-    }
-}, [placeName]);
-    
-    const validateFields = () => {
-        const newErrors = { name: '', email: '', phone: '' };
-        if (!name) newErrors.name = 'Name is required.';
-        if (!email) newErrors.email = 'Email is required.';
-        if (!phone) newErrors.phone = 'Phone number is required.';
-        setErrors(newErrors);
+        const fetchReservationRequests = async () => {
+            try {
+                const response = await axios.get(`http://localhost:3000/api/reservations/requests/${placeName}`);
+                setReservationRequests(response.data.requests);
+            } catch (err) {
+                console.error('Failed to fetch reservation requests', err);
+            }
+        };
 
-        return !Object.values(newErrors).some((error) => error !== '');
-    };
+        fetchHotelDetails();
+        fetchReservationRequests();
+    }, [placeName]);
 
     const handleReservation = () => {
         if (!validateFields()) return;
@@ -66,6 +65,16 @@ export default function ReservationScreen() {
         );
     };
 
+    const validateFields = () => {
+        const newErrors = { name: '', email: '', phone: '' };
+        if (!name) newErrors.name = 'Name is required.';
+        if (!email) newErrors.email = 'Email is required.';
+        if (!phone) newErrors.phone = 'Phone number is required.';
+        setErrors(newErrors);
+
+        return !Object.values(newErrors).some((error) => error !== '');
+    };
+
     // Room images
     const roomImages = {
         'Single Bed': require('./../assets/images/SingleBed.jpeg'),
@@ -73,6 +82,22 @@ export default function ReservationScreen() {
         'King Suite': require('../assets/images/KingSuite.jpeg'),
         'Queen Suite': require('../assets/images/QueenSuite.jpeg'),
     };
+
+    if (loading) {
+        return (
+            <View style={styles.container}>
+                <Text style={styles.loadingText}>Loading hotel details...</Text>
+            </View>
+        );
+    }
+
+    if (error) {
+        return (
+            <View style={styles.container}>
+                <Text style={styles.errorText}>Error: {error}</Text>
+            </View>
+        );
+    }
 
     return (
         <KeyboardAvoidingView
@@ -87,14 +112,11 @@ export default function ReservationScreen() {
 
                 {/* Display Hotel Data if Found */}
                 <View>
-                    {isHotelFound && hotelData ? (
-                        <>
-                            <Text style={styles.hotelDescription}>{hotelData.description}</Text>
-                        </>
-                    ) : (null)
-                    }
+                    {hotelDetails && hotelDetails.description ? (
+                        <Text style={styles.hotelDescription}>{hotelDetails.description}</Text>
+                    ) : null}
 
-                    {/* Form for Reservation (same even if hotel is found) */}
+                    {/* Form for Reservation */}
                     <View style={styles.inputContainer}>
                         <MaterialIcons name="person" size={20} color="#888" style={styles.icon} />
                         <TextInput
@@ -143,50 +165,35 @@ export default function ReservationScreen() {
                     <Text style={styles.label}>Choose a Room Type:</Text>
 
                     {/* Map through rooms from the hotel data */}
-                    {isHotelFound && hotelData && hotelData.rooms ? (
                     <View style={styles.roomTypeContainer}>
-                        {rooms.map((room: any, index: number) => {
-                        const roomTypeMapping: { [key: string]: string } = {
-                            'Deluxe Twin': 'Double Bed',
-                            'Pearl King': 'King Suite',
-                            'Standard Queen': 'Queen Suite',
-                        };
+                        {hotelDetails?.rooms?.map((room, index) => {
+                            const roomTypeMapping = {
+                                'Deluxe Twin': 'Double Bed',
+                                'Pearl King': 'King Suite',
+                                'Standard Queen': 'Queen Suite',
+                            };
 
-                        const displayRoomType = roomTypeMapping[room.room_type] || room.room_type;
+                            const displayRoomType = roomTypeMapping[room.room_type] || room.room_type;
 
-                        return (
-                            <TouchableOpacity
-                            key={index}
-                            style={[styles.roomTypeCard, roomType === displayRoomType && styles.selectedCard]}
-                            onPress={() => setRoomType(displayRoomType)}
-                            >
-                            <Image source={roomImages[displayRoomType]} style={styles.roomImage} />
-                            <Text style={styles.roomTypeText}>{displayRoomType}</Text>
-                            <Text style={styles.roomPriceText}>Price: {room.price} PKR</Text>
-                            <Text style={styles.roomAvailabilityText}>
-                                Available: {room.available ? 'Yes' : 'No'}
-                            </Text>
-                            <Text style={styles.roomAvailabilityText}>
-                                Available Rooms: {room.duplicates - room.num_booked}
-                            </Text>
-                            </TouchableOpacity>
-                        );
+                            return (
+                                <TouchableOpacity
+                                    key={index}
+                                    style={[styles.roomTypeCard, roomType === displayRoomType && styles.selectedCard]}
+                                    onPress={() => setRoomType(displayRoomType)}
+                                >
+                                    <Image source={roomImages[displayRoomType]} style={styles.roomImage} />
+                                    <Text style={styles.roomTypeText}>{displayRoomType}</Text>
+                                    <Text style={styles.roomPriceText}>Price: {room.price} PKR</Text>
+                                    <Text style={styles.roomAvailabilityText}>
+                                        Available: {room.available ? 'Yes' : 'No'}
+                                    </Text>
+                                    <Text style={styles.roomAvailabilityText}>
+                                        Available Rooms: {room.duplicates - room.num_booked}
+                                    </Text>
+                                </TouchableOpacity>
+                            );
                         })}
                     </View>
-                    ) : (
-                    <View style={styles.roomTypeContainer}>
-                        {Object.keys(roomImages).map((roomType) => (
-                        <TouchableOpacity
-                            key={roomType}
-                            style={styles.roomTypeCard}
-                            onPress={() => setRoomType(roomType)}
-                        >
-                            <Image source={roomImages[roomType]} style={styles.roomImage} />
-                            <Text style={styles.roomTypeText}>{roomType}</Text>
-                        </TouchableOpacity>
-                        ))}
-                    </View>
-                    )}
 
                     {/* Confirm Reservation Button */}
                     <TouchableOpacity style={styles.button} onPress={handleReservation}>
@@ -217,68 +224,6 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         textAlign: 'center',
     },
-    roomDetails: {
-        marginBottom: 15,
-    },
-    roomTypeText: {
-        fontSize: 18,
-        fontWeight: '600',
-        marginBottom: 5,
-    },
-    roomTypeContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-        marginBottom: 20,
-    },
-    roomTypeCard: {
-        width: '48%',
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 8,
-        alignItems: 'center',
-        backgroundColor: '#fff',
-        padding: 15,
-        marginBottom: 15,
-        elevation: 5, // Add some shadow for better visual depth
-    },
-    selectedCard: {
-        borderColor: '#007BFF',
-        backgroundColor: '#e8f4ff',
-    },
-    roomImage: {
-        width: '100%',
-        height: 80,
-        borderRadius: 8,
-        marginBottom: 10,
-    },
-    roomTypeText: {
-        fontSize: 18,
-        fontWeight: '600',
-        marginBottom: 5,
-    },
-    roomPriceText: {
-        fontSize: 16,
-        color: '#555',
-        marginBottom: 5,
-    },
-    roomAvailabilityText: {
-        fontSize: 14,
-        color: '#888',
-        marginBottom: 5,
-    },
-
-    button: {
-        backgroundColor: '#007BFF',
-        padding: 15,
-        borderRadius: 8,
-        alignItems: 'center',
-    },
-    buttonText: {
-        color: '#fff',
-        fontSize: 18,
-        fontWeight: '600',
-    },
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -297,7 +242,60 @@ const styles = StyleSheet.create({
         fontSize: 14,
         marginBottom: 10,
     },
-    icon: {
-        marginRight: 10,
+    roomTypeContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        marginBottom: 20,
+    },
+    roomTypeCard: {
+        width: '48%',
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 8,
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        padding: 15,
+        marginBottom: 15,
+        elevation: 2,
+    },
+    selectedCard: {
+        borderColor: '#007bff',
+        backgroundColor: '#e7f3ff',
+    },
+    roomImage: {
+        width: 100,
+        height: 100,
+        marginBottom: 10,
+        borderRadius: 8,
+    },
+    roomTypeText: {
+        fontSize: 16,
+        color: '#333',
+        fontWeight: 'bold',
+    },
+    roomPriceText: {
+        fontSize: 14,
+        color: '#777',
+    },
+    roomAvailabilityText: {
+        fontSize: 12,
+        color: '#555',
+    },
+    label: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    button: {
+        backgroundColor: '#007bff',
+        paddingVertical: 14,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginTop: 20,
+    },
+    buttonText: {
+        fontSize: 18,
+        color: '#fff',
     },
 });

@@ -46,8 +46,6 @@ exports.getHotelByName = async (req, res) => {
 };
 
 
-// Get a hotel by admin username
-// Get a hotel by admin username (hotel_name in this case)
 exports.getHotelByUsername = async (req, res) => {
   try {
     const { username } = req.params; // Retrieve username from URL parameters
