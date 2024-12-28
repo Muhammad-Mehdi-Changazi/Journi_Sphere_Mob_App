@@ -27,9 +27,9 @@ router.post('/Hotel', createHotel);
 router.get('/Hotels', getHotels);
 router.get('/api/hotels/:placeName', getHotelByName); // Modified route to get hotel by name
 router.get('/api/hotels/admin/:username', getHotelByUsername); // New route to get hotel by username
-router.post('/Room', createRoom);
 
 // Room Routes
+router.post('/Room', createRoom);
 router.get('/Rooms', getRooms);
 router.get('/hotel/:hotel_name', getRoomsByHotel);
 
