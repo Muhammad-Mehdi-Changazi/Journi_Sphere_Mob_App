@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useLocalSearchParams } from 'expo-router';
-import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 
 interface Location {
   address: string;
@@ -15,34 +14,26 @@ interface Hotel {
   description: string;
 }
 
-interface Room {
-  room_type: string;
-  description: string;
-}
-
-const Hotel: React.FC = () => {
-  const { hotelName } = useLocalSearchParams<{ hotelName: string }>();
-  const [hotel, setHotel] = useState<Hotel | null>(null);
-  const [rooms, setRooms] = useState<Room[]>([]);
+const HotelsList: React.FC = () => {
+  const [hotels, setHotels] = useState<Hotel[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchHotelData = async () => {
+    const fetchHotels = async () => {
       try {
-        const hotelResponse = await axios.get(`/api/hotels/${hotelName}`);
-        setHotel(hotelResponse.data);
-
-        const roomsResponse = await axios.get(`/api/rooms/hotel/${hotelName}`);
-        setRooms(roomsResponse.data);
+        const response = await axios.get('http://localhost:3000/api/hotels');  
+        setHotels(response.data);
       } catch (error) {
-        console.error('Error fetching hotel or room data:', error);
+        setError('Error fetching hotels');
+        console.error(error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchHotelData();
-  }, [hotelName]);
+    fetchHotels();
+  }, []);
 
   if (loading) {
     return (
@@ -52,29 +43,24 @@ const Hotel: React.FC = () => {
     );
   }
 
-  if (!hotel) {
-    return <Text style={styles.errorText}>Hotel not found.</Text>;
+  if (error) {
+    return <Text style={styles.errorText}>{error}</Text>;
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.card}>
-        <Text style={styles.placeName}>{hotel.hotel_name}</Text>
-        <Text>
-          <Text style={styles.columnTitle}>Location:</Text> {hotel.location.address}, {hotel.location.city},{' '}
-          {hotel.location.country}
-        </Text>
-        <Text style={{ marginTop: 8 }}>{hotel.description}</Text>
-      </View>
-
-      <Text style={styles.cityName}>Rooms</Text>
-      {rooms.map((room, index) => (
-        <View style={styles.card} key={index}>
-          <Text style={styles.placeName}>{room.room_type}</Text>
-          <Text>{room.description}</Text>
-        </View>
-      ))}
-    </ScrollView>
+    <View style={styles.container}>
+      <FlatList
+        data={hotels}
+        keyExtractor={(item) => item.hotel_name}
+        renderItem={({ item }) => (
+          <View style={styles.card}>
+            <Text style={styles.hotelName}>{item.hotel_name}</Text>
+            <Text>{item.location.city}, {item.location.country}</Text>
+            <Text>{item.description}</Text>
+          </View>
+        )}
+      />
+    </View>
   );
 };
 
@@ -83,60 +69,16 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
-  cityName: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
-  columnsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  column: {
-    flex: 1,
-    marginHorizontal: 8,
-  },
-  columnTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#333',
-  },
   card: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    marginBottom: 16,
     padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    backgroundColor: '#f0f0f0',
+    marginBottom: 16,
+    borderRadius: 8,
     elevation: 3,
   },
-  placeImage: {
-    width: '100%',
-    height: 150,
-    borderRadius: 8,
-    marginBottom: 8,
-  },
-  placeName: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 8,
-  },
-  buttonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  button: {
-    backgroundColor: '#007BFF',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-  },
-  buttonText: {
-    color: '#fff',
+  hotelName: {
     fontWeight: 'bold',
+    fontSize: 18,
   },
   loader: {
     flex: 1,
@@ -144,11 +86,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   errorText: {
-    textAlign: 'center',
     color: 'red',
+    textAlign: 'center',
     fontSize: 18,
-    marginTop: 20,
   },
 });
 
-export default Hotel;
+export default HotelsList;
