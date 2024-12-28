@@ -26,16 +26,16 @@ exports.getHotels = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
-// Get a hotel by name
 exports.getHotelByName = async (req, res) => {
   try {
     let { placeName } = req.params; 
     placeName = placeName.trim().replace(/\r?\n|\r/g, '');
 
-    const hotel = await Hotel.findOne({ hotel_name: placeName });
+    const hotel = await Hotel.findOne({ hotel_name: placeName }).populate('rooms'); // This should populate the rooms correctly
+
 
     if (!hotel) return res.status(404).json({ error: 'Hotel not found' });
+
     res.status(200).json({
       message: 'Hotel fetched successfully',
       hotel,
@@ -44,6 +44,11 @@ exports.getHotelByName = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+
+
+
+
 
 exports.getHotelByUsername = async (req, res) => {
   try {
