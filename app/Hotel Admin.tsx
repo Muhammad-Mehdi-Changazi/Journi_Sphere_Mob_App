@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Button } from 'react-native';
 import axios from 'axios';
 import { useLocalSearchParams } from 'expo-router';
+import { io } from 'socket.io-client';
+
+const socket = io('http://localhost:3000'); // Connect to Socket.IO server
 
 export default function HotelAdmin() {
     const { username } = useLocalSearchParams<{ username: string }>();
@@ -39,14 +42,23 @@ export default function HotelAdmin() {
 
         fetchHotelDetails();
         fetchReservationRequests();
+
+        // Listen for real-time reservation updates
+        socket.on('reservation-updated', (reservation) => {
+            setReservationRequests((prevRequests) => [...prevRequests, reservation]);
+        });
+
+        return () => {
+            socket.off('reservation-updated');
+        };
     }, [username]);
 
     const handleEditRoom = async (roomId) => {
         try {
             const response = await axios.put(`http://localhost:3000/api/rooms/${roomId}`, editedRoom);
-            setHotelDetails(prevDetails => ({
+            setHotelDetails((prevDetails) => ({
                 ...prevDetails,
-                rooms: prevDetails.rooms.map(room =>
+                rooms: prevDetails.rooms.map((room) =>
                     room._id === roomId ? response.data.room : room
                 ),
             }));
@@ -106,13 +118,10 @@ export default function HotelAdmin() {
                             <View key={index} style={styles.roomCard}>
                                 <Text style={styles.roomHeader}>Room {room.room_number}</Text>
                                 <Text style={styles.text}>Type: {room.room_type}</Text>
-                                {/* <Text style={styles.text}>Capacity: {room.capacity}</Text> */}
                                 <Text style={styles.text}>Price: ${room.price}</Text>
                                 <Text style={[styles.text, room.available ? styles.available : styles.notAvailable]}>
                                     Status: {room.available ? 'Available' : 'Not Available'}
                                 </Text>
-                                {/* <Text style={styles.text}>Duplicates: {room.duplicates}</Text> */}
-                                {/* <Text style={styles.text}>Booked: {room.num_booked}</Text> */}
                             </View>
                         ))
                     ) : (
@@ -126,12 +135,12 @@ export default function HotelAdmin() {
                 <View style={styles.section}>
                     <Text style={styles.sectionHeader}>Reservation Requests</Text>
                     {reservationRequests.length > 0 ? (
-                        reservationRequests.map((request, index) => (
+                        reservationRequests.map((reservation, index) => (
                             <View key={index} style={styles.requestCard}>
-                                <Text style={styles.text}>User: {request.user}</Text>
-                                <Text style={styles.text}>Room: {request.room}</Text>
-                                <Text style={styles.text}>Date: {request.date}</Text>
-                                <Text style={styles.text}>Status: {request.status}</Text>
+                                <Text style={styles.text}>Name: {reservation.name}</Text>
+                                <Text style={styles.text}>Email: {reservation.email}</Text>
+                                <Text style={styles.text}>Phone: {reservation.phone}</Text>
+                                <Text style={styles.text}>Room Type: {reservation.roomType}</Text>
                             </View>
                         ))
                     ) : (
@@ -150,13 +159,6 @@ export default function HotelAdmin() {
                         value={editedRoom?.room_number || ''}
                         onChangeText={(text) => setEditedRoom({ ...editedRoom, room_number: text })}
                     />
-                    {/* <TextInput
-                        style={styles.input}
-                        placeholder="Capacity"
-                        keyboardType="number-pad"
-                        value={editedRoom?.capacity || ''}
-                        onChangeText={(text) => setEditedRoom({ ...editedRoom, capacity: text })}
-                    /> */}
                     <TextInput
                         style={styles.input}
                         placeholder="Price"
@@ -173,7 +175,6 @@ export default function HotelAdmin() {
                     <Button title="Update Room" onPress={() => handleEditRoom(editedRoom?._id)} />
                 </View>
             )}
-
         </ScrollView>
     );
 }

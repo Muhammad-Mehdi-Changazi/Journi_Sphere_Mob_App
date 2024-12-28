@@ -3,8 +3,11 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Keyboa
 import axios from 'axios';
 import { useLocalSearchParams } from 'expo-router';
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
+import { io } from 'socket.io-client';
 
-export default function HotelAdmin() {
+const socket = io('http://localhost:3000'); // Connect to the Socket.IO server
+
+export default function ReservationScreen() {
     const { placeName } = useLocalSearchParams<{ placeName: string }>();
     const [hotelDetails, setHotelDetails] = useState<{ rooms: any[] } | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -45,12 +48,21 @@ export default function HotelAdmin() {
             roomType,
         };
 
+        // Emit the reservation details to the server
+        socket.emit('new-reservation', reservationDetails);
+
         console.log('Reservation Details:', reservationDetails);
 
         Alert.alert(
             'Reservation Successful',
             `Your reservation at ${placeName} for a ${roomType} has been confirmed.`
         );
+
+        // Reset fields after reservation
+        setName('');
+        setEmail('');
+        setPhone('');
+        setRoomType('');
     };
 
     const validateFields = () => {
