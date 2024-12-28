@@ -20,14 +20,11 @@ exports.signup = async (req, res) => {
       return res.status(400).json({ message: 'Email already exists' });
     }
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create a new user
+    // Create a new user (password is stored as plain text)
     const newUser = new User({
       username,
       email,
-      password: hashedPassword,
+      password,  // No hashing here
       role
     });
 
@@ -40,6 +37,7 @@ exports.signup = async (req, res) => {
     res.status(500).json({ message: 'Error creating user', error });
   }
 };
+
 
 
 /// Login logic without bcrypt
