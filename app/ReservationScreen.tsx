@@ -13,6 +13,7 @@ export default function ReservationScreen() {
     const [phone, setPhone] = useState('');
     const [roomType, setRoomType] = useState('Single Bed');
     const [errors, setErrors] = useState({ name: '', email: '', phone: '' });
+    const [rooms, setRooms] = useState([]);
 
     const [isHotelFound, setIsHotelFound] = useState(false); 
 
@@ -22,6 +23,7 @@ export default function ReservationScreen() {
             const response = await axios.get(`http://localhost:3000/api/hotels/${placeName}`);  
             if (response.status === 200) {
                 setHotelData(response.data); // Store hotel data in state
+                setRooms(response.data.rooms);
                 setIsHotelFound(true); 
             }
         } catch (error) {
@@ -89,9 +91,8 @@ export default function ReservationScreen() {
                         <>
                             <Text style={styles.hotelDescription}>{hotelData.description}</Text>
                         </>
-                    ) : (
-                        <Text style={styles.hotelDescription}>Searching for hotel details...</Text>
-                    )}
+                    ) : (null)
+                    }
 
                     {/* Form for Reservation (same even if hotel is found) */}
                     <View style={styles.inputContainer}>
@@ -142,32 +143,50 @@ export default function ReservationScreen() {
                     <Text style={styles.label}>Choose a Room Type:</Text>
 
                     {/* Map through rooms from the hotel data */}
+                    {isHotelFound && hotelData && hotelData.rooms ? (
                     <View style={styles.roomTypeContainer}>
-                        {hotelData.rooms.map((room: any, index: number) => {
-                            
-                            const roomTypeMapping: { [key: string]: string } = {
-                                'Deluxe Twin': 'Double Bed',
-                                'Pearl King': 'King Suite',
-                                'Standard Queen': 'Queen Suite',
-                            };
+                        {rooms.map((room: any, index: number) => {
+                        const roomTypeMapping: { [key: string]: string } = {
+                            'Deluxe Twin': 'Double Bed',
+                            'Pearl King': 'King Suite',
+                            'Standard Queen': 'Queen Suite',
+                        };
 
-                            const displayRoomType = roomTypeMapping[room.room_type] || room.room_type; // Default to original if no mapping
+                        const displayRoomType = roomTypeMapping[room.room_type] || room.room_type;
 
-                            return (
-                                <TouchableOpacity
-                                    key={index}
-                                    style={[styles.roomTypeCard, roomType === displayRoomType && styles.selectedCard]}
-                                    onPress={() => setRoomType(displayRoomType)} 
-                                >
-                                    <Image source={roomImages[displayRoomType]} style={styles.roomImage} />
-                                    <Text style={styles.roomTypeText}>{displayRoomType}</Text>
-                                    <Text style={styles.roomPriceText}>Price: {room.price} PKR</Text>
-                                    <Text style={styles.roomAvailabilityText}>Available: {room.available ? 'Yes' : 'No'}</Text>
-                                    <Text style={styles.roomAvailabilityText}>Available Rooms: {room.duplicates - room.num_booked}</Text>
-                                </TouchableOpacity>
-                            );
+                        return (
+                            <TouchableOpacity
+                            key={index}
+                            style={[styles.roomTypeCard, roomType === displayRoomType && styles.selectedCard]}
+                            onPress={() => setRoomType(displayRoomType)}
+                            >
+                            <Image source={roomImages[displayRoomType]} style={styles.roomImage} />
+                            <Text style={styles.roomTypeText}>{displayRoomType}</Text>
+                            <Text style={styles.roomPriceText}>Price: {room.price} PKR</Text>
+                            <Text style={styles.roomAvailabilityText}>
+                                Available: {room.available ? 'Yes' : 'No'}
+                            </Text>
+                            <Text style={styles.roomAvailabilityText}>
+                                Available Rooms: {room.duplicates - room.num_booked}
+                            </Text>
+                            </TouchableOpacity>
+                        );
                         })}
                     </View>
+                    ) : (
+                    <View style={styles.roomTypeContainer}>
+                        {Object.keys(roomImages).map((roomType) => (
+                        <TouchableOpacity
+                            key={roomType}
+                            style={styles.roomTypeCard}
+                            onPress={() => setRoomType(roomType)}
+                        >
+                            <Image source={roomImages[roomType]} style={styles.roomImage} />
+                            <Text style={styles.roomTypeText}>{roomType}</Text>
+                        </TouchableOpacity>
+                        ))}
+                    </View>
+                    )}
 
                     {/* Confirm Reservation Button */}
                     <TouchableOpacity style={styles.button} onPress={handleReservation}>
