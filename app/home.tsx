@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, ActivityIndicator, Image, ScrollView, Tex
 import { useRouter } from 'expo-router';
 import ProtectedRoute from './components/protectedroute';
 import axios from 'axios';
-import Icon from 'react-native-vector-icons/Ionicons'; // Importing Ionicons for the arrow
 import styles from './styles/homestyles'; // Import your styles
 
 export default function HomeScreen() {

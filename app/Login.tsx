@@ -70,7 +70,7 @@ export default function LoginScreen() {
 
       // Navigate based on role
       if (role === 'Customer') {
-        router.push('/Home');
+        router.push({ pathname: '/home' });      
       } else if (role === 'Hotel Management Staff') {
         // Pass the username in the URL as a parameter
         router.push(`/Hotel Admin?username=${encodeURIComponent(username)}`);
