@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, ActivityIndicator, Image, ScrollView, Tex
 import { useRouter } from 'expo-router';
 import ProtectedRoute from './components/protectedroute';
 import axios from 'axios';
-import Icon from 'react-native-vector-icons/Ionicons'; // Importing Ionicons for the arrow
 import styles from './styles/homestyles'; // Import your styles
 
 export default function HomeScreen() {
@@ -101,7 +100,7 @@ export default function HomeScreen() {
                           style={styles.searchResultButton}
                           onPress={() => {
                             router.push({
-                              pathname: '/GoogleMap',
+                              pathname: '/Google Map',
                               params: { placeName: result.name },
                             });
                           }}
@@ -143,7 +142,7 @@ export default function HomeScreen() {
                       style={styles.exploreButton}
                       onPress={() => {
                         router.push({
-                          pathname: '/CityScreen',
+                          pathname: '/City Screen',
                           params: {
                             city: JSON.stringify({
                               name: city.name,

@@ -35,6 +35,7 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
   const router = useRouter();
 
+  // LoginScreen.tsx
   const handleLogin = async () => {
     try {
       // Make a POST request to the backend login endpoint
@@ -48,27 +49,34 @@ export default function LoginScreen() {
       // Store the token in AsyncStorage
       await AsyncStorage.setItem('authToken', token);
 
-      // Manually decode the token to extract the username
+      // Manually decode the token to extract role
       const decodedToken = decodeJwt(token);
 
       if (!decodedToken) {
         throw new Error('Failed to decode token');
       }
 
-      // Extract the username from the decoded token
-      const username = decodedToken.username;
+      const { username, role } = decodedToken;
 
-      if (!username) {
-        throw new Error('Username not found in token');
+      if (!username || !role) {
+        throw new Error('Invalid token structure');
       }
 
-      // Store the username in AsyncStorage
+      // Store username and role in AsyncStorage
       await AsyncStorage.setItem('username', username);
+      await AsyncStorage.setItem('role', role);
 
       console.log('Login successful, token and username stored');
 
-      // Navigate to the home screen
-      router.push('/home');
+      // Navigate based on role
+      if (role === 'Customer') {
+        router.push({ pathname: '/home' });      
+      } else if (role === 'Hotel Management Staff') {
+        // Pass the username in the URL as a parameter
+        router.push(`/Hotel Admin?username=${encodeURIComponent(username)}`);
+      } else {
+        throw new Error('Invalid role');
+      }
     } catch (error) {
       console.error('Error during login:', error);
       Alert.alert('Login Failed', 'Invalid email or password');

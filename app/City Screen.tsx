@@ -68,7 +68,7 @@ export default function CityScreen() {
   }, [city]);
 
   const handleNavigate = (placeName: string) => {
-    router.push(`/GoogleMap?placeName=${encodeURIComponent(placeName)}`); // Navigate to GoogleMap screen
+    router.push(`/Google Map?placeName=${encodeURIComponent(placeName)}`); // Navigate to GoogleMap screen
   };
 
   const handleCheckReviews = (placeName: string) => {
@@ -76,7 +76,7 @@ export default function CityScreen() {
   };
 
   const handleMakeReservation = (placeName: string) => {
-    router.push(`/ReservationScreen?placeName=${encodeURIComponent(placeName)}`); // Navigate to ReservationScreen
+    router.push(`/Make Reservation?placeName=${encodeURIComponent(placeName)}`); // Navigate to ReservationScreen
   };
 
   // Function to render the hotel item
