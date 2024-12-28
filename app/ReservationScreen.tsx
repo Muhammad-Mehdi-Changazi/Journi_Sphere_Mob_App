@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Button, KeyboardAvoidingView, Platform, Image, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, Image, Alert } from 'react-native';
 import axios from 'axios';
 import { useLocalSearchParams } from 'expo-router';
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
@@ -13,7 +13,6 @@ export default function HotelAdmin() {
     const [phone, setPhone] = useState('');
     const [roomType, setRoomType] = useState('');
     const [errors, setErrors] = useState({ name: '', email: '', phone: '' });
-    const [reservationRequests, setReservationRequests] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -23,8 +22,7 @@ export default function HotelAdmin() {
                     throw new Error('placeName is missing.');
                 }
 
-                // Fetch hotel details from the backend
-                const response = await axios.get(`http://localhost:3000/api/hotels/admin/${placeName}`);
+                const response = await axios.get(`http://localhost:3000/api/hotels/${placeName}`);
                 setHotelDetails(response.data.hotel);
                 setLoading(false);
             } catch (err) {
@@ -33,9 +31,7 @@ export default function HotelAdmin() {
             }
         };
 
-
         fetchHotelDetails();
-
     }, [placeName]);
 
     const handleReservation = () => {
@@ -67,7 +63,6 @@ export default function HotelAdmin() {
         return !Object.values(newErrors).some((error) => error !== '');
     };
 
-    // Room images
     const roomImages = {
         'Single Bed': require('./../assets/images/SingleBed.jpeg'),
         'Double Bed': require('./../assets/images/DoubleBed.jpeg'),
@@ -92,25 +87,17 @@ export default function HotelAdmin() {
     }
 
     return (
-        <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        >
-            <ScrollView
-                contentContainerStyle={styles.scrollContainer}
-                keyboardShouldPersistTaps="handled"
-            >
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+            <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
                 <Text style={styles.header}>Reserve a Stay at {placeName}</Text>
 
-                {/* Display Hotel Data if Found */}
                 <View>
                     {hotelDetails && hotelDetails.description ? (
                         <Text style={styles.hotelDescription}>{hotelDetails.description}</Text>
                     ) : null}
 
-                    {/* Form for Reservation */}
                     <View style={styles.inputContainer}>
-                        <MaterialIcons name="person" size={20} color="#888" style={styles.icon} />
+                        <MaterialIcons name="person" size={24} color="#007bff" style={styles.icon} />
                         <TextInput
                             style={styles.input}
                             placeholder="Your Name"
@@ -124,7 +111,7 @@ export default function HotelAdmin() {
                     {errors.name ? <Text style={styles.errorText}>{errors.name}</Text> : null}
 
                     <View style={styles.inputContainer}>
-                        <MaterialIcons name="email" size={20} color="#888" style={styles.icon} />
+                        <MaterialIcons name="email" size={24} color="#007bff" style={styles.icon} />
                         <TextInput
                             style={styles.input}
                             placeholder="Your Email"
@@ -139,7 +126,7 @@ export default function HotelAdmin() {
                     {errors.email ? <Text style={styles.errorText}>{errors.email}</Text> : null}
 
                     <View style={styles.inputContainer}>
-                        <FontAwesome5 name="phone" size={20} color="#888" style={styles.icon} />
+                        <FontAwesome5 name="phone" size={24} color="#007bff" style={styles.icon} />
                         <TextInput
                             style={styles.input}
                             placeholder="Your Phone Number"
@@ -153,10 +140,8 @@ export default function HotelAdmin() {
                     </View>
                     {errors.phone ? <Text style={styles.errorText}>{errors.phone}</Text> : null}
 
-                    {/* Choose Room Type */}
                     <Text style={styles.label}>Choose a Room Type:</Text>
 
-                    {/* Map through rooms from the hotel data */}
                     <View style={styles.roomTypeContainer}>
                         {hotelDetails?.rooms?.map((room, index) => {
                             const roomTypeMapping = {
@@ -179,15 +164,11 @@ export default function HotelAdmin() {
                                     <Text style={styles.roomAvailabilityText}>
                                         Available: {room.available ? 'Yes' : 'No'}
                                     </Text>
-                                    <Text style={styles.roomAvailabilityText}>
-                                        Available Rooms: {room.duplicates - room.num_booked}
-                                    </Text>
                                 </TouchableOpacity>
                             );
                         })}
                     </View>
 
-                    {/* Confirm Reservation Button */}
                     <TouchableOpacity style={styles.button} onPress={handleReservation}>
                         <Text style={styles.buttonText}>Confirm Reservation</Text>
                     </TouchableOpacity>
@@ -201,18 +182,18 @@ const styles = StyleSheet.create({
     scrollContainer: {
         flexGrow: 1,
         padding: 16,
-        backgroundColor: '#f4f4f4',
+        backgroundColor: '#f7f7f7',
     },
     header: {
-        fontSize: 26,
+        fontSize: 30,
         fontWeight: 'bold',
         color: '#333',
         marginBottom: 20,
         textAlign: 'center',
     },
     hotelDescription: {
-        fontSize: 16,
-        color: '#555',
+        fontSize: 18,
+        color: '#666',
         marginBottom: 20,
         textAlign: 'center',
     },
@@ -220,74 +201,92 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         borderBottomWidth: 1,
-        borderBottomColor: '#ccc',
+        borderBottomColor: '#ddd',
         marginBottom: 20,
+        paddingBottom: 8,
     },
     input: {
         flex: 1,
-        padding: 10,
+        padding: 14,
         fontSize: 16,
+        borderRadius: 8,
+        backgroundColor: '#fff',
         color: '#333',
     },
     errorText: {
         color: 'red',
         fontSize: 14,
         marginBottom: 10,
+        textAlign: 'center',
     },
     roomTypeContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'space-between',
-        marginBottom: 20,
+        marginBottom: 30,
     },
     roomTypeCard: {
         width: '48%',
         borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 8,
-        alignItems: 'center',
+        borderColor: '#ddd',
+        borderRadius: 15,
         backgroundColor: '#fff',
-        padding: 15,
-        marginBottom: 15,
-        elevation: 2,
+        padding: 20,
+        marginBottom: 20,
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 6,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     selectedCard: {
         borderColor: '#007bff',
         backgroundColor: '#e7f3ff',
     },
     roomImage: {
-        width: 100,
+        width: 130,
         height: 100,
-        marginBottom: 10,
         borderRadius: 8,
+        marginBottom: 10,
     },
     roomTypeText: {
-        fontSize: 16,
-        color: '#333',
+        fontSize: 18,
         fontWeight: 'bold',
+        color: '#333',
     },
     roomPriceText: {
         fontSize: 14,
-        color: '#777',
+        color: '#555',
     },
     roomAvailabilityText: {
         fontSize: 12,
-        color: '#555',
-    },
-    label: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 10,
+        color: '#777',
     },
     button: {
         backgroundColor: '#007bff',
-        paddingVertical: 14,
-        borderRadius: 8,
+        paddingVertical: 15,
+        borderRadius: 10,
         alignItems: 'center',
         marginTop: 20,
+        elevation: 3,
     },
     buttonText: {
-        fontSize: 18,
         color: '#fff',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    label: {
+        fontSize: 16,
+        color: '#333',
+        marginBottom: 15,
+        fontWeight: 'bold',
+    },
+    loadingText: {
+        fontSize: 18,
+        color: '#777',
+        textAlign: 'center',
+        marginTop: 20,
     },
 });

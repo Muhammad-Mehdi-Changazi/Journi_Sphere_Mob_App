@@ -19,8 +19,7 @@ export default function HotelAdmin() {
                     throw new Error('Username is missing.');
                 }
 
-                // Fetch hotel details from the backend
-                const response = await axios.get(`http://localhost:3000/api/hotels/admin/${username}`);
+                const response = await axios.get(`http://localhost:3000/api/hotels/${username}`);
                 setHotelDetails(response.data.hotel);
                 setLoading(false);
             } catch (err) {
@@ -41,12 +40,6 @@ export default function HotelAdmin() {
         fetchHotelDetails();
         fetchReservationRequests();
     }, [username]);
-
-    useEffect(() => {
-        if (hotelDetails) {
-            console.log(hotelDetails.rooms); // Check if rooms data is available
-        }
-    }, [hotelDetails]);
 
     const handleEditRoom = async (roomId) => {
         try {
@@ -85,14 +78,14 @@ export default function HotelAdmin() {
 
             {/* Tab Navigation */}
             <View style={styles.tabs}>
-                <TouchableOpacity onPress={() => setActiveTab('rooms')} style={styles.tab}>
-                    <Text style={activeTab === 'rooms' ? styles.activeTabText : styles.tabText}>Rooms</Text>
+                <TouchableOpacity onPress={() => setActiveTab('rooms')} style={[styles.tab, activeTab === 'rooms' && styles.activeTab]}>
+                    <Text style={[styles.tabText, activeTab === 'rooms' && styles.activeTabText]}>Rooms</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => setActiveTab('requests')} style={styles.tab}>
-                    <Text style={activeTab === 'requests' ? styles.activeTabText : styles.tabText}>Reservation Requests</Text>
+                <TouchableOpacity onPress={() => setActiveTab('requests')} style={[styles.tab, activeTab === 'requests' && styles.activeTab]}>
+                    <Text style={[styles.tabText, activeTab === 'requests' && styles.activeTabText]}>Reservation Requests</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => setActiveTab('edit')} style={styles.tab}>
-                    <Text style={activeTab === 'edit' ? styles.activeTabText : styles.tabText}>Edit Room Info</Text>
+                <TouchableOpacity onPress={() => setActiveTab('edit')} style={[styles.tab, activeTab === 'edit' && styles.activeTab]}>
+                    <Text style={[styles.tabText, activeTab === 'edit' && styles.activeTabText]}>Edit Room Info</Text>
                 </TouchableOpacity>
             </View>
 
@@ -188,46 +181,51 @@ export default function HotelAdmin() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20,
-        backgroundColor: '#f4f4f4',
+        backgroundColor: '#f4f7fc',
+        padding: 15,
     },
     header: {
-        fontSize: 26,
+        fontSize: 28,
         fontWeight: 'bold',
         color: '#333',
         marginBottom: 20,
     },
     tabs: {
         flexDirection: 'row',
-        marginBottom: 20,
+        marginBottom: 15,
+        justifyContent: 'center',
     },
     tab: {
         flex: 1,
-        padding: 10,
+        paddingVertical: 12,
         alignItems: 'center',
-        backgroundColor: '#ddd',
-        marginRight: 5,
+        backgroundColor: '#EAEFF1',
+        marginHorizontal: 5,
+        borderRadius: 8,
+    },
+    activeTab: {
+        backgroundColor: '#007bff',
     },
     activeTabText: {
+        color: 'white',
         fontWeight: 'bold',
-        color: '#007bff',
     },
     tabText: {
         color: '#333',
     },
     section: {
-        marginBottom: 20,
+        marginBottom: 25,
     },
     sectionHeader: {
-        fontSize: 20,
+        fontSize: 22,
         fontWeight: '600',
         color: '#333',
-        marginBottom: 10,
+        marginBottom: 12,
     },
     text: {
-        fontSize: 14,
+        fontSize: 16,
         color: '#555',
-        marginBottom: 6,
+        marginBottom: 8,
     },
     bold: {
         fontWeight: 'bold',
@@ -240,45 +238,52 @@ const styles = StyleSheet.create({
     },
     roomCard: {
         backgroundColor: '#fff',
-        padding: 10,
-        marginBottom: 15,
-        borderRadius: 8,
+        padding: 15,
+        marginBottom: 18,
+        borderRadius: 12,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.2,
+        shadowRadius: 6,
         elevation: 5,
     },
     roomHeader: {
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: 'bold',
-        marginBottom: 10,
         color: '#333',
+        marginBottom: 8,
     },
     requestCard: {
         backgroundColor: '#fff',
-        padding: 10,
-        marginBottom: 15,
-        borderRadius: 8,
+        padding: 15,
+        marginBottom: 18,
+        borderRadius: 12,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: { width: 0, height: 3 },
         shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 5,
+        shadowRadius: 5,
+        elevation: 4,
     },
     input: {
+        height: 45,
         borderWidth: 1,
         borderColor: '#ccc',
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 5,
+        borderRadius: 8,
+        paddingLeft: 12,
+        marginBottom: 12,
+        backgroundColor: '#fff',
+        fontSize: 16,
     },
     loadingText: {
         fontSize: 18,
         color: '#666',
+        textAlign: 'center',
+        marginTop: 30,
     },
     errorText: {
         fontSize: 18,
         color: 'red',
+        textAlign: 'center',
+        marginTop: 30,
     },
 });
