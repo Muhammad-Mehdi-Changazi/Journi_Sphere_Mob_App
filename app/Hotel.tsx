@@ -22,7 +22,7 @@ const HotelsList: React.FC = () => {
   useEffect(() => {
     const fetchHotels = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/hotels');  
+        const response = await axios.get('http://localhost:3000/hotels');  
         setHotels(response.data);
       } catch (error) {
         setError('Error fetching hotels');
