@@ -24,7 +24,9 @@ exports.getHotels = async (req, res) => {
 // Get a hotel by name
 exports.getHotelByName = async (req, res) => {
   try {
-    const hotel = await Hotel.findOne({ hotel_name: req.params.hotel_name });
+    const { placeName } = req.params;  // Retrieve placeName from URL parameters
+    const hotel = await Hotel.findOne({ hotel_name: placeName });
+    
     if (!hotel) return res.status(404).json({ error: 'Hotel not found' });
     res.status(200).json(hotel);
   } catch (error) {
