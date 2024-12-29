@@ -57,16 +57,20 @@ export default function ReservationScreen() {
         if (!validateFields()) return;
 
         const reservationDetails = {
-            placeName,
-            name,
-            email,
-            phone,
-            roomType,
+            reservationDetails: {  // Wrap the reservation data under reservationDetails
+                placeName,
+                name,
+                email,
+                phone,
+                roomType,
+            },
         };
+        console.log(reservationDetails);
 
         try {
             // Send reservation details to the backend
             const response = await axios.post('http://localhost:3000/api/reservations', reservationDetails);
+            
             console.log('Reservation Response:', response.data);
 
             // Emit the reservation details to the Socket.IO server
