@@ -81,9 +81,10 @@ exports.getHotelByUsername = async (req, res) => {
 // Handle new reservation request (using Socket.IO)
 exports.createReservation = async (req, res) => {
   try {
+    console.log(req.body);
     console.log("Data received.");
     const { reservationDetails } = req.body;
-    const { placeName } = req.params;
+    console.log(reservationDetails);
 
     // Check if reservation details and placeName are provided
     if (!reservationDetails) {
@@ -116,3 +117,25 @@ exports.createReservation = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+
+exports.getReservationRequests = async (req, res) => {
+  try {
+    const { hotelName } = req.query; // Extract hotelName from query parameters
+
+    if (!hotelName) {
+      return res.status(400).json({ error: 'hotelName is required' });
+    }
+
+    const hotel = await Hotel.findOne({ hotel_name: hotelName });
+    if (!hotel) {
+      return res.status(404).json({ error: 'Hotel not found' });
+    }
+
+    const reservations = await Reservation.find({ hotel: hotel._id });
+    res.status(200).json({ requests: reservations });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Button } from 'react-native';
 import axios from 'axios';
 import { useLocalSearchParams } from 'expo-router';
-import  io  from 'socket.io-client';
+import io from 'socket.io-client';
 
 let socket;
 export default function HotelAdmin() {
@@ -47,29 +47,41 @@ export default function HotelAdmin() {
         };
 
         const fetchReservationRequests = async () => {
-        try {
-            const response = await axios.get(`http://localhost:3000/api/reservations/requests/${username}`);
-            setReservationRequests((prevRequests) => [...prevRequests, ...response.data.requests]);
-        } catch (err) {
-            console.error('Failed to fetch reservation requests', err);
-        }};
+            try {
+                if (!hotelDetails?.hotel_name) {
+                    throw new Error('Hotel name is missing');
+                }
+
+                const response = await axios.get(`http://localhost:3000/api/reservations/requests`, {
+                    params: { hotelName: hotelDetails.hotel_name }
+                });
+
+                setReservationRequests(response.data.requests);
+            } catch (err) {
+                console.error('Failed to fetch reservation requests', err);
+            }
+        };
 
         fetchHotelDetails();
-        fetchReservationRequests();
+
+        // Fetch reservation requests after hotel details are fetched
+        if (hotelDetails?.hotel_name) {
+            fetchReservationRequests();
+        }
 
         // Listen for real-time reservation updates
         socket.on('reservation-updated', (reservation) => {
-        try {
+            try {
                 setReservationRequests((prevRequests) => [...prevRequests, reservation]);
             } catch (err) {
                 console.error('Error handling reservation update', err);
-            }        
+            }
         });
 
         return () => {
             socket.off('reservation-updated');
         };
-    }, [username]);
+    }, [username, hotelDetails]);
 
     const handleEditRoom = async (roomId) => {
         try {
@@ -127,27 +139,6 @@ export default function HotelAdmin() {
                 <Text style={styles.text}>Description: {hotelDetails.description}</Text>
             </View>
 
-            {/* Rooms Tab */}
-            {activeTab === 'rooms' && (
-                <View style={styles.section}>
-                    <Text style={styles.sectionHeader}>Room Information</Text>
-                    {hotelDetails.rooms?.length > 0 ? (
-                        hotelDetails.rooms.map((room, index) => (
-                            <View key={index} style={styles.roomCard}>
-                                <Text style={styles.roomHeader}>Room {room.room_number}</Text>
-                                <Text style={styles.text}>Type: {room.room_type}</Text>
-                                <Text style={styles.text}>Price: ${room.price}</Text>
-                                <Text style={[styles.text, room.available ? styles.available : styles.notAvailable]}>
-                                    Status: {room.available ? 'Available' : 'Not Available'}
-                                </Text>
-                            </View>
-                        ))
-                    ) : (
-                        <Text style={styles.text}>No rooms available</Text>
-                    )}
-                </View>
-            )}
-
             {/* Reservation Requests Tab */}
             {activeTab === 'requests' && (
                 <View style={styles.section}>
@@ -164,33 +155,6 @@ export default function HotelAdmin() {
                     ) : (
                         <Text style={styles.text}>No reservation requests</Text>
                     )}
-                </View>
-            )}
-
-            {/* Edit Room Info Tab */}
-            {activeTab === 'edit' && (
-                <View style={styles.section}>
-                    <Text style={styles.sectionHeader}>Edit Room Information</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Room Number"
-                        value={editedRoom?.room_number || ''}
-                        onChangeText={(text) => setEditedRoom({ ...editedRoom, room_number: text })}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Price"
-                        keyboardType="number-pad"
-                        value={editedRoom?.price || ''}
-                        onChangeText={(text) => setEditedRoom({ ...editedRoom, price: text })}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Status"
-                        value={editedRoom?.status || ''}
-                        onChangeText={(text) => setEditedRoom({ ...editedRoom, status: text })}
-                    />
-                    <Button title="Update Room" onPress={() => handleEditRoom(editedRoom?._id)} />
                 </View>
             )}
         </ScrollView>
