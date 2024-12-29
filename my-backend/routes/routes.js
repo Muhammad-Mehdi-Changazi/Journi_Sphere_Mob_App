@@ -29,7 +29,7 @@ router.get('/api/hotels/:placeName', getHotelByName); // Modified route to get h
 router.get('/api/hotels/admin/:username', getHotelByUsername); // New route to get hotel by username
 
 // Reservation Route (POST request for creating a reservation)
-router.post('/api/reservations', createReservation);
+router.post('/api/reservations/requests/:placeName', createReservation);
 
 // Room Routes
 router.post('/Room', createRoom);

@@ -66,11 +66,11 @@ export default function ReservationScreen() {
 
         try {
             // Send reservation details to the backend
-            const response = await axios.post('http://localhost:3000/api/reservations', reservationDetails);
+            const response = await axios.post(`http://localhost:3000/api/reservations/requests/${placeName}`, { reservationDetails });
             console.log('Reservation Response:', response.data);
 
             // Emit the reservation details to the Socket.IO server
-            socket.emit('new-reservation', reservationDetails);
+            socket.emit('reservation-updated', reservationDetails);
 
             Alert.alert(
                 'Reservation Successful',
