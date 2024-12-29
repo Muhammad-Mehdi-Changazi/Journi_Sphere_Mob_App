@@ -5,6 +5,7 @@ import { useLocalSearchParams } from 'expo-router';
 import io from 'socket.io-client';
 
 let socket;
+
 export default function HotelAdmin() {
     const { username } = useLocalSearchParams<{ username: string }>();
     const [hotelDetails, setHotelDetails] = useState(null);
@@ -139,6 +140,26 @@ export default function HotelAdmin() {
                 <Text style={styles.text}>Description: {hotelDetails.description}</Text>
             </View>
 
+            {/* Rooms Tab */}
+            {activeTab === 'rooms' && (
+                <View style={styles.section}>
+                    <Text style={styles.sectionHeader}>Rooms</Text>
+                    {hotelDetails.rooms && hotelDetails.rooms.length > 0 ? (
+    hotelDetails.rooms.map((room, index) => (
+        <View key={room._id || index} style={styles.roomCard}>
+            <Text style={styles.roomHeader}>Room Type: {room.room_type}</Text>
+            <Text style={styles.text}>Price: PKR {room.price}</Text>
+            <Text style={styles.text}>Available: {room.available ? 'Yes' : 'No'}</Text>
+            <Text style={styles.text}>Duplicates: {room.duplicates}</Text>
+            <Text style={styles.text}>Number Booked: {room.num_booked}</Text>
+        </View>
+    ))
+) : (
+    <Text style={styles.text}>No rooms available</Text>
+)}
+                </View>
+            )}
+
             {/* Reservation Requests Tab */}
             {activeTab === 'requests' && (
                 <View style={styles.section}>
@@ -157,6 +178,64 @@ export default function HotelAdmin() {
                     )}
                 </View>
             )}
+            {activeTab === 'edit' && (
+    <View style={styles.section}>
+        <Text style={styles.sectionHeader}>Edit Room Info</Text>
+        {hotelDetails.rooms && hotelDetails.rooms.length > 0 ? (
+            hotelDetails.rooms.map((room, index) => (
+                <TouchableOpacity
+                    key={room._id || index}
+                    style={styles.roomCard}
+                    onPress={() => setEditedRoom(room)}
+                >
+                    <Text style={styles.roomHeader}>Room Type: {room.room_type}</Text>
+                    <Text style={styles.text}>Price: PKR {room.price}</Text>
+                    <Text style={styles.text}>Available: {room.available ? 'Yes' : 'No'}</Text>
+                    <Text style={styles.text}>Duplicates: {room.duplicates}</Text>
+                </TouchableOpacity>
+            ))
+        ) : (
+            <Text style={styles.text}>No rooms available</Text>
+        )}
+        {editedRoom && (
+            <View style={styles.section}>
+                <Text style={styles.sectionHeader}>Editing Room: {editedRoom.room_type}</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Price"
+                    keyboardType="numeric"
+                    value={String(editedRoom.price)}
+                    onChangeText={(value) =>
+                        setEditedRoom({ ...editedRoom, price: parseFloat(value) })
+                    }
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Duplicates"
+                    keyboardType="numeric"
+                    value={String(editedRoom.duplicates)}
+                    onChangeText={(value) =>
+                        setEditedRoom({ ...editedRoom, duplicates: parseInt(value, 10) })
+                    }
+                />
+                <TouchableOpacity
+                    style={[styles.tab, { backgroundColor: editedRoom.available ? 'green' : 'red' }]}
+                    onPress={() =>
+                        setEditedRoom((prev) => ({ ...prev, available: !prev.available }))
+                    }
+                >
+                    <Text style={{ color: 'white', fontWeight: 'bold' }}>
+                        Available: {editedRoom.available ? 'Yes' : 'No'}
+                    </Text>
+                </TouchableOpacity>
+                <Button
+                    title="Save Changes"
+                    onPress={() => handleEditRoom(editedRoom._id)}
+                />
+            </View>
+        )}
+    </View>
+)}
         </ScrollView>
     );
 }
