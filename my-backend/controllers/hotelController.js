@@ -80,16 +80,28 @@ exports.getHotelByUsername = async (req, res) => {
 // Handle new reservation request (using Socket.IO)
 exports.createReservation = async (req, res) => {
   try {
-    const { hotelId, reservationDetails } = req.body;
+    console.log("Data received.");
+    const { reservationDetails } = req.body;
 
-    const hotel = await Hotel.findById(hotelId);
+    // Check if reservation details and placeName are provided
+    if (!reservationDetails || !reservationDetails.placeName) {
+      return res.status(400).json({ error: 'placeName is required in reservationDetails' });
+    }
+
+    const { placeName } = reservationDetails;
+
+    // Find the hotel by name (placeName)
+    const hotel = await Hotel.findOne({ hotel_name: placeName });
     if (!hotel) {
       return res.status(404).json({ error: 'Hotel not found' });
     }
 
-    // Add the reservation to the hotel's reservations array (or similar logic based on your schema)
-    hotel.reservations.push(reservationDetails);
-    await hotel.save();
+    // Add the hotel ID to the reservation details
+    reservationDetails.hotel = hotel._id;
+
+    // Create a new reservation with the hotel reference
+    const reservation = new Reservation(reservationDetails);
+    await reservation.save();
 
     res.status(201).json({
       message: 'Reservation created successfully',
@@ -98,7 +110,7 @@ exports.createReservation = async (req, res) => {
 
     // Emit the new reservation event to connected clients
     if (io) {
-      io.emit('new-reservation', { hotelId, reservationDetails });
+      io.emit('new-reservation', { hotelId: hotel._id, reservationDetails });
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
