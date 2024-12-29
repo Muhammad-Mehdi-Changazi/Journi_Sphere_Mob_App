@@ -121,25 +121,23 @@ exports.createReservation = async (req, res) => {
 };
 
 
-// Backend: Fetch Reservation Requests based on hotel name
 exports.getReservationRequests = async (req, res) => {
   try {
-    const { hotelName } = req.query;
+    const { hotelName } = req.query; // Extract hotelName from query parameters
 
     if (!hotelName) {
       return res.status(400).json({ error: 'hotelName is required' });
     }
 
-    // Find hotel by hotelName
     const hotel = await Hotel.findOne({ hotel_name: hotelName });
     if (!hotel) {
       return res.status(404).json({ error: 'Hotel not found' });
     }
 
-    // Fetch reservations associated with the hotel's _id
     const reservations = await Reservation.find({ hotel: hotel._id });
     res.status(200).json({ requests: reservations });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+

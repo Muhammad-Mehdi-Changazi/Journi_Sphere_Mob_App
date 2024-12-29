@@ -32,7 +32,7 @@ router.get('/api/hotels/admin/:username', getHotelByUsername); // Route to get h
 router.post('/api/reservations', createReservation);
 
 // New route to get reservation requests by hotel name
-router.get('/api/reservations/requests/:hotelName', getReservationRequests);
+router.get('/api/reservations/requests', getReservationRequests);
 
 // Room Routes
 router.post('/Room', createRoom);
