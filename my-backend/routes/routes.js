@@ -3,7 +3,7 @@ const authController = require('../controllers/authController');
 const reviewController = require('../controllers/reviewController');
 const cityController = require('../controllers/cityController');
 const recommendationController = require('../controllers/recommendationController');
-const { createHotel, getHotels, getHotelByName, getHotelByUsername } = require('../controllers/hotelController');
+const { createHotel, getHotels, getHotelByName, getHotelByUsername, createReservation } = require('../controllers/hotelController');
 const { createRoom, getRooms, getRoomsByHotel } = require('../controllers/roomController');
 
 const router = express.Router();
@@ -27,6 +27,9 @@ router.post('/Hotel', createHotel);
 router.get('/Hotels', getHotels);
 router.get('/api/hotels/:placeName', getHotelByName); // Modified route to get hotel by name
 router.get('/api/hotels/admin/:username', getHotelByUsername); // New route to get hotel by username
+
+// Reservation Route (POST request for creating a reservation)
+router.post('/api/reservations', createReservation);
 
 // Room Routes
 router.post('/Room', createRoom);

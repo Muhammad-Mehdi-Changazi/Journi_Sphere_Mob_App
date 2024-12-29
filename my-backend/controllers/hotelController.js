@@ -1,4 +1,5 @@
 const Hotel = require('../models/Hotel');
+const Reservation = require('../models/reservation')
 
 let io;
 

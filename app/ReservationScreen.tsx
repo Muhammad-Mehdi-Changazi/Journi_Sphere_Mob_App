@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Keyboa
 import axios from 'axios';
 import { useLocalSearchParams } from 'expo-router';
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
-import  io from 'socket.io-client';
+import io from 'socket.io-client';
 
 let socket;
 
@@ -53,7 +53,7 @@ export default function ReservationScreen() {
         fetchHotelDetails();
     }, [placeName]);
 
-    const handleReservation = () => {
+    const handleReservation = async () => {
         if (!validateFields()) return;
 
         const reservationDetails = {
@@ -64,21 +64,28 @@ export default function ReservationScreen() {
             roomType,
         };
 
-        // Emit the reservation details to the server
-        socket.emit('reservation-updated', reservationDetails);
+        try {
+            // Send reservation details to the backend
+            const response = await axios.post('http://localhost:3000/api/reservations', reservationDetails);
+            console.log('Reservation Response:', response.data);
 
-        console.log('Reservation Details:', reservationDetails);
+            // Emit the reservation details to the Socket.IO server
+            socket.emit('new-reservation', reservationDetails);
 
-        Alert.alert(
-            'Reservation Successful',
-            `Your reservation at ${placeName} for a ${roomType} has been confirmed.`
-        );
+            Alert.alert(
+                'Reservation Successful',
+                `Your reservation at ${placeName} for a ${roomType} has been confirmed.`
+            );
 
-        // Reset fields after reservation
-        setName('');
-        setEmail('');
-        setPhone('');
-        setRoomType('');
+            // Reset fields after reservation
+            setName('');
+            setEmail('');
+            setPhone('');
+            setRoomType('');
+        } catch (error) {
+            console.error('Error making reservation:', error);
+            Alert.alert('Reservation Failed', 'An error occurred while making the reservation.');
+        }
     };
 
     const validateFields = () => {
