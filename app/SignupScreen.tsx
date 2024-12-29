@@ -57,7 +57,7 @@ export default function SignupScreen() {
     try {
       setLoading(true);
       const response = await axios.post(
-        'http://localhost:3000/signup',
+        'https://manzil-sprint1-production.up.railway.app/signup',
         requestData,
         {
           headers: {

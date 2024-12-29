@@ -16,7 +16,7 @@ export default function HotelAdmin() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        socket = io('http://localhost:3000'); // Connect to Socket.IO server
+        socket = io('https://manzil-sprint1-production.up.railway.app'); // Connect to Socket.IO server
 
         socket.on('connect', () => {
             console.log('Connected to Socket.IO server');
@@ -38,7 +38,7 @@ export default function HotelAdmin() {
                     throw new Error('Username is missing.');
                 }
 
-                const response = await axios.get(`http://localhost:3000/api/hotels/${username}`);
+                const response = await axios.get(`https://manzil-sprint1-production.up.railway.app/api/hotels/${username}`);
                 setHotelDetails(response.data.hotel);
                 setLoading(false);
             } catch (err) {
@@ -53,7 +53,7 @@ export default function HotelAdmin() {
                     throw new Error('Hotel name is missing');
                 }
 
-                const response = await axios.get(`http://localhost:3000/api/reservations/requests`, {
+                const response = await axios.get(`https://manzil-sprint1-production.up.railway.app/api/reservations/requests`, {
                     params: { hotelName: hotelDetails.hotel_name }
                 });
 
@@ -86,7 +86,7 @@ export default function HotelAdmin() {
 
     const handleEditRoom = async (roomId) => {
         try {
-            const response = await axios.put(`http://localhost:3000/api/rooms/${roomId}`, editedRoom);
+            const response = await axios.put(`https://manzil-sprint1-production.up.railway.app/api/rooms/${roomId}`, editedRoom);
             setHotelDetails((prevDetails) => ({
                 ...prevDetails,
                 rooms: prevDetails.rooms.map((room) =>

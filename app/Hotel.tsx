@@ -22,7 +22,7 @@ const HotelsList: React.FC = () => {
   useEffect(() => {
     const fetchHotels = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/hotels');  
+        const response = await axios.get('https://manzil-sprint1-production.up.railway.app/hotels');  
         setHotels(response.data);
         
       } catch (error) {

@@ -40,7 +40,7 @@ export default function Reviews() {
   // Fetch reviews from the backend
   const fetchReviews = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/Reviews?placeName=${placeName}`);
+      const response = await axios.get(`https://manzil-sprint1-production.up.railway.app/Reviews?placeName=${placeName}`);
         setReviews(response.data);
     } catch (error) {
       console.error('Error fetching reviews:', error);
@@ -73,7 +73,7 @@ export default function Reviews() {
 
     try {
       // Send the review to the backend
-      await axios.post(`http://localhost:3000/Reviews`, {
+      await axios.post(`https://manzil-sprint1-production.up.railway.app/Reviews`, {
         placeName,
         user: username,
         rating,
