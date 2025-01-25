@@ -1,50 +1,114 @@
-# Welcome to your Expo app 👋
+# MANZIL - Tourist Guide Mobile Application  
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**MANZIL** is a React Native mobile application designed to guide tourists in finding places, exploring reviews, and booking hotels for their stay. The application provides a seamless user experience for both customers and hotel management staff.
 
-## Get started
+---
 
-1. Install dependencies
+## **Features**
 
+### **For Customers:**
+1. **Sign up & Login:**
+   - Users can register by selecting the customer option on the sign up page.
+   - Login to access the app features.
+
+2. **Search & Explore:**
+   - Search for desired places using the search bar on the home page.
+   - The recommendation system suggests places based on the user's location (if enabled).
+
+3. **Explore Cities & Famous Places:**
+   - Browse cities and explore their famous attractions.
+
+4. **Hotel Features:**
+   - View details of hotels and their rooms.
+   - **Reviews Tab:** Check reviews from users and Google reviews.
+   - **Navigate Tab:** Navigate to the hotel's location using Google Maps integration.
+   - **Make Reservation Tab:** Place room reservation requests based on room availability.
+
+5. **Restaurant Features:**
+   - **Navigate Tab:** Find the location of restaurants via Google Maps.
+   - **Reviews Tab:** Check user reviews and Google reviews for restaurants.
+
+---
+
+### **For Hotel Management Staff:**
+1. **Login:**
+   - Hotel management staff login credentials are manually assigned (email and password).
+   
+2. **Manage Hotel Information:**
+   - **Room Info Tab:** View details of their hotel rooms.
+   - **Reservation Requests Tab:** Monitor real-time reservation requests from customers.
+   - **Edit Room Info Tab:** Update room information as required.
+
+3. **Real-Time Communication:**
+   - Integrated **Socket.IO** for real-time updates and interactions between customers and hotel management staff.
+
+---
+
+## **Technologies Used**
+- **Frontend:** React Native
+- **Backend:** Node.js, Express.js
+- **Database:** MongoDB
+- **Real-Time Communication:** Socket.IO
+- **Google Maps Integration:** Google Maps API
+- **Authentication:** JSON Web Tokens (JWT)
+
+---
+
+## **Current Data Setup**
+### **Hotels Added:**
+1. **Pearl Continental Hotel Karachi**
+   - Includes room information.
+2. **Hotel One Downtown Lahore**
+   - Includes room information.
+
+### **Manual Data Handling:**
+- Hotels and their details are currently added manually.
+- Login credentials for hotel management staff are also assigned manually.
+
+---
+
+## **Installation & Setup**
+1. Clone the repository:
    ```bash
+   git clone https://github.com/Muhammad-Mehdi-Changazi/Manzil
+   ```
+2. Install dependencies:
+   ```bash
+   cd MANZIL
    npm install
    ```
-
-2. Start the app
-
+3. Configure environment variables:
+   - Create a `.env` file and add the required variables:
+     ```env
+     MONGODB_URI= mongodb+srv://sQpbJkHNcJzho6Pd:sQpbJkHNcJzho6Pd@manzil.gxdiu.mongodb.net/
+     GOOGLE_API_KEY= AIzaSyAUwcgoinASwKDHlKDuW9HvNodSkBz64YI
+     ```
+4. Run the backend server:
    ```bash
-    npx expo start
+   cd my-backend
+   npm start
+   ```
+5. Run the frontend:
+   ```bash
+   cd MANZIL
+   npm start
    ```
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## **Future Enhancements**
+- Enable dynamic hotel addition by hotel management staff.
+- Implement user feedback for improving recommendations.
+- Expand real-time communication to include chat between users and hotel staff.
+- Add more hotels and more data.
+- Enable the hotel information editing feature.
+- Enable the reservation requests more, to deal in real time and accept or reject the request.
+- Send notification to the hotel management staff upon receiving a reservation request.
+- Send notification to the customer upon acceptance or rejection of their reservation request.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-## Get a fresh project
+---
 
-When you're ready, run:
+**Authors:**  
+SPROJ Group 04
 
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
