@@ -17,7 +17,7 @@ export default function HomeScreen() {
   useEffect(() => {
     const fetchCities = async () => {
       try {
-        const response = await axios.get('https://manzil-sprint1-production.up.railway.app/api/cities'); // Replace with your API endpoint
+        const response = await axios.get('http://localhost:3000/api/cities'); // Replace with your API endpoint
         setCities(response.data);
         setLoading(false);
       } catch (error) {
@@ -33,7 +33,7 @@ export default function HomeScreen() {
     if (query.length >= 3) {
       setSearchLoading(true);
       try {
-        const response = await axios.get('https://manzil-sprint1-production.up.railway.app/api/search', {
+        const response = await axios.get('http://localhost:3000/api/search', {
           params: { query },
         });
 

@@ -3,8 +3,8 @@ const authController = require('../controllers/authController');
 const reviewController = require('../controllers/reviewController');
 const cityController = require('../controllers/cityController');
 const recommendationController = require('../controllers/recommendationController');
-const { createHotel, getHotels, getHotelByName, getHotelByUsername, createReservation, getReservationRequests } = require('../controllers/hotelController');
-const { createRoom, getRooms, getRoomsByHotel } = require('../controllers/roomController');
+const hotelController = require('../controllers/hotelController');
+const roomController = require('../controllers/roomController');
 
 const router = express.Router();
 
@@ -13,8 +13,8 @@ router.post('/signup', authController.signup);
 router.post('/login', authController.login);
 
 // Reviews Routes
-router.get('/Reviews', reviewController.getReviews);
-router.post('/Reviews', reviewController.createReview);
+router.get('/reviews', reviewController.getReviews);
+router.post('/reviews', reviewController.createReview);
 
 // City Routes
 router.get('/api/cities', cityController.getCities);
@@ -23,21 +23,20 @@ router.get('/api/cities', cityController.getCities);
 router.get('/recommendations', recommendationController.getRecommendations);
 
 // Hotel Routes
-router.post('/Hotel', createHotel);
-router.get('/Hotels', getHotels);
-router.get('/api/hotels/:placeName', getHotelByName); // Route to get hotel by name
-router.get('/api/hotels/admin/:username', getHotelByUsername); // Route to get hotel by username
+router.post('/hotel', hotelController.createHotel); // Make sure this function exists
+router.get('/hotels', hotelController.getHotels);
+router.get('/api/hotels/:placeName', hotelController.getHotelByName); // Route to get hotel by name
+router.get('/api/hotels/admin/:username', hotelController.getHotelByUsername); // Route to get hotel by username
+router.get('/hotels/city/:cityName', hotelController.getHotelsByCity); // Route to get hotels by city
 
 // Reservation Routes
-router.post('/api/reservations', createReservation);
-
-// New route to get reservation requests by hotel name
-router.get('/api/reservations/requests', getReservationRequests);
+router.post('/api/reservations', hotelController.createReservation);
+router.get('/api/reservations/requests', hotelController.getReservationRequests);
 
 // Room Routes
-router.post('/Room', createRoom);
-router.get('/Rooms', getRooms);
-router.get('/hotel/:hotel_name', getRoomsByHotel);
+router.post('/room', roomController.createRoom);
+router.get('/rooms', roomController.getRooms);
+router.get('/hotel/:hotel_name/rooms', roomController.getRoomsByHotel); // Fetch rooms by hotel
 
 // Search Routes
 router.get('/api/search', recommendationController.searchPlaces);
