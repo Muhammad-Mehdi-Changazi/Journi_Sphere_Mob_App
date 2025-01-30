@@ -87,11 +87,9 @@ exports.createReservation = async (req, res) => {
     console.log(reservationDetails);
 
     // Check if reservation details and placeName are provided
-    if (!reservationDetails || !reservationDetails.placeName) {
-      return res.status(400).json({ error: 'placeName is required in reservationDetails' });
-    }
-
-    const { placeName } = reservationDetails;
+    if (!reservationDetails) {
+                return res.status(400).json({ error: 'Reservation details are required.' });
+            }
 
     // Find the hotel by name (placeName)
     const hotel = await Hotel.findOne({ hotel_name: placeName });
@@ -108,12 +106,12 @@ exports.createReservation = async (req, res) => {
 
     res.status(201).json({
       message: 'Reservation created successfully',
-      reservationDetails,
+      reservation,
     });
 
     // Emit the new reservation event to connected clients
     if (io) {
-      io.emit('new-reservation', { hotelId: hotel._id, reservationDetails });
+      io.emit('reservation-updated', { hotelId: hotel._id, reservationDetails });
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
