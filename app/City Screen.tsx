@@ -1,25 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, ActivityIndicator, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, Dimensions } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import ProtectedRoute from './components/protectedroute';
 import axios from 'axios';
 
-// Update fetchRecommendations to call your server API
+// Modify fetchRecommendations to call your server API for hotels and the custom API for restaurants
 const fetchRecommendations = async (cityName: string) => {
   try {
     // Fetch hotels from your database (replace with your actual backend API URL)
     const hotelsResponse = await axios.get(`http://localhost:3000/hotels/city/${cityName}`);
-    console.log("Hi", cityName);
+    // console.log("Hi", cityName);
     const hotels = hotelsResponse.data.hotels; // Assuming the backend returns an array of hotels
-    console
+
 
     // Fetch restaurants from the custom recommendation API
     const restaurantsResponse = await axios.get(`https://manzil-sprint1-production.up.railway.app/recommendations?city=${cityName}`);
     const restaurants = restaurantsResponse.data.restaurants; // Assuming the API returns an array of restaurants
 
     return {
-      places: response.data.hotels,  // Hotels as places
-      foods: response.data.restaurants // Restaurants as foods
+      places: hotels,  // Hotels as places
+      foods: restaurants // Restaurants as foods
     };
   } catch (error) {
     console.error('Error fetching recommendations:', error);
@@ -88,18 +88,11 @@ export default function CityScreen() {
     router.push(`/ReservationScreen?placeName=${encodeURIComponent(placeName)}`); // Navigate to ReservationScreen
   };
 
-  // Function to render the hotel item
+  // Function to render the hotel item (now showing name only)
   const renderHotelItem = (place: any) => {
-    const photoReference = place.photos && place.photos[0]?.photo_reference;
-    const photoUrl = photoReference ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoReference}&key=YOUR_GOOGLE_API_KEY` : 'https://via.placeholder.com/150';
-
     return (
-      <View style={styles.card} key={place.place_id}>
-        <Image
-          source={{ uri: photoUrl }}
-          style={styles.placeImage}
-        />
-        <Text style={styles.placeName}>{place.name}</Text>
+      <View style={styles.card} key={place.id}>
+        <Text style={styles.placeName}>{place.hotel_name}</Text>
 
         <View style={[styles.buttonsContainer, isSmallScreen && styles.buttonsContainerVertical]}>
           <TouchableOpacity style={styles.button} onPress={() => handleNavigate(place.name)}>
@@ -116,17 +109,10 @@ export default function CityScreen() {
     );
   };
 
-  // Function to render the food item
+  // Function to render the food item (now showing name only)
   const renderFoodItem = (food: any) => {
-    const photoReference = food.photos && food.photos[0]?.photo_reference;
-    const photoUrl = photoReference ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoReference}&key=YOUR_GOOGLE_API_KEY` : 'https://via.placeholder.com/150';
-
     return (
       <View style={styles.card} key={food.place_id}>
-        <Image
-          source={{ uri: photoUrl }}
-          style={styles.placeImage}
-        />
         <Text style={styles.placeName}>{food.name}</Text>
 
         <View style={[styles.buttonsContainer, isSmallScreen && styles.buttonsContainerVertical]}>
@@ -156,10 +142,6 @@ export default function CityScreen() {
 
         <View style={[styles.columnsContainer, isSmallScreen && styles.columnsContainerVertical]}>
           {/* Tourist Sites Column (Hotels) */}
-            {/* links for testing. will be removed later*/}
-            {/* <a href="http://localhost:8081/Hotel">API: All Hotels</a>
-            <a href="http://localhost:8081/hotels/Pearl_Continental_Karachi">API: Pearl Continental Karachi</a> */}
-
           <View style={styles.column}>
             <Text style={styles.columnTitle}>Hotels</Text>
             {places.length === 0 ? (
@@ -222,12 +204,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
-  placeImage: {
-    width: '100%',
-    height: 150,
-    borderRadius: 8,
-    marginBottom: 8,
-  },
   placeName: {
     fontSize: 18,
     fontWeight: '600',
@@ -252,6 +228,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
+    fontSize: 14,
     fontWeight: 'bold',
     textAlign: 'center',
   },
@@ -261,9 +238,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   errorText: {
-    textAlign: 'center',
-    color: 'red',
     fontSize: 18,
+    color: 'red',
+    textAlign: 'center',
     marginTop: 20,
   },
 });

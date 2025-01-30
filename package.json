@@ -23,6 +23,7 @@
     "@react-native-picker/picker": "^2.10.2",
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/stack": "^6.4.1",
+    "@tailwindcss/vite": "^4.0.0",
     "axios": "^1.7.7",
     "base-64": "^1.0.0",
     "cors": "^2.8.5",
@@ -55,7 +56,8 @@
     "react-native-web": "~0.19.10",
     "react-native-web-maps": "^0.3.0",
     "socket.io": "^4.8.1",
-    "socket.io-client": "^4.8.1"
+    "socket.io-client": "^4.8.1",
+    "tailwindcss": "^4.0.0"
   },
   "devDependencies": {
     "@react-native-community/cli": "latest",

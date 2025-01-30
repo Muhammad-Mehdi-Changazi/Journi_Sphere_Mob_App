@@ -13,25 +13,10 @@ const port = process.env.PORT || 3000;
 
 const server = http.createServer(app); // Create an HTTP server instance
 
-// List of allowed origins (can also be configured via .env)
-const allowedOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(',')
-  : ['http://localhost:8081', 'http://localhost:8082', 'http://localhost:3001'];
-
-// Dynamic CORS Middleware
+// Allow CORS from all origins
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps or Postman)
-      if (!origin) return callback(null, true);
-
-      // Check if the origin is in the allowed list
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      } else {
-        return callback(new Error('Not allowed by CORS'));
-      }
-    },
+    origin: '*', // Allow all origins
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed HTTP methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers in requests
     credentials: true, // Allow cookies if needed
@@ -44,7 +29,7 @@ app.use(bodyParser.json());
 // Socket.IO configuration with CORS
 const io = socketIo(server, {
   cors: {
-    origin: allowedOrigins, // Allow multiple origins for Socket.IO
+    origin: '*', // Allow all origins for Socket.IO
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   },

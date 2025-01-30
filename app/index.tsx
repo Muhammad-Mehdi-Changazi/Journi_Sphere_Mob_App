@@ -29,7 +29,7 @@ export default function Index() {
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={handleSignup}>
-            <Text style={styles.buttonText}>Sign Up</Text>
+            <Text style={styles.buttonText}>Sign Up as Customer</Text>
           </TouchableOpacity>
         </View>
       </View>

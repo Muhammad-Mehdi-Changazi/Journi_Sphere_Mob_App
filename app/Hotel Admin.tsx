@@ -145,7 +145,7 @@ export default function HotelAdmin() {
                 <View style={styles.section}>
                     <Text style={styles.sectionHeader}>Rooms</Text>
                     {hotelDetails.rooms && hotelDetails.rooms.length > 0 ? (
-    hotelDetails.rooms.map((room, index) => (
+                    hotelDetails.rooms.map((room, index) => (
         <View key={room._id || index} style={styles.roomCard}>
             <Text style={styles.roomHeader}>Room Type: {room.room_type}</Text>
             <Text style={styles.text}>Price: PKR {room.price}</Text>

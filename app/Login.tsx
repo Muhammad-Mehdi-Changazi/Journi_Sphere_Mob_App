@@ -39,7 +39,7 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     try {
       // Make a POST request to the backend login endpoint
-      const response = await axios.post('https://manzil-sprint1-production.up.railway.app/login', {
+      const response = await axios.post('http://localhost:3000/login', {
         email,
         password,
       });

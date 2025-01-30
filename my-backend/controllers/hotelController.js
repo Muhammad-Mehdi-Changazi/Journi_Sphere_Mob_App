@@ -139,5 +139,26 @@ exports.getReservationRequests = async (req, res) => {
   }
 };
 
-// updated code
+exports.getHotelsByCity = async (req, res) => {
+  const { cityName } = req.params;  // Extract cityName from route parameters
 
+  // console.log("Requested City:", cityName);  // Debugging log
+
+  if (!cityName) {
+    return res.status(400).json({ message: 'City is required' });
+  }
+
+  try {
+    // console.log('Fetching hotels for city:', cityName);
+    const hotels = await Hotel.find({ city: cityName }); // Fetch hotels from DB
+
+    if (hotels.length === 0) {
+      return res.status(404).json({ message: 'No hotels found for this city' });
+    }
+
+    return res.json({ hotels });
+  } catch (error) {
+    console.error('Error fetching hotels:', error);
+    return res.status(500).json({ message: 'Failed to fetch hotels' });
+  }
+};

@@ -15,7 +15,6 @@ export default function SignupScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [role, setRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -23,10 +22,6 @@ export default function SignupScreen() {
 
   const handleSignup = async () => {
     setErrorMessage('');
-    if (!role) {
-      setErrorMessage('Please select a role');
-      return;
-    }
 
     if (password !== confirmPassword) {
       setErrorMessage("Passwords don't match");
@@ -51,13 +46,13 @@ export default function SignupScreen() {
       username: username,
       email: email,
       password: password,
-      role: role,
+      role: 'Customer', // Automatically setting role to 'Customer'
     };
 
     try {
       setLoading(true);
       const response = await axios.post(
-        'https://manzil-sprint1-production.up.railway.app/signup',
+        'http://localhost:3000/signup',
         requestData,
         {
           headers: {
@@ -72,7 +67,7 @@ export default function SignupScreen() {
       } else {
         setErrorMessage('Failed to register user');
       }
-    } catch (error: any) {
+    } catch (error) {
       setErrorMessage(error.response?.data?.message || 'Network error');
     } finally {
       setLoading(false);
@@ -114,43 +109,6 @@ export default function SignupScreen() {
         secureTextEntry
         autoCapitalize="none"
       />
-
-      <Text style={styles.roleText}>Sign Up as a</Text>
-      <View style={styles.roleContainer}>
-        <TouchableOpacity
-          style={[
-            styles.roleButton,
-            role === 'Customer' && styles.roleButtonSelected,
-          ]}
-          onPress={() => setRole('Customer')}
-        >
-          <Text
-            style={[
-              styles.roleButtonText,
-              { color: role === 'Customer' ? '#fff' : '#000' },
-            ]}
-          >
-            Customer
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            styles.roleButton,
-            role === 'Hotel Management Staff' &&
-            styles.roleButtonSelected,
-          ]}
-          onPress={() => setRole('Hotel Management Staff')}
-        >
-          <Text
-            style={[
-              styles.roleButtonText,
-              { color: role === 'Hotel Management Staff' ? '#fff' : '#000' },
-            ]}
-          >
-            Hotel Staff
-          </Text>
-        </TouchableOpacity>
-      </View>
 
       {errorMessage ? (
         <Text style={styles.errorText}>{errorMessage}</Text>
@@ -198,30 +156,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 6,
     elevation: 2,
-  },
-  roleText: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 10,
-    color: '#333',
-  },
-  roleContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 20,
-  },
-  roleButton: {
-    backgroundColor: '#e0e0e0',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    marginHorizontal: 10,
-  },
-  roleButtonSelected: {
-    backgroundColor: '#007bff',
-  },
-  roleButtonText: {
-    fontWeight: '600',
   },
   button: {
     backgroundColor: '#007bff',
