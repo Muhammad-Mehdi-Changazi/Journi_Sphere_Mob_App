@@ -22,10 +22,21 @@ exports.getRooms = async (req, res) => {
 };
 
 // Get rooms by hotel name
-exports.getRoomsByHotel = async (req, res) => {
+exports.getRoomsByHotelId = async (req, res) => {
   try {
-    const rooms = await Room.find({ hotel_name: req.params.hotel_name });
-    res.status(200).json(rooms);
+    const { hotel_id } = req.query; // Fetch hotel_id from query parameter
+
+    if (!hotel_id) {
+      return res.status(400).json({ error: 'hotel_id is required' });
+    }
+
+    const rooms = await Room.find({ hotel: hotel_id });
+
+    if (rooms.length === 0) {
+      return res.status(404).json({ error: 'No rooms found for this hotel' });
+    }
+
+    res.status(200).json({ rooms });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
