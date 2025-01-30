@@ -61,6 +61,7 @@ exports.login = async (req, res) => {
         email: existingUser.email,
         username: existingUser.username,
         role: existingUser.role,
+        hotel_id: existingUser.hotel_id,
       },
       'your_secret_key', // Use an environment variable for the secret key in production
       { expiresIn: '1h' }

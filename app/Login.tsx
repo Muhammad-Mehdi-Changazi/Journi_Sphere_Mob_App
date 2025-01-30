@@ -56,7 +56,7 @@ export default function LoginScreen() {
         throw new Error('Failed to decode token');
       }
 
-      const { username, role } = decodedToken;
+      const { username, role, hotel_id } = decodedToken;
 
       if (!username || !role) {
         throw new Error('Invalid token structure');
@@ -73,7 +73,9 @@ export default function LoginScreen() {
         router.push({ pathname: '/home' });      
       } else if (role === 'Hotel Management Staff') {
         // Pass the username in the URL as a parameter
-        router.push(`/Hotel Admin?username=${encodeURIComponent(username)}`);
+        // console.log("ID: ",hotel_id);
+        router.push(`/Hotel Admin?username=${encodeURIComponent(username)}&hotel_id=${encodeURIComponent(hotel_id)}`);
+
       } else {
         throw new Error('Invalid role');
       }
