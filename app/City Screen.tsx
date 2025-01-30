@@ -7,7 +7,16 @@ import axios from 'axios';
 // Update fetchRecommendations to call your server API
 const fetchRecommendations = async (cityName: string) => {
   try {
-    const response = await axios.get(`https://manzil-sprint1-production.up.railway.app/recommendations?city=${cityName}`);
+    // Fetch hotels from your database (replace with your actual backend API URL)
+    const hotelsResponse = await axios.get(`http://localhost:3000/hotels/city/${cityName}`);
+    console.log("Hi", cityName);
+    const hotels = hotelsResponse.data.hotels; // Assuming the backend returns an array of hotels
+    console
+
+    // Fetch restaurants from the custom recommendation API
+    const restaurantsResponse = await axios.get(`https://manzil-sprint1-production.up.railway.app/recommendations?city=${cityName}`);
+    const restaurants = restaurantsResponse.data.restaurants; // Assuming the API returns an array of restaurants
+
     return {
       places: response.data.hotels,  // Hotels as places
       foods: response.data.restaurants // Restaurants as foods
