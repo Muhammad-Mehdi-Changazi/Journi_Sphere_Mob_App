@@ -77,7 +77,7 @@ export default function CityScreen() {
   }, [city]);
 
   const handleNavigate = (placeName: string) => {
-    router.push(`/Google Map?placeName=${encodeURIComponent(placeName)}`); // Navigate to GoogleMap screen
+    router.push(`/GoogleMapScreen?placeName=${encodeURIComponent(placeName)}`); // Navigate to GoogleMap screen
   };
 
   const handleCheckReviews = (placeName: string) => {

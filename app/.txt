@@ -1,0 +1,160 @@
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
+import axios from 'axios';
+import MapView, { Marker } from 'react-native-maps';
+import MapViewDirections from 'react-native-maps-directions';
+import { useLocalSearchParams } from 'expo-router';
+
+/** 
+ * DEMO ONLY - In production, restrict or secure your API key. 
+ * Make sure "Directions API" & "Geocoding API" are enabled for it. 
+ */
+const GOOGLE_API_KEY =  'AIzaSyAUwcgoinASwKDHlKDuW9HvNodSkBz64YI';
+
+type Coordinates = {
+  latitude: number;
+  longitude: number;
+};
+
+export default function GoogleMapScreenNative() {
+  const { placeName } = useLocalSearchParams<{ placeName: string }>();
+
+  const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
+  const [cityLocation, setCityLocation] = useState<Coordinates | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCityCoordinates = async () => {
+      try {
+        const response = await axios.get(
+          'https://maps.googleapis.com/maps/api/geocode/json',
+          {
+            params: {
+              address: placeName,
+              key: GOOGLE_API_KEY,
+            },
+          }
+        );
+
+        if (response.data.status !== 'OK') {
+          console.error(
+            'Geocoding API error:',
+            response.data.error_message || response.data.status
+          );
+          alert(
+            `Geocoding API error: ${
+              response.data.error_message || response.data.status
+            }`
+          );
+          setLoading(false);
+          return;
+        }
+
+        const location = response.data.results[0].geometry.location;
+        setCityLocation({
+          latitude: location.lat,
+          longitude: location.lng,
+        });
+      } catch (error) {
+        console.error('Error fetching city location:', error);
+        alert('Failed to fetch city location.');
+        setLoading(false);
+      }
+    };
+
+    const fetchUserLocation = () => {
+      // "navigator.geolocation" works in Expo if location permissions are granted
+      if ('geolocation' in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            setUserLocation({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            });
+            setLoading(false);
+          },
+          (error) => {
+            console.error('Error getting user location:', error);
+            alert('Failed to get current location.');
+            setLoading(false);
+          },
+          { enableHighAccuracy: false, timeout: 15000, maximumAge: 10000 }
+        );
+      } else {
+        alert('Geolocation not supported.');
+        setLoading(false);
+      }
+    };
+
+    fetchCityCoordinates();
+    fetchUserLocation();
+  }, [placeName]);
+
+  if (loading || !userLocation || !cityLocation) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#007bff" />
+        <Text>Loading map...</Text>
+      </View>
+    );
+  }
+
+  const region = {
+    latitude: (userLocation.latitude + cityLocation.latitude) / 2,
+    longitude: (userLocation.longitude + cityLocation.longitude) / 2,
+    latitudeDelta: Math.abs(userLocation.latitude - cityLocation.latitude) * 2,
+    longitudeDelta: Math.abs(userLocation.longitude - cityLocation.longitude) * 2,
+  };
+
+  return (
+    <View style={styles.container}>
+      <MapView
+        style={styles.map}
+        initialRegion={region}
+      >
+        <Marker
+          coordinate={{
+            latitude: userLocation.latitude,
+            longitude: userLocation.longitude,
+          }}
+          title="Your Location"
+        />
+        <Marker
+          coordinate={{
+            latitude: cityLocation.latitude,
+            longitude: cityLocation.longitude,
+          }}
+          title={placeName || 'Destination'}
+        />
+
+        {/* Directions */}
+        <MapViewDirections
+          origin={userLocation}
+          destination={cityLocation}
+          apikey={GOOGLE_API_KEY}
+          strokeWidth={5}
+          strokeColor="blue"
+        />
+      </MapView>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  container: {
+    flex: 1,
+  },
+  map: {
+    flex: 1,
+  },
+});
