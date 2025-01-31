@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu'; // Install this package
+import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 
 const Header: React.FC = () => {
     const [count, setCount] = useState(0);
     const navigation = useNavigation();
 
     useEffect(() => {
-        const unsubscribe = navigation.addListener('state', (e) => {
+        const unsubscribeFocus = navigation.addListener('state', (e) => {
             const isBack = e.data.state.index < e.data.state.routes.length - 1;
             if (isBack) {
                 setCount((prevCount) => Math.max(prevCount - 1, 0));
@@ -18,7 +18,15 @@ const Header: React.FC = () => {
             }
         });
 
-        return unsubscribe;
+        // Listen for the back button press explicitly
+        const unsubscribeBack = navigation.addListener('beforeRemove', (e) => {
+            setCount((prevCount) => Math.max(prevCount - 1, 0));
+        });
+
+        return () => {
+            unsubscribeFocus();
+            unsubscribeBack();
+        };
     }, [navigation]);
 
     // Dynamic height based on count
@@ -28,7 +36,10 @@ const Header: React.FC = () => {
         <View style={[styles.header, { height: headerHeight }]}>
             {/* Back Button */}
             {navigation.canGoBack() && (
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                <TouchableOpacity onPress={() => {
+                    navigation.goBack();
+                    setCount((prevCount) => Math.max(prevCount - 1, 0)); // Ensure count decrements
+                }} style={styles.backButton}>
                     <Icon name="arrow-back" size={30} color="white" />
                 </TouchableOpacity>
             )}
@@ -38,22 +49,25 @@ const Header: React.FC = () => {
 
             {/* Weather Icon & User Menu */}
             <View style={styles.rightContainer}>
-                {/* Weather Icon (Placeholder for location-based weather) */}
-                <TouchableOpacity style={styles.iconButton}>
-                    <Icon name="cloud-outline" size={25} color="white" />
-                </TouchableOpacity>
-
+                {/* Weather Icon (Visible after 2nd page) */}
+                {count > 2 && (
+                    <TouchableOpacity style={styles.iconButton}>
+                        <Icon name="cloud-outline" size={25} color="white" />
+                    </TouchableOpacity>
+                )}
                 {/* User Account Dropdown */}
-                <Menu>
-                    <MenuTrigger>
-                        <Icon name="person-circle-outline" size={30} color="white" />
-                    </MenuTrigger>
-                    <MenuOptions customStyles={{ optionsContainer: styles.menu }}>
-                        <MenuOption onSelect={() => alert('Profile')} text="Profile" />
-                        <MenuOption onSelect={() => alert('Settings')} text="Settings" />
-                        <MenuOption onSelect={() => alert('Logout')} text="Logout" />
-                    </MenuOptions>
-                </Menu>
+                {count > 2 && (
+                    <Menu>
+                        <MenuTrigger>
+                            <Icon name="person-circle-outline" size={30} color="white" />
+                        </MenuTrigger>
+                        <MenuOptions customStyles={{ optionsContainer: styles.menu }}>
+                            <MenuOption onSelect={() => alert('Profile')} text="Profile" />
+                            <MenuOption onSelect={() => alert('Settings')} text="Settings" />
+                            <MenuOption onSelect={() => alert('Logout')} text="Logout" />
+                        </MenuOptions>
+                    </Menu>
+                )}
             </View>
         </View>
     );
@@ -65,7 +79,7 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
         backgroundColor: '#007bff',
         alignItems: 'center',
-        justifyContent: 'space-between', // Align elements on both sides
+        justifyContent: 'space-between',
         elevation: 3,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },

@@ -74,7 +74,7 @@ export default function ReservationScreen() {
             console.log('Reservation Response:', response.data);
 
             // Emit the reservation details to the Socket.IO server
-            socket.emit('new-reservation', reservationDetails);
+            socket.emit('reservation-updated', reservationDetails);
 
             Alert.alert(
                 'Reservation Successful',

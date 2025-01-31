@@ -12,6 +12,7 @@ const fetchRecommendations = async (cityName: string) => {
     // console.log("Hi", cityName);
     const hotels = hotelsResponse.data.hotels; // Assuming the backend returns an array of hotels
 
+
     // Fetch restaurants from the custom recommendation API
     const restaurantsResponse = await axios.get(`https://manzil-sprint1-production.up.railway.app/recommendations?city=${cityName}`);
     const restaurants = restaurantsResponse.data.restaurants; // Assuming the API returns an array of restaurants

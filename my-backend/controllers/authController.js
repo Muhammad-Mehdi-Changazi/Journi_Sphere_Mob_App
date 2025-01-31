@@ -53,11 +53,13 @@ exports.login = async (req, res) => {
     if (password !== existingUser.password) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
+    console.log("User found:", existingUser.username);
+    console.log("Hotel ID:", existingUser.hotel_id);
+
 
     // Generate a JWT token including the role
     const token = jwt.sign(
       {
-        userId: existingUser._id,
         email: existingUser.email,
         username: existingUser.username,
         role: existingUser.role,
@@ -67,7 +69,13 @@ exports.login = async (req, res) => {
       { expiresIn: '1h' }
     );
 
-    res.status(200).json({ message: 'Login successful', token, role: existingUser.role });
+    res.status(200).json({
+      message: 'Login successful',
+      token,
+      role: existingUser.role,
+      hotel_id: existingUser.hotel_id // Ensure hotel_id is sent
+    });
+
   } catch (error) {
     res.status(500).json({ message: 'Error logging in', error });
   }

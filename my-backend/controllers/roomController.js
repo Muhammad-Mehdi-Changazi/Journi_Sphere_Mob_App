@@ -20,24 +20,22 @@ exports.getRooms = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
-// Get rooms by hotel name
-exports.getRoomsByHotelId = async (req, res) => {
+// Controller to get all rooms for a specific hotel
+exports.getHotelRooms = async (req, res) => {
   try {
-    const { hotel_id } = req.query; // Fetch hotel_id from query parameter
+    const { hotel_id } = req.params;
 
-    if (!hotel_id) {
-      return res.status(400).json({ error: 'hotel_id is required' });
-    }
-
-    const rooms = await Room.find({ hotel: hotel_id });
+    // Fetch rooms related to the hotel_id
+    const rooms = await Room.find({ hotel_id }).exec();
 
     if (rooms.length === 0) {
       return res.status(404).json({ error: 'No rooms found for this hotel' });
     }
 
-    res.status(200).json({ rooms });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    // Send rooms data as response
+    res.json({ rooms });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error fetching rooms for hotel' });
   }
 };

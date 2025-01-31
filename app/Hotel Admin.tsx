@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import axios from 'axios';
 import { useLocalSearchParams } from 'expo-router';
 import io from 'socket.io-client';
@@ -7,14 +7,30 @@ import io from 'socket.io-client';
 let socket;
 
 export default function HotelAdmin() {
-    const { username, hotel_id } = useLocalSearchParams<{ username: string, hotel_id: string }>();
+    const { username, hotel_id } = useLocalSearchParams<{ username: string; hotel_id: string }>();
+    interface HotelDetails {
+        hotel_name: string;
+        complete_address: string;
+        city: string;
+        hotel_class: string;
+        functional: boolean;
+    }
 
-    const [hotelDetails, setHotelDetails] = useState(null);
-    const [error, setError] = useState(null);
-    const [activeTab, setActiveTab] = useState('details');  // Default to Hotel Details
+    interface Room {
+        room_type: string;
+        room_number: number;
+        rent: number;
+        available: boolean;
+        bed_size: string;
+    }
+
+    const [hotelDetails, setHotelDetails] = useState<HotelDetails | null>(null);
+    const [rooms, setRooms] = useState<Room[]>([]);
+    const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        // Connect to Socket.IO server
         socket = io('http://localhost:3000');
 
         socket.on('connect', () => console.log('Connected to Socket.IO server'));
@@ -28,28 +44,26 @@ export default function HotelAdmin() {
     useEffect(() => {
         const fetchHotelDetails = async () => {
             try {
-                if (!hotel_id) throw new Error('Hotel ID is missing.');
-                console.log('Fetching hotel details for hotel ID:', hotel_id);
-                
-                const response = await axios.get(`http://localhost:3000/api/hotels/${hotel_id}`);
-                setHotelDetails(response.data.hotel);
-                console.log('Hotel details:', response.data.hotel);
-                setLoading(false); // Data has been fetched, set loading to false
+                const hotelResponse = await axios.get(`http://localhost:3000/hotels/${hotel_id}`);
+                setHotelDetails(hotelResponse.data.hotel);
+
+                const roomsResponse = await axios.get(`http://localhost:3000/${hotel_id}/rooms`);
+                setRooms(roomsResponse.data.rooms);
+
+                setLoading(false);
             } catch (err) {
-                setError(err.response?.data?.error || err.message);
-                setLoading(false); // Stop loading even if there is an error
+                setError('Error fetching data');
+                setLoading(false);
             }
         };
 
         fetchHotelDetails();
-        console.log("hotelDetails:", hotelDetails);
     }, [hotel_id]);
 
     if (loading) {
         return (
             <View style={styles.container}>
-                <ActivityIndicator size="large" color="#007bff" />
-                <Text style={styles.loadingText}>Loading hotel details...</Text>
+                <Text style={styles.loadingText}>Loading hotel and room details...</Text>
             </View>
         );
     }
@@ -64,86 +78,83 @@ export default function HotelAdmin() {
 
     return (
         <ScrollView style={styles.container}>
-            {/* <Header /> */}
-            <Text style={styles.header}></Text>
+            <Text style={styles.header}>Hotel Admin Panel</Text>
+            <Text style={styles.subHeader}>Welcome, {username}</Text>
 
-            {/* Tab Navigation */}
-            <View style={styles.tabs}>
-                <TouchableOpacity onPress={() => setActiveTab('details')} style={[styles.tab, activeTab === 'details' && styles.activeTab]}>
-                    <Text style={[styles.tabText, activeTab === 'details' && styles.activeTabText]}>Hotel Details</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setActiveTab('rooms')} style={[styles.tab, activeTab === 'rooms' && styles.activeTab]}>
-                    <Text style={[styles.tabText, activeTab === 'rooms' && styles.activeTabText]}>Rooms</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setActiveTab('requests')} style={[styles.tab, activeTab === 'requests' && styles.activeTab]}>
-                    <Text style={[styles.tabText, activeTab === 'requests' && styles.activeTabText]}>Reservations</Text>
-                </TouchableOpacity>
-            </View>
-
-            {/* Hotel Details Tab */}
-            {activeTab === 'details' && hotelDetails && (
+            {/* Hotel Information */}
+            {hotelDetails && (
                 <View style={styles.section}>
                     <Text style={styles.sectionHeader}>Hotel Information</Text>
-                    <Text style={styles.text}>
-                        Hotel Name: <Text style={styles.bold}>{hotelDetails.hotel_name}</Text>
-                    </Text>
-                    <Text style={styles.text}>
-                        Location: {`${hotelDetails.complete_address}, ${hotelDetails.city}`}
-                    </Text>
-                    <Text style={styles.text}>
-                        Longitude: {hotelDetails.longitude}
-                    </Text>
-                    <Text style={styles.text}>
-                        Latitude: {hotelDetails.latitude}
-                    </Text>
-                    <Text style={styles.text}>
-                        Room Types: {hotelDetails.room_types.join(', ')}
-                    </Text>
-                    <Text style={styles.text}>
-                        Number of Rooms: {hotelDetails.number_of_rooms}
-                    </Text>
-                    <Text style={styles.text}>
-                        Hotel Class: {hotelDetails.hotel_class}
-                    </Text>
-                    <Text style={styles.text}>
-                        Functional: {hotelDetails.functional ? 'Yes' : 'No'}
-                    </Text>
-                    <Text style={styles.text}>
-                        Mess Included: {hotelDetails.mess_included ? 'Yes' : 'No'}
-                    </Text>
+                    <Text style={styles.text}>Name: {hotelDetails.hotel_name}</Text>
+                    <Text style={styles.text}>Location: {hotelDetails.complete_address}</Text>
+                    <Text style={styles.text}>City: {hotelDetails.city}</Text>
+                    <Text style={styles.text}>Class: {hotelDetails.hotel_class}</Text>
+                    <Text style={styles.text}>Functional: {hotelDetails.functional ? 'Yes' : 'No'}</Text>
                 </View>
             )}
 
-            {/* Rooms Tab - Placeholder */}
-            {activeTab === 'rooms' && (
-                <View style={styles.section}>
-                    <Text style={styles.sectionHeader}>Rooms</Text>
-                    <Text style={styles.text}>Rooms info will be displayed here.</Text>
-                </View>
-            )}
-
-            {/* Reservation Requests Tab - Placeholder */}
-            {activeTab === 'requests' && (
-                <View style={styles.section}>
-                    <Text style={styles.sectionHeader}>Reservation Requests</Text>
-                    <Text style={styles.text}>Reservation requests will be displayed here.</Text>
-                </View>
-            )}
+            {/* Room Information */}
+            <View style={styles.section}>
+                <Text style={styles.sectionHeader}>Room Information</Text>
+                {rooms.length > 0 ? (
+                    rooms.map((room) => (
+                        <View key={room.room_number} style={styles.room}>
+                            <Text style={styles.text}>Room Type: {room.room_type}</Text>
+                            <Text style={styles.text}>Room Number: {room.room_number}</Text>
+                            <Text style={styles.text}>Rent: ${room.rent}</Text>
+                            <Text style={styles.text}>Available: {room.available ? 'Yes' : 'No'}</Text>
+                            <Text style={styles.text}>Bed Size: {room.bed_size}</Text>
+                        </View>
+                    ))
+                ) : (
+                    <Text style={styles.text}>No rooms available for this hotel.</Text>
+                )}
+            </View>
         </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#f4f7fc', padding: 15 },
-    header: { fontSize: 28, fontWeight: 'bold', color: '#333', marginBottom: 20 },
-    tabs: { flexDirection: 'row', marginBottom: 15, justifyContent: 'center' },
-    tab: { flex: 1, paddingVertical: 12, alignItems: 'center', backgroundColor: '#EAEFF1', marginHorizontal: 5, borderRadius: 8 },
-    activeTab: { backgroundColor: '#007bff' },
-    activeTabText: { color: 'white', fontWeight: 'bold' },
-    text: { fontSize: 16, color: '#555', marginBottom: 8 },
-    section: { marginBottom: 25 },
-    sectionHeader: { fontSize: 22, fontWeight: '600', color: '#333', marginBottom: 12 },
-    roomCard: { backgroundColor: '#fff', padding: 15, marginBottom: 18, borderRadius: 12, shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 6, elevation: 5 },
-    loadingText: { fontSize: 18, color: '#666', textAlign: 'center', marginTop: 30 },
-    errorText: { fontSize: 18, color: 'red', textAlign: 'center', marginTop: 30 },
+    container: {
+        flex: 1,
+        padding: 15,
+        backgroundColor: '#f4f7fc',
+    },
+    loadingText: {
+        fontSize: 18,
+        color: '#555',
+        textAlign: 'center',
+        marginTop: 20,
+    },
+    header: {
+        fontSize: 26,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    subHeader: {
+        fontSize: 18,
+        color: '#555',
+        marginBottom: 15,
+    },
+    sectionHeader: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 8,
+    },
+    text: {
+        fontSize: 16,
+        marginBottom: 6,
+    },
+    section: {
+        marginBottom: 20,
+    },
+    room: {
+        marginBottom: 15,
+    },
+    errorText: {
+        fontSize: 18,
+        color: 'red',
+        textAlign: 'center',
+        marginTop: 20,
+    },
 });
