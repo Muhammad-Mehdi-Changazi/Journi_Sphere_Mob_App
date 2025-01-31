@@ -152,30 +152,30 @@ exports.getHotelsByCity = async (req, res) => {
 };
 
 
-// Get hotel by ID
-exports.getHotelById = async (req, res) => {
-  try {
-    console.log(req.params);
-    const { hotel_id } = req.params;
-    console.log(hotel_id);
+// // Get hotel by ID
+// exports.getHotelById = async (req, res) => {
+//   try {
+//     console.log(req.params);
+//     const { hotel_id } = req.params;
+//     console.log(hotel_id);
 
-    // Validate hotel_id
-    if (!mongoose.Types.ObjectId.isValid(hotel_id)) {
-      return res.status(400).json({ error: 'Invalid hotel_id format' });
-    }
+//     // Validate hotel_id
+//     if (!mongoose.Types.ObjectId.isValid(hotel_id)) {
+//       return res.status(400).json({ error: 'Invalid hotel_id format' });
+//     }
 
-    // Convert string to ObjectId using new keyword
-    const hotelId = new mongoose.Types.ObjectId(hotel_id);
+//     // Convert string to ObjectId using new keyword
+//     const hotelId = new mongoose.Types.ObjectId(hotel_id);
 
-    // Fetch the hotel details (no population of 'rooms')
-    const hotel = await Hotel.findById(hotelId);
-    if (!hotel) return res.status(404).json({ error: 'Hotel not found 123' });
+//     // Fetch the hotel details (no population of 'rooms')
+//     const hotel = await Hotel.findById(hotelId);
+//     if (!hotel) return res.status(404).json({ error: 'Hotel not found 123' });
 
-    res.status(200).json({
-      message: 'Hotel fetched successfully',
-      hotel,
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+//     res.status(200).json({
+//       message: 'Hotel fetched successfully',
+//       hotel,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
