@@ -35,7 +35,7 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
   const router = useRouter();
 
-  // LoginScreen.tsx
+  // Login Function
   const handleLogin = async () => {
     try {
       // Make a POST request to the backend login endpoint
@@ -49,31 +49,27 @@ export default function LoginScreen() {
       // Store the token in AsyncStorage
       await AsyncStorage.setItem('authToken', token);
 
-      // Manually decode the token to extract role
+      // Decode the token to extract user details
       const decodedToken = decodeJwt(token);
+      if (!decodedToken) throw new Error('Failed to decode token');
 
-      if (!decodedToken) {
-        throw new Error('Failed to decode token');
-      }
+      const { username, role, hotel_id } = decodedToken;
+      if (!username || !role) throw new Error('Invalid token structure');
 
-      const { username, role } = decodedToken;
-
-      if (!username || !role) {
-        throw new Error('Invalid token structure');
-      }
-
-      // Store username and role in AsyncStorage
+      // Store username, role, and hotel_id in AsyncStorage
       await AsyncStorage.setItem('username', username);
       await AsyncStorage.setItem('role', role);
+      if (hotel_id) await AsyncStorage.setItem('hotel_id', hotel_id);
 
-      console.log('Login successful, token and username stored');
+      console.log('Login successful, data stored');
 
       // Navigate based on role
       if (role === 'Customer') {
-        router.push({ pathname: '/home' });      
+        router.push('/home'); // Navigate to home
       } else if (role === 'Hotel Management Staff') {
-        // Pass the username in the URL as a parameter
-        router.push(`/Hotel Admin?username=${encodeURIComponent(username)}`);
+        // Pass both username and hotel_id in the URL
+        console.log(hotel_id);
+        router.push(`/Hotel Admin?username=${encodeURIComponent(username)}&hotel_id=${encodeURIComponent(hotel_id)}`);
       } else {
         throw new Error('Invalid role');
       }

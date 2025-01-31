@@ -6,7 +6,7 @@ import { AuthProvider } from './contexts/authcontext'; // Adjust the import path
 export default function RootLayout() {
   return (
     <AuthProvider> {/* Wrap your entire app with AuthProvider */}
-      <Stack screenOptions={{ headerShown: false }} /> {/* Hide default header */}
+      <Stack screenOptions={{ headerShown: false }} /> {/* No need for NavigationContainer */}
     </AuthProvider>
   );
 }
