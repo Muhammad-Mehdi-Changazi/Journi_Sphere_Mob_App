@@ -24,19 +24,17 @@ router.get('/recommendations', recommendationController.getRecommendations);
 
 // Hotel Routes
 router.post('/hotel', hotelController.createHotel); // Make sure this function exists
-router.get('/hotels', hotelController.getHotels);
-router.get('/api/hotels/:placeName', hotelController.getHotelByName); // Route to get hotel by name
-router.get('/api/hotels/admin/:username', hotelController.getHotelByUsername); // Route to get hotel by username
 router.get('/hotels/city/:cityName', hotelController.getHotelsByCity); // Route to get hotels by city
+router.get('/hotels/:hotel_id', hotelController.getHotelById);
 
 // Reservation Routes
 router.post('/api/reservations', hotelController.createReservation);
-router.get('/api/reservations/requests', hotelController.getReservationRequests);
+router.get('/api/reservations/requests', hotelController.getReservationRequests); // Fetch reservations by hotel ID
 
 // Room Routes
 router.post('/room', roomController.createRoom);
-router.get('/rooms', roomController.getRooms);
-router.get('/hotel/:hotel_name/rooms', roomController.getRoomsByHotel); // Fetch rooms by hotel
+router.get('/getRooms/:hotel_id', roomController.getRoomsByHotel);
+router.get('/:hotel_id/rooms', roomController.getHotelRooms);
 
 // Search Routes
 router.get('/api/search', recommendationController.searchPlaces);

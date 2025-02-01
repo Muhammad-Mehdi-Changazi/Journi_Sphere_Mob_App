@@ -12,21 +12,44 @@ exports.createRoom = async (req, res) => {
 };
 
 // Get all rooms
-exports.getRooms = async (req, res) => {
+// Get rooms by hotel_id
+exports.getRoomsByHotel = async (req, res) => {
   try {
-    const rooms = await Room.find();
+    const { hotel_id } = req.params;
+
+    if (!hotel_id) {
+      return res.status(400).json({ error: 'Hotel ID is required' });
+    }
+
+    const rooms = await Room.find({ hotel_id });
+
+    if (rooms.length === 0) {
+      return res.status(404).json({ message: 'No rooms found for this hotel' });
+    }
+
     res.status(200).json(rooms);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// Get rooms by hotel name
-exports.getRoomsByHotel = async (req, res) => {
+
+// Controller to get all rooms for a specific hotel
+exports.getHotelRooms = async (req, res) => {
   try {
-    const rooms = await Room.find({ hotel_name: req.params.hotel_name });
-    res.status(200).json(rooms);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    const { hotel_id } = req.params;
+
+    // Fetch rooms related to the hotel_id
+    const rooms = await Room.find({ hotel_id }).exec();
+
+    if (rooms.length === 0) {
+      return res.status(404).json({ error: 'No rooms found for this hotel' });
+    }
+
+    // Send rooms data as response
+    res.json({ rooms });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error fetching rooms for hotel' });
   }
 };

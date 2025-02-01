@@ -1,12 +1,25 @@
-// app/_layout.tsx
 import React from 'react';
+import { View, StyleSheet } from 'react-native';
 import { Stack } from 'expo-router';
-import { AuthProvider } from './contexts/authcontext'; // Adjust the import path if necessary
+import { AuthProvider } from './contexts/authcontext';  // Adjusted path
+import Header from './components/Header';  // Adjusted path
+import { MenuProvider } from 'react-native-popup-menu';
 
 export default function RootLayout() {
   return (
-    <AuthProvider> {/* Wrap your entire app with AuthProvider */}
-      <Stack screenOptions={{ headerShown: false }} /> {/* Hide default header */}
-    </AuthProvider>
+    <MenuProvider>
+      <AuthProvider>
+        <View style={styles.container}>
+          {/* <Header />  Uncomment if needed */}
+          <Stack screenOptions={{ headerShown: false }} />
+        </View>
+      </AuthProvider>
+    </MenuProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
