@@ -5,6 +5,8 @@ import { useLocalSearchParams } from 'expo-router';
 import io from 'socket.io-client';
 import Icon from 'react-native-vector-icons/Ionicons'; // For icons
 import { BarChart } from 'react-native-chart-kit';
+import EditRoomInfo from './editroominfo';
+import ReservationRequests from './components/ReservationsRequest';
 
 let socket;
 
@@ -44,9 +46,9 @@ function HotelAdmin() {
     const roomsOccupied = rooms.filter(room => !room.available).length;
     const roomsAvailable = totalRooms - roomsOccupied;  // or filter for 'available'
     // Dummy Data for Reservations
-    const [ongoingReservations, setongoingReservations] = useState<number>(5);
-    const [futureReservations, setFutureReservations] = useState<number>(15);
-    const [historyReservations, setHistoryReservations] = useState<number>(10);
+    const [CurrentReservationRequests, setCurrentReservationRequests] = useState<number>(5);
+    const [OngoingReservations, setOngoingReservations] = useState<number>(15);
+    const [pastReservation, setPastReservations] = useState<number>(10);
     const [modalVisible, setModalVisible] = useState(false); // For controlling modal visibility
 
 
@@ -57,10 +59,10 @@ function HotelAdmin() {
 
     // Graph Data
     const graphData = {
-        labels: ['Ongoing', 'Future', 'History'],  // Categories
+        labels: ['Current Requests', 'Ongoing', 'History'],  // Categories
         datasets: [
             {
-                data: [ongoingReservations, futureReservations, historyReservations],  // Values
+                data: [CurrentReservationRequests, OngoingReservations, pastReservation],  // Values
                 color: (opacity = 1) => `rgba(0, 255, 0, ${opacity})`,  // Green color for bars
                 strokeWidth: 2,
             },
@@ -96,6 +98,40 @@ function HotelAdmin() {
                 setLoading(false);
             }
         };
+
+        const fetchReservations = async () => {
+            try {
+                // Fetch all reservations with hotel_id and status filtering
+                const response = await axios.get(`http://localhost:3000/GetAllReservationsByHotelID?hotel_id=${hotel_id}`);
+
+                // Store the fetched data
+                const allReservations = response.data;
+                setReservations(allReservations);
+
+
+                // Count the length of each status category
+                const pendingCount: number = allReservations.filter((reservation: { reservationStatus: string }) => reservation.reservationStatus === "PENDING").length;
+                const confirmedCount: number = allReservations.filter((reservation: { reservationStatus: string }) => reservation.reservationStatus === "CONFIRMED").length;
+                const cancelledOrCompletedCount: number = allReservations.filter((reservation: { reservationStatus: string }) =>
+                    reservation.reservationStatus === "CANCELLED" || reservation.reservationStatus === "COMPLETED"
+                ).length;
+
+                // Set the counts to state (assuming you have states for these)
+                setCurrentReservationRequests(pendingCount);
+                setOngoingReservations(confirmedCount);
+                setPastReservations(cancelledOrCompletedCount);
+
+                // Stop loading
+                setLoading(false);
+            } catch (error) {
+                console.error("Error fetching reservations:", error);
+                setError("Failed to fetch reservations.");
+                setLoading(false);
+            }
+        };
+
+        fetchReservations();
+
 
         fetchHotelData();
     }, [hotel_id]);
@@ -179,12 +215,12 @@ function HotelAdmin() {
                                 <Text style={styles.statValue}>{roomsAvailable}</Text>
                             </View>
                             <View style={styles.statColumn}>
-                                <Text style={styles.statText}>Payment Dues</Text>
-                                <Text style={styles.statValue}>12</Text>
+                                <Text style={styles.statText}>Total Reservation</Text>
+                                <Text style={styles.statValue}>{pastReservation + OngoingReservations}</Text>
                             </View>
                             <View style={styles.statColumn}>
-                                <Text style={styles.statText}>Room Ready</Text>
-                                <Text style={styles.statValue}>3</Text>
+                                <Text style={styles.statText}>Reservation Requests</Text>
+                                <Text style={styles.statValue}>{CurrentReservationRequests}</Text>
                             </View>
                         </View>
 
@@ -201,8 +237,11 @@ function HotelAdmin() {
                 );
             case "Staff Info":
             case "Ongoing Reservations":
+                return <ReservationRequests status="CONFIRMED" hotel_id={hotel_id} />;
             case "Reservation History":
-            case "Future Reservations":
+                return <ReservationRequests status={["CANCELLED", "COMPLETED"]} hotel_id={hotel_id} />;
+            case "Reservation Requests":
+                return <ReservationRequests status="PENDING" hotel_id={hotel_id} />;
             case "Edit Account":
             case "Logout":
                 return (
@@ -214,6 +253,7 @@ function HotelAdmin() {
 
 
             case "Edit Room Info":
+                return <EditRoomInfo hotel_id={hotel_id} />;
             case "Room Information":
                 return (
                     <View style={styles.section}>
@@ -293,7 +333,7 @@ function HotelAdmin() {
             {/* Notification Icon */}
             <View style={[styles.notificationContainer]}>
                 <TouchableOpacity style={styles.notificationIcon}>
-                    <Icon name="notifications" size={30} color="black" />
+                    <Icon name="notifications" size={35} color="black" />
                 </TouchableOpacity>
             </View>
             {/* Hamburger icon for small screens */}
@@ -344,7 +384,7 @@ function HotelAdmin() {
 
 
                 {/* Sidebar Menu */}
-                {[{ title: "Rooms", subItems: ["Room Information", "Edit Room Info"] }, { title: "Reservations", subItems: ["Ongoing Reservations", "Reservation History", "Future Reservations"] }, { title: "Account Settings", subItems: ["Edit Account", "Logout"] }].map((menu) => (
+                {[{ title: "Rooms", subItems: ["Room Information", "Edit Room Info"] }, { title: "Reservations", subItems: ["Ongoing Reservations", "Reservation History", "Reservation Requests"] }, { title: "Account Settings", subItems: ["Edit Account", "Logout"] }].map((menu) => (
                     <View key={menu.title}>
                         <TouchableOpacity
                             style={[styles.menuButton, selectedTab === menu.title && styles.selectedTab]}
@@ -438,7 +478,7 @@ const styles = StyleSheet.create({
     centeredContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
     container: { flex: 1, flexDirection: 'row', backgroundColor: '#f4f7fc' },
     notificationContainer: { position: 'absolute', top: 10, right: 10, zIndex: 2 },
-    notificationIcon: { padding: 10 },
+    notificationIcon: { padding: 10, marginRight: 10},
     sidebar: { backgroundColor: '#f0f0f0', padding: 10, paddingTop: 20, position: 'absolute', top: 0, bottom: 0, left: -250, zIndex: 1, transition: 'left 0.3s' },
     sidebarHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 20, marginTop: 10 },
     sidebarHeaderText: { fontSize: 20, fontWeight: 'bold', marginLeft: 10 },

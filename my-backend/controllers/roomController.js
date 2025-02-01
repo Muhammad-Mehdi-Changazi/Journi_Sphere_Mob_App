@@ -11,7 +11,6 @@ exports.createRoom = async (req, res) => {
   }
 };
 
-// Get all rooms
 // Get rooms by hotel_id
 exports.getRoomsByHotel = async (req, res) => {
   try {
@@ -51,5 +50,23 @@ exports.getHotelRooms = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error fetching rooms for hotel' });
+  }
+};
+
+exports.updateRoom = async (req, res) => {
+  try {
+    const { id } = req.params;  // Extract room ID from request params
+    const updatedRoomData = req.body;  // Extract updated room data from request body
+
+    const updatedRoom = await Room.findByIdAndUpdate(id, updatedRoomData, { new: true });
+
+    if (!updatedRoom) {
+      return res.status(404).json({ message: "Room not found" });
+    }
+
+    res.status(200).json({ message: "Room updated successfully", updatedRoom });
+  } catch (error) {
+    console.error("Error updating room:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };

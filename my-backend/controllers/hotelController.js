@@ -42,7 +42,7 @@ exports.getHotels = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-const isValidHotelId = (id) => /^[0-9a-fA-F]{24}$/.test(id);
+
 
 
 
@@ -124,28 +124,29 @@ exports.createReservation = async (req, res) => {
 };
 
 
-
-// Get reservation requests by hotel ID
-exports.getReservationRequests = async (req, res) => {
+exports.getReservationsByHotelId = async (req, res) => {
   try {
     const { hotel_id } = req.query;
 
-    // Validate hotel_id format
-    if (!hotel_id || !mongoose.Types.ObjectId.isValid(hotel_id)) {
-      return res.status(400).json({ error: 'Invalid or missing hotel_id' });
+    if (!hotel_id) {
+      return res.status(400).json({ error: "Hotel ID is required" });
     }
 
-    const reservations = await Reservation.find({ hotel: hotel_id });
-    res.status(200).json({ requests: reservations });
+    // Fetch reservations for the given hotel_id
+    const reservations = await Reservation.find({ hotel_ID: hotel_id });
+    console.log("Reservations",reservations);
+
+    // Return the reservations
+    res.status(200).json(reservations);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Error fetching reservations:", error);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
-exports.getHotelsByCity = async (req, res) => {
-  const { cityName } = req.params;  // Extract cityName from route parameters
 
-  // console.log("Requested City:",cityName);  // Debugging log
+exports.getHotelsByCity = async (req, res) => {
+  const { cityName } = req.params; 
 
   if (!cityName) {
     return res.status(400).json({ message: 'City is required' });
@@ -163,5 +164,70 @@ exports.getHotelsByCity = async (req, res) => {
   } catch (error) {
     console.error('Error fetching hotels:', error);
     return res.status(500).json({ message: 'Failed to fetch hotels' });
+  }
+};
+
+exports.getReservationsByStatus = async (req, res) => {
+  try {
+    const { status, hotel_id } = req.query;
+
+    if (!status || !hotel_id) {
+      return res.status(400).json({ error: "Status and hotel_id are required" });
+    }
+
+    // If multiple statuses are sent as an array, use $in operator
+    const statusArray = status.includes(",") ? status.split(",") : [status];
+
+    // Fetch reservations filtered by both status and hotel_id
+    const reservations = await Reservation.find({
+      reservationStatus: { $in: statusArray },
+      hotel_ID: hotel_id,  // Filtering by hotel_id
+    });
+    
+    res.status(200).json(reservations);
+  } catch (error) {
+    console.error("Error fetching reservations:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+exports.updateReservationStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    const validStatuses = ["PENDING", "CONFIRMED", "CANCELLED", "COMPLETED"];
+
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ error: "Invalid status" });
+    }
+
+    // Find the reservation by ID
+    const updatedReservation = await Reservation.findById(req.params.id);
+
+    if (!updatedReservation) {
+      return res.status(404).json({ error: "Reservation not found" });
+    }
+
+    if (status === "CONFIRMED" && updatedReservation.reservationStatus !== "CONFIRMED") {
+      const room_id = updatedReservation.room_ID;
+
+      const updatedRoom = await Room.findByIdAndUpdate(
+        room_id,
+        { available: false },
+        { new: true }
+      );
+
+      if (!updatedRoom) {
+        return res.status(404).json({ error: "Room not found" });
+      }
+    }
+
+    updatedReservation.reservationStatus = status;
+
+    await updatedReservation.save();
+
+    res.status(200).json(updatedReservation);
+  } catch (error) {
+    console.error("Error updating reservation:", error);
+    res.status(500).json({ error: "Server error" });
   }
 };

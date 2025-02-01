@@ -140,7 +140,7 @@ export default function CityScreen() {
   return (
     <ProtectedRoute>
       <ScrollView style={styles.container}>
-        <Text style={styles.cityName}>City: {JSON.parse(city).name}</Text>
+        <Text style={styles.cityName}>{JSON.parse(city).name}</Text>
 
         <View style={[styles.columnsContainer, isSmallScreen && styles.columnsContainerVertical]}>
           {/* Tourist Sites Column (Hotels) */}

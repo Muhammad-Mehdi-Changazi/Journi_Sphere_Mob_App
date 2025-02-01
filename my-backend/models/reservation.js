@@ -12,6 +12,7 @@ const reservationSchema = new mongoose.Schema({
         from: { type: Date, required: true }, // Start date of the reservation
         to: { type: Date, required: true },   // End date of the reservation
     },
+    reservationStatus: { type: String, enum: ["PENDING", "CONFIRMED", "CANCELLED", "COMPLETED"], default: "PENDING" }, // New Field
     createdAt: { type: Date, default: Date.now }, // Automatically add reservation timestamp
 });
 
