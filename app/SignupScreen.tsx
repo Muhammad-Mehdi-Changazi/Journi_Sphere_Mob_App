@@ -76,7 +76,7 @@ export default function SignupScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.headerText}>Sign Up</Text>
+      <Text style={styles.headerText}>Start your Journey</Text>
 
       <TextInput
         style={styles.input}

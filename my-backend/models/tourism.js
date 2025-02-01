@@ -6,6 +6,8 @@ const touristSpotSchema = new mongoose.Schema({
   image: { type: String, required: true }, // Image URL
 });
 
+
+
 const specificCitySchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true },
   touristSpots: [touristSpotSchema], // Array of tourist spots

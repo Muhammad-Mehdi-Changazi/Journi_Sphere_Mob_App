@@ -8,7 +8,8 @@ const citySchema = new mongoose.Schema({
   photoUrl: { type: String, required: false }, // Existing field
   description: { type: String, required: false }, // Existing field
   places: { type: [String], required: false },
-  food: { type: [String], required: false }
+  food: { type: [String], required: false },
+  tourist: { type: [], required: false },
 });
 
 const City = mongoose.model('City', citySchema, 'city'); // Collection name is 'city'

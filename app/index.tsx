@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+    opacity:1,
   },
   overlay: {
     flex: 1,

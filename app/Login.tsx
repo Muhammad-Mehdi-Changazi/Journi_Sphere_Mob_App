@@ -78,7 +78,10 @@ export default function LoginScreen() {
 
     await AsyncStorage.setItem('selectedCity', cityData);
     setShowModal(false);
-    router.replace(`/City Screen?city=${encodeURIComponent(cityData)}`); // Navigate to CityScreen
+    router.replace({
+    pathname: "/home",
+    params: { city: cityData },
+  }); // Navigate to home
   };
 
   const handleUseLocation = async () => {
@@ -128,7 +131,10 @@ export default function LoginScreen() {
         // Save and navigate
         await AsyncStorage.setItem('selectedCity', cityData);
         setShowModal(false);
-        router.replace(`/City Screen?city=${encodeURIComponent(cityData)}`);
+        router.replace({
+        pathname: "/home",
+        params: { city: cityData },
+      });
       } else {
         Alert.alert('Error', 'Could not retrieve city name.');
       }
@@ -140,14 +146,14 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.headerText}>Login</Text>
+      <Text style={styles.headerText}>Continue the Journey</Text>
 
       <View style={styles.inputContainer}>
         <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} autoCapitalize="none" />
         <TextInput style={styles.input} placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry />
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
+      <TouchableOpacity style={styles.button1} onPress={handleLogin}>
         <Text style={styles.buttonText}>Log In</Text>
       </TouchableOpacity>
 
@@ -163,13 +169,12 @@ export default function LoginScreen() {
               style={{ inputIOS: styles.input, inputAndroid: styles.input }}
               placeholder={{ label: 'Select a city...', value: '' }}
             />
-
-            <TouchableOpacity style={styles.button} onPress={handleUseLocation}>
-              <Text style={styles.buttonText}>Use My Location</Text>
-            </TouchableOpacity>
-
             <TouchableOpacity style={styles.button} onPress={handleSelectCity}>
               <Text style={styles.buttonText}>Confirm Selection</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.button2} onPress={handleUseLocation}>
+              <Text style={styles.buttonText}>Use My Location</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -181,12 +186,24 @@ export default function LoginScreen() {
 // Styles remain **unchanged** as per your request
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16, backgroundColor: '#f4f4f4' },
+  
   headerText: { fontSize: 32, fontWeight: 'bold', marginBottom: 30, color: '#333' },
+  
   inputContainer: { width: '100%', marginBottom: 20 },
+  
   input: { backgroundColor: '#fff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 16, marginBottom: 15, fontSize: 16, width: '100%' },
-  button: { backgroundColor: '#007bff', paddingVertical: 12, paddingHorizontal: 40, borderRadius: 25, marginTop: 10, alignItems: 'center', width: '80%' },
+  
+  button: { backgroundColor: '#007AFF', paddingVertical: 12, gap: 8, paddingHorizontal: 40, borderRadius: 25, marginTop: 10, alignItems: 'center', width: '80%' },
+
+  button1: { backgroundColor: '#007AFF', paddingVertical: 12, gap: 8, paddingHorizontal: 40, borderRadius: 25, marginTop: 5, alignItems: 'center', width: '80%' },
+
+  button2: { backgroundColor: '#007AFF', paddingVertical: 15, gap: 8, paddingHorizontal: 40, borderRadius: 25, marginTop: 20, alignItems: 'center', width: '80%' },
+
   buttonText: { color: '#fff', fontSize: 18, fontWeight: '600' },
+  
   modalContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' },
+  
   modalContent: { backgroundColor: 'white', padding: 20, borderRadius: 10, width: '80%', alignItems: 'center' },
+  
   modalHeader: { fontSize: 22, fontWeight: 'bold', marginBottom: 20 },
 });

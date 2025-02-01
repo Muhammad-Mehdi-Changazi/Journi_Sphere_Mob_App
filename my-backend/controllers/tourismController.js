@@ -12,19 +12,6 @@ app.get("/api/tourist-spots/:city", async (req, res) => {
 });
 
 
-// // Get a single city by name
-// exports.getCityByName = async (req, res) => {
-//   try {
-//     const city = await City.findOne({ name: req.params.cityName });
-//     if (!city) return res.status(404).json({ message: 'City not found' });
-//     res.json(city);
-//   } catch (error) {
-//     res.status(500).json({ error: 'Error fetching city details' });
-//   }
-// };
-
-
-
 // Fetch a specific city's tourist spots
 export const fetchCitySpots = async (city) => {
   try {
