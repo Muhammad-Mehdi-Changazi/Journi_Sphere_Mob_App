@@ -3,7 +3,7 @@ import { View, Text, TextInput, Button, FlatList, StyleSheet, Image } from 'reac
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter, useLocalSearchParams } from 'expo-router'; // Use expo-router imports
-import ProtectedRoute from './components/protectedroute';
+import ProtectedRoute from './components/protectedroute'; // Import ProtectedRoute component
 
 interface Review {
   id: string;

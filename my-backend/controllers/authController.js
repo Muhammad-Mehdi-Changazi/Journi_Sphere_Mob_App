@@ -53,8 +53,8 @@ exports.login = async (req, res) => {
     if (password !== existingUser.password) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
-    console.log("User found:", existingUser.username);
-    console.log("Hotel ID:", existingUser.hotel_id);
+    // console.log("User found:", existingUser.username);
+    // console.log("Hotel ID:", existingUser.hotel_id);
 
 
     // Generate a JWT token including the role

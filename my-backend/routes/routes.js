@@ -33,7 +33,7 @@ router.get('/api/reservations/requests', hotelController.getReservationRequests)
 
 // Room Routes
 router.post('/room', roomController.createRoom);
-router.get('/rooms', roomController.getRooms);
+router.get('/getRooms/:hotel_id', roomController.getRoomsByHotel);
 router.get('/:hotel_id/rooms', roomController.getHotelRooms);
 
 // Search Routes
