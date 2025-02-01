@@ -1,5 +1,7 @@
+const { mongo } = require('mongoose');
 const Hotel = require('../models/Hotel');
 const Reservation = require('../models/reservation')
+mongoose = require('mongoose');
 
 let io;
 
@@ -39,15 +41,23 @@ exports.getHotels = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+const isValidHotelId = (id) => /^[0-9a-fA-F]{24}$/.test(id);
 
-// Get hotel by place name
-exports.getHotelByName = async (req, res) => {
+
+
+// Get hotel by ID
+exports.getHotelById = async (req, res) => {
   try {
-    let { placeName } = req.params;
-    placeName = placeName.trim().replace(/\r?\n|\r/g, '');
-
-    const hotel = await Hotel.findOne({ hotel_name: placeName }).populate('rooms'); // Populate rooms
-
+    const { hotel_id } = req.params;
+    console.log("Before",hotel_id);
+    const hotelId = new mongoose.Types.ObjectId(hotel_id);
+    console.log("After" ,hotelId);
+    // Validate hotel_id
+    if (!mongoose.Types.ObjectId.isValid(hotelId)) {
+      return res.status(400).json({ error: 'Invalid hotel_id format' });
+    }
+    // Fetch the hotel details (no population of 'rooms')
+    const hotel = await Hotel.findById(hotelId);
     if (!hotel) return res.status(404).json({ error: 'Hotel not found' });
 
     res.status(200).json({
@@ -59,48 +69,31 @@ exports.getHotelByName = async (req, res) => {
   }
 };
 
-// Get hotel by username
-exports.getHotelByUsername = async (req, res) => {
-  try {
-    const { username } = req.params;
-    const hotel = await Hotel.findOne({ hotel_name: username }); // Query by hotel_name
-
-    if (!hotel) {
-      return res.status(404).json({ error: 'Hotel not found for the given username' });
-    }
-
-    res.status(200).json({
-      message: 'Hotel fetched successfully',
-      hotel,
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-// Handle new reservation request (using Socket.IO)
+// Create a reservation
 exports.createReservation = async (req, res) => {
   try {
-    console.log(req.body);
-    console.log("Data received.");
     const { reservationDetails } = req.body;
-    console.log(reservationDetails);
 
     // Check if reservation details and placeName are provided
     if (!reservationDetails) {
                 return res.status(400).json({ error: 'Reservation details are required.' });
             }
 
-    // Find the hotel by name (placeName)
-    const hotel = await Hotel.findOne({ hotel_name: placeName });
+    // Validate hotel_id format
+    if (!mongoose.Types.ObjectId.isValid(hotel_id)) {
+      return res.status(400).json({ error: 'Invalid hotel_id format' });
+    }
+
+    // Verify the hotel exists
+    const hotel = await Hotel.findById(hotel_id);
     if (!hotel) {
       return res.status(404).json({ error: 'Hotel not found' });
     }
 
-    // Add the hotel ID to the reservation details
+    // Assign the hotel ID to the reservation
     reservationDetails.hotel = hotel._id;
 
-    // Create a new reservation with the hotel reference
+    // Create reservation
     const reservation = new Reservation(reservationDetails);
     await reservation.save();
 
@@ -109,7 +102,7 @@ exports.createReservation = async (req, res) => {
       reservation,
     });
 
-    // Emit the new reservation event to connected clients
+    // Emit event via Socket.IO
     if (io) {
       io.emit('reservation-updated', { hotelId: hotel._id, reservationDetails });
     }
@@ -118,27 +111,22 @@ exports.createReservation = async (req, res) => {
   }
 };
 
-
+// Get reservation requests by hotel ID
 exports.getReservationRequests = async (req, res) => {
   try {
-    const { hotelName } = req.query; // Extract hotelName from query parameters
+    const { hotel_id } = req.query;
 
-    if (!hotelName) {
-      return res.status(400).json({ error: 'hotelName is required' });
+    // Validate hotel_id format
+    if (!hotel_id || !mongoose.Types.ObjectId.isValid(hotel_id)) {
+      return res.status(400).json({ error: 'Invalid or missing hotel_id' });
     }
 
-    const hotel = await Hotel.findOne({ hotel_name: hotelName });
-    if (!hotel) {
-      return res.status(404).json({ error: 'Hotel not found' });
-    }
-
-    const reservations = await Reservation.find({ hotel: hotel._id });
+    const reservations = await Reservation.find({ hotel: hotel_id });
     res.status(200).json({ requests: reservations });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
-
 exports.getHotelsByCity = async (req, res) => {
   const { cityName } = req.params;  // Extract cityName from route parameters
 
@@ -162,3 +150,32 @@ exports.getHotelsByCity = async (req, res) => {
     return res.status(500).json({ message: 'Failed to fetch hotels' });
   }
 };
+
+
+// // Get hotel by ID
+// exports.getHotelById = async (req, res) => {
+//   try {
+//     console.log(req.params);
+//     const { hotel_id } = req.params;
+//     console.log(hotel_id);
+
+//     // Validate hotel_id
+//     if (!mongoose.Types.ObjectId.isValid(hotel_id)) {
+//       return res.status(400).json({ error: 'Invalid hotel_id format' });
+//     }
+
+//     // Convert string to ObjectId using new keyword
+//     const hotelId = new mongoose.Types.ObjectId(hotel_id);
+
+//     // Fetch the hotel details (no population of 'rooms')
+//     const hotel = await Hotel.findById(hotelId);
+//     if (!hotel) return res.status(404).json({ error: 'Hotel not found 123' });
+
+//     res.status(200).json({
+//       message: 'Hotel fetched successfully',
+//       hotel,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };

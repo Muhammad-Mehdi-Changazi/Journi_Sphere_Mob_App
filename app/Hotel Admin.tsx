@@ -1,35 +1,58 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Button } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, FlatList } from 'react-native';
 import axios from 'axios';
 import { useLocalSearchParams } from 'expo-router';
 import io from 'socket.io-client';
+import Icon from 'react-native-vector-icons/Ionicons'; // For icons
 
 let socket;
 
-export default function HotelAdmin() {
-    const { username } = useLocalSearchParams<{ username: string }>();
-    const [hotelDetails, setHotelDetails] = useState(null);
-    const [error, setError] = useState(null);
-    const [activeTab, setActiveTab] = useState('rooms');
-    const [editedRoom, setEditedRoom] = useState(null);
-    const [reservationRequests, setReservationRequests] = useState([]);
+function HotelAdmin() {
+    const { username, hotel_id } = useLocalSearchParams<{ username: string; hotel_id: string }>();
+
+    // Define types
+    interface HotelDetails {
+        hotel_name: string;
+        complete_address: string;
+        city: string;
+        hotel_class: string;
+        functional: boolean;
+    }
+
+    interface Room {
+        room_type: string;
+        room_number: number;
+        rent: number;
+        available: boolean;
+        bed_size: string;
+    }
+
+    // State Variables
+    const [hotelDetails, setHotelDetails] = useState<HotelDetails | null>(null);
+    const [rooms, setRooms] = useState<Room[]>([]);
+    const [reservations, setReservations] = useState<any[]>([]);
+    const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const [activeScreen, setActiveScreen] = useState<string>("Hotel Details");
+    const [expandedTab, setExpandedTab] = useState<string | null>(null); // Track expanded menu
+    const [isSidebarOpen, setIsSidebarOpen] = useState(Dimensions.get('window').width > 768); // Show sidebar only on large screens
+    const [expandedRoom, setExpandedRoom] = useState<Room | null>(null);
 
     useEffect(() => {
-        socket = io('http://34.226.13.20:3000'); // Connect to Socket.IO server
+            socket = io('http://34.226.13.20:3000'); // Connect to Socket.IO server
 
-        socket.on('connect', () => {
-            console.log('Connected to Socket.IO server');
-        });
+            socket.on('connect', () => {
+                console.log('Connected to Socket.IO server');
+            });
 
-        socket.on('disconnect', () => {
-            console.log('Disconnected from Socket.IO server');
-        });
+            socket.on('disconnect', () => {
+                console.log('Disconnected from Socket.IO server');
+            });
 
-        return () => {
-            socket.disconnect();
-        };
-    }, []);
+            return () => {
+                socket.disconnect();
+            };
+        }, []);
 
     useEffect(() => {
         const fetchHotelDetails = async () => {

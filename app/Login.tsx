@@ -42,7 +42,7 @@ export default function LoginScreen() {
   const [selectedCity, setSelectedCity] = useState('');
   const router = useRouter();
 
-  const GOOGLE_API_KEY = 'AIzaSyAUwcgoinASwKDHlKDuW9HvNodSkBz64YI'; // Replace with your actual API key
+  const GOOGLE_API_KEY = 'AIzaSyDx_TwV8vhwbKTTWn0tV2BVRDGIipfwzlc'; // Replaced with Usman's API
 
   const handleLogin = async () => {
     try {
