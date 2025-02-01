@@ -58,10 +58,10 @@ export default function HomeScreen() {
   return (
     <ProtectedRoute>
       <View style={styles.container}>
-        {/* Back to Home Button */}
+        {/* Back to Home Button
         <TouchableOpacity style={styles.backButton} onPress={resetSearch}>
-          {/* <Icon name="arrow-back-outline" size={24} color="white" /> */}
-        </TouchableOpacity>
+          <Icon name="arrow-back-outline" size={24} color="white" />
+        </TouchableOpacity> */}
 
         {/* Search Bar */}
         <View style={styles.searchContainer}>
