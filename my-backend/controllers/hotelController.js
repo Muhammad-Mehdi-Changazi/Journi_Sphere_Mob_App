@@ -3,13 +3,7 @@ const Hotel = require('../models/Hotel');
 const Reservation = require('../models/reservation')
 mongoose = require('mongoose');
 const Room = require('../models/Room');
-
-let io;
-
-// Initialize the Socket.IO instance
-exports.setSocket = (socketIoInstance) => {
-  io = socketIoInstance;
-};
+const { io } = require('../server'); // Adjust the path based on where your server file is located
 
 // Create a new hotel
 exports.createHotel = async (req, res) => {
@@ -115,8 +109,10 @@ exports.createReservation = async (req, res) => {
     });
 
     // Emit event via Socket.IO
+    console.log(io);
     if (io) {
-      io.emit('reservation-updated', { hotelId: hotel._id, reservationDetails });
+      console.log('Emitting reservation-created event');
+      io.emit('reservation-updated', { hotel_ID, reservationDetails });
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -134,7 +130,7 @@ exports.getReservationsByHotelId = async (req, res) => {
 
     // Fetch reservations for the given hotel_id
     const reservations = await Reservation.find({ hotel_ID: hotel_id });
-    console.log("Reservations",reservations);
+    // console.log("Reservations",reservations);
 
     // Return the reservations
     res.status(200).json(reservations);

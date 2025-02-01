@@ -84,7 +84,7 @@ export default function ReservationScreen() {
             });
             console.log('Reservation Sent!');
 
-            socket.emit('reservation-updated', { placeID, reservationDetails });
+            // socket.emit('reservation-updated', { placeID, reservationDetails });
 
             Alert.alert('Success', response.data.message);
             setModalVisible(false);

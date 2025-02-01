@@ -30,7 +30,7 @@ app.use(bodyParser.json());
 const io = socketIo(server, {
   cors: {
     origin: '*', // Allow all origins for Socket.IO
-    methods: ['GET', 'POST'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed HTTP methods
     allowedHeaders: ['Content-Type', 'Authorization'],
   },
 });
@@ -67,3 +67,5 @@ app.use('/', Routes);
 server.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
+module.exports = { io };

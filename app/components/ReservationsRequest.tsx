@@ -39,6 +39,7 @@ export default function ReservationRequests({ status, hotel_id }: ReservationReq
 
         fetchReservations();
     }, [status, hotel_id]);
+    
 
     const updateReservationStatus = async (id: string, newStatus: "CONFIRMED" | "CANCELLED") => {
         try {

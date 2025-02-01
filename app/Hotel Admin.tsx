@@ -59,7 +59,7 @@ function HotelAdmin() {
 
     // Graph Data
     const graphData = {
-        labels: ['Current Requests', 'Ongoing', 'History'],  // Categories
+        labels: ['Requests', 'Ongoing', 'History'],  // Categories
         datasets: [
             {
                 data: [CurrentReservationRequests, OngoingReservations, pastReservation],  // Values
@@ -69,19 +69,27 @@ function HotelAdmin() {
         ],
     };
 
-    const sidebarWidth = windowWidth > 768 && isSidebarOpen ? 250 : 0; // Sidebar width based on screen size and its state
+    // const sidebarWidth = windowWidth > 768 && isSidebarOpen ? 250 : 0; // Sidebar width based on screen size and its state
 
     useEffect(() => {
         // Connect to Socket.IO server
         socket = io('http://localhost:3000');
 
         socket.on('connect', () => console.log('Connected to Socket.IO server'));
+        socket.on('reservation-updated', (data: { placeID: string; reservationDetails: any }) => {
+            // If the hotel_id matches, update the reservations list
+            console.log("Data:", data);
+            if (data.placeID === hotel_id) {
+            setCurrentReservationRequests((prevCount: number) => prevCount + 1);  // Update based on your logic
+            }
+        });
+
         socket.on('disconnect', () => console.log('Disconnected from Socket.IO server'));
 
         return () => {
             socket.disconnect();
         };
-    }, []);
+    }, [hotel_id]);
 
     useEffect(() => {
         const fetchHotelData = async () => {
@@ -186,6 +194,7 @@ function HotelAdmin() {
                                     labelColor: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`,  // Red labels
                                     style: {
                                         borderRadius: 16,
+                                        fontSize: 20,
                                     },
                                     propsForDots: {
                                         r: '6',
