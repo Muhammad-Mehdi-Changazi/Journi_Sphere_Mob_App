@@ -19,7 +19,7 @@ export default function ReservationScreen() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        socket = io('https://manzil-sprint1-production.up.railway.app'); // Connect to the Socket.IO server
+        socket = io('http://34.226.13.20:3000'); // Connect to the Socket.IO server
 
         socket.on('connect', () => {
             console.log('Connected to Socket.IO server');
@@ -41,7 +41,7 @@ export default function ReservationScreen() {
                     throw new Error('placeName is missing.');
                 }
 
-                const response = await axios.get(`https://manzil-sprint1-production.up.railway.app/api/hotels/${placeName}`);
+                const response = await axios.get(`http://34.226.13.20:3000/api/hotels/${placeName}`);
                 setHotelDetails(response.data.hotel);
                 setLoading(false);
             } catch (err) {
@@ -69,7 +69,7 @@ export default function ReservationScreen() {
 
         try {
             // Send reservation details to the backend
-            const response = await axios.post('https://manzil-sprint1-production.up.railway.app/api/reservations', reservationDetails);
+            const response = await axios.post('http://34.226.13.20:3000/api/reservations', reservationDetails);
             
             console.log('Reservation Response:', response.data);
 
