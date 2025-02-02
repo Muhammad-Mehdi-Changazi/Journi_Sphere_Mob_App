@@ -5,6 +5,7 @@ const cityController = require('../controllers/cityController');
 const recommendationController = require('../controllers/recommendationController');
 const hotelController = require('../controllers/hotelController');
 const roomController = require('../controllers/roomController');
+const tourismController = require('../controllers/tourismController');
 
 const router = express.Router();
 
@@ -18,6 +19,9 @@ router.post('/reviews', reviewController.createReview);
 
 // City Routes
 router.get('/api/cities', cityController.getCities);
+
+// Tourism Routes
+router.get('/api/tourist-spots/:city', tourismController.getCityByName);
 
 // Recommendation Routes
 router.get('/recommendations', recommendationController.getRecommendations);

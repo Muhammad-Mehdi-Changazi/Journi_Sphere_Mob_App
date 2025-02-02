@@ -52,7 +52,7 @@ export default function SignupScreen() {
     try {
       setLoading(true);
       const response = await axios.post(
-        'http://localhost:3000/signup',
+        'http://34.226.13.20:3000/signup',
         requestData,
         {
           headers: {
@@ -76,7 +76,7 @@ export default function SignupScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.headerText}>Sign Up</Text>
+      <Text style={styles.headerText}>Start your Journey</Text>
 
       <TextInput
         style={styles.input}

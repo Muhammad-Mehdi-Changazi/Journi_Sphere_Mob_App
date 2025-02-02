@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+    opacity:1,
   },
   overlay: {
     flex: 1,
@@ -58,6 +59,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
     color: '#fff',
+    fontFamily: 'Ruslan Display',
   },
   subtitle: {
     fontSize: 18,
