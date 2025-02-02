@@ -91,7 +91,7 @@ export default function CityScreen() {
 
   const handleMakeReservation = (placeID: string) => {
     
-    // console.log("Place ID:", placeID);
+    console.log("Place ID:", placeID);
     router.push(`/ReservationScreen?placeID=${encodeURIComponent(placeID)}`); // Navigate to ReservationScreen
   };
 

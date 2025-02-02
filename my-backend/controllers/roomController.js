@@ -1,5 +1,5 @@
 const Room = require('../models/Room');
-
+const { getSocket } = require('../socket')
 // Create a new room
 exports.createRoom = async (req, res) => {
   try {
@@ -54,6 +54,7 @@ exports.getHotelRooms = async (req, res) => {
 };
 
 exports.updateRoom = async (req, res) => {
+  const io = getSocket();
   try {
     const { id } = req.params;  // Extract room ID from request params
     const updatedRoomData = req.body;  // Extract updated room data from request body
@@ -65,6 +66,11 @@ exports.updateRoom = async (req, res) => {
     }
 
     res.status(200).json({ message: "Room updated successfully", updatedRoom });
+
+    if (io) {
+      io.emit('room_updated', updatedRoom);
+    }
+
   } catch (error) {
     console.error("Error updating room:", error);
     res.status(500).json({ message: "Internal server error", error: error.message });

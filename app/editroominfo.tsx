@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, TextInput, Button } from 'react-native';
 import axios from 'axios';
+import io from 'socket.io-client';
+
+let socket;
 
 interface Room {
     _id: string;
@@ -19,6 +22,11 @@ const EditRoomInfo = ({ hotel_id }: { hotel_id: string }) => {
 
     // Fetch all rooms from backend
     useEffect(() => {
+
+        socket = io('http://localhost:3000');
+
+        socket.on('connect', () => console.log('Connected to Socket.IO server'));
+
         console.log("Hotel ID:", hotel_id);
         const fetchRooms = async () => {
             try {
@@ -30,6 +38,15 @@ const EditRoomInfo = ({ hotel_id }: { hotel_id: string }) => {
         };
 
         fetchRooms();
+
+        socket.on('room_updated', (updatedRoom: Room) => {
+            console.log('Room updated:', updatedRoom);
+
+            setRooms((prevRooms) =>
+                prevRooms.map((room) => (room._id === updatedRoom._id ? updatedRoom : room))
+            );
+        });
+
     }, [hotel_id]);
 
     // Handle edit button click
@@ -60,15 +77,23 @@ const EditRoomInfo = ({ hotel_id }: { hotel_id: string }) => {
         <View style={styles.container}>
             <Text style={styles.header}>Edit Room Information</Text>
 
-            {/* Room List */}
+            {/* Grid Layout of Rooms */}
             <FlatList
                 data={rooms}
                 keyExtractor={(item) => item._id}
+                numColumns={3} // Three columns
+                columnWrapperStyle={styles.row}
                 renderItem={({ item }) => (
-                    <TouchableOpacity style={styles.roomItem} onPress={() => handleEdit(item)}>
-                        <Text style={styles.roomText}>Room {item.room_number} - {item.room_type}</Text>
-                        <Text style={styles.roomText}>Rent: ${item.rent} | {item.available ? 'Available' : 'Occupied'}</Text>
-                    </TouchableOpacity>
+                    <View style={styles.roomCard}>
+                        <Text style={styles.roomNumber}>Room {item.room_number}</Text>
+                        <Text style={styles.roomText}>{item.room_type}</Text>
+                        <Text style={styles.roomText}>Rent: {item.rent} Pkr</Text>
+
+                        {/* Edit Button at Bottom Left */}
+                        <TouchableOpacity style={styles.editButton} onPress={() => handleEdit(item)}>
+                            <Text style={styles.buttonText}>Edit</Text>
+                        </TouchableOpacity>
+                    </View>
                 )}
             />
 
@@ -119,21 +144,51 @@ const EditRoomInfo = ({ hotel_id }: { hotel_id: string }) => {
 
 const styles = StyleSheet.create({
     container: { flex: 1, padding: 20, backgroundColor: '#f4f7fc' },
-    header: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
-    roomItem: { padding: 15, backgroundColor: 'white', marginBottom: 10, borderRadius: 10 },
-    roomText: { fontSize: 16 },
+    header: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
 
+    // Grid Layout
+    row: { justifyContent: 'space-between', marginBottom: 15 },
+    roomCard: {
+        flex: 1,
+        padding: 15,
+        backgroundColor: 'white',
+        borderRadius: 10,
+        alignItems: 'center',
+        marginHorizontal: 5,
+        elevation: 3,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+    },
+
+    roomNumber: { fontSize: 18, fontWeight: 'bold', color: '#333', marginBottom: 5 },
+    roomText: { fontSize: 14, color: '#555' },
+
+    // Edit Button (Bottom-Left)
+    editButton: {
+        position: 'absolute',
+        bottom: 10,
+        left: 10,
+        backgroundColor: '#176FF2',
+        paddingVertical: 5,
+        paddingHorizontal: 15,
+        borderRadius: 5
+    },
+    buttonText: { color: 'white', fontSize: 14, fontWeight: 'bold' },
+
+    // Modal Styles
     modalOverlay: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' },
     modalContainer: { backgroundColor: 'white', padding: 20, borderRadius: 10, width: '80%', alignItems: 'center' },
     modalTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
 
     input: { width: '100%', padding: 10, borderWidth: 1, borderColor: '#ccc', borderRadius: 5, marginBottom: 10 },
+
     availabilityButton: { padding: 10, borderRadius: 5, marginBottom: 10 },
     available: { backgroundColor: 'green' },
     unavailable: { backgroundColor: 'red' },
-    buttonText: { color: 'white', fontSize: 16, textAlign: 'center' },
 
-    buttonRow: { flexDirection: 'row', justifyContent: 'space-between', width: '100%', marginTop: 10 },
+    buttonRow: { flexDirection: 'row', justifyContent: 'space-between', width: '100%', marginTop: 10, borderRadius:5, padding:5 },
 });
 
 export default EditRoomInfo;
