@@ -1,169 +1,3 @@
-// import React, { useState, useEffect } from 'react';
-// import { View, Text, TouchableOpacity, ActivityIndicator, Image, ScrollView, TextInput } from 'react-native';
-// import { useRouter } from 'expo-router';
-// import ProtectedRoute from './components/protectedroute';
-// import axios from 'axios';
-// import styles from './styles/homestyles'; // Import your styles
-
-// export default function HomeScreen() {
-//   const router = useRouter();
-//   const [cities, setCities] = useState<any[]>([]);
-//   const [loading, setLoading] = useState(true);
-//   const [searchQuery, setSearchQuery] = useState('');
-//   const [searchResults, setSearchResults] = useState<any[]>([]);
-//   const [searchLoading, setSearchLoading] = useState(false);
-
-//   // Fetch cities when the page loads
-//   useEffect(() => {
-//     const fetchCities = async () => {
-//       try {
-//         const response = await axios.get('http://localhost:3000/api/cities'); // Replace with your API endpoint
-//         setCities(response.data);
-//         setLoading(false);
-//       } catch (error) {
-//         console.error('Error fetching cities:', error);
-//         setLoading(false);
-//       }
-//     };
-//     fetchCities();
-//   }, []);
-
-//   const handleSearch = async (query: string) => {
-//     setSearchQuery(query);
-//     if (query.length >= 3) {
-//       setSearchLoading(true);
-//       try {
-//         const response = await axios.get('http://localhost:3000/api/search', {
-//           params: { query },
-//         });
-
-//         if (response.data.status === 'OK' && response.data.results.length > 0) {
-//           setSearchResults(response.data.results);
-//           resetSearch();
-//         } else {
-//           setSearchResults([]);
-//           resetSearch();
-//         }
-//         setSearchLoading(false);
-//       } catch (error) {
-//         console.error('Error fetching search results:', error);
-//         setSearchLoading(false);
-//       }
-//     }
-//   };
-
-//   const resetSearch = () => {
-//     setSearchQuery('');
-//     setSearchResults([]);
-//   };
-
-//   return (
-//     <ProtectedRoute>
-//       <View style={styles.container}>
-//         {/* Search Bar */}
-//         <View style={styles.searchContainer}>
-//           <TextInput
-//             style={styles.searchBar}
-//             placeholder="Search for hotels, places, or restaurants"
-//             value={searchQuery}
-//             onChangeText={handleSearch}
-//             autoCorrect={false}
-//             autoCapitalize="none"
-//           />
-//           {searchLoading && <ActivityIndicator size="small" color="#007bff" style={styles.searchLoader} />}
-//         </View>
-
-//         <Text style={styles.header}>Explore Popular Cities</Text>
-
-//         {loading ? (
-//           <ActivityIndicator size="large" color="#0000ff" />
-//         ) : (
-//           <ScrollView contentContainerStyle={styles.citiesScrollView}>
-//             {searchQuery ? (
-//               searchResults.length > 0 ? (
-//                 searchResults.map((result, index) => (
-//                   <View key={index} style={styles.cityCard}>
-//                     <Image
-//                       source={{ uri: result.icon }}
-//                       style={styles.cityImage}
-//                     />
-//                     <View style={styles.cityInfo}>
-//                       <Text style={styles.cityName}>{result.name}</Text>
-//                       <Text style={styles.cityDescription}>{result.formatted_address}</Text>
-
-//                       {/* Navigate buttons */}
-//                       <View style={styles.searchResultButtonsContainer}>
-//                         <TouchableOpacity
-//                           style={styles.searchResultButton}
-//                           onPress={() => {
-//                             router.push({
-//                               pathname: '/Google Map',
-//                               params: { placeName: result.name },
-//                             });
-//                           }}
-//                         >
-//                           <Text style={styles.searchResultButtonText}>Navigate</Text>
-//                         </TouchableOpacity>
-
-//                         <TouchableOpacity
-//                           style={styles.searchResultButton}
-//                           onPress={() => {
-//                             router.push({
-//                               pathname: '/Reviews',
-//                               params: { placeName: result.name },
-//                             });
-//                           }}
-//                         >
-//                           <Text style={styles.searchResultButtonText}>Check Reviews</Text>
-//                         </TouchableOpacity>
-//                       </View>
-//                     </View>
-//                   </View>
-//                 ))
-//               ) : (
-//                 <Text style={styles.cityDescription}>No results found for "{searchQuery}"</Text>
-//               )
-//             ) : (
-//               cities.map((city, index) => (
-//                 <View key={index} style={styles.cityCard}>
-//                   <Image
-//                     source={{ uri: city.photoUrl }}
-//                     style={styles.cityImage}
-//                   />
-//                   <View style={styles.cityInfo}>
-//                     <Text style={styles.cityName}>{city.name}</Text>
-//                     <Text style={styles.cityDescription}>
-//                       {city.description || 'Discover amazing places and experiences!'}
-//                     </Text>
-//                     <TouchableOpacity
-//                       style={styles.exploreButton}
-//                       onPress={() => {
-//                         router.push({
-//                           pathname: '/City Screen',
-//                           params: {
-//                             city: JSON.stringify({
-//                               name: city.name,
-//                               places: city.places,
-//                               foods: city.food,
-//                             }),
-//                           },
-//                         });
-//                       }}
-//                     >
-//                       <Text style={styles.exploreButtonText}>Explore</Text>
-//                     </TouchableOpacity>
-//                   </View>
-//                 </View>
-//               ))
-//             )}
-//           </ScrollView>
-//         )}
-//       </View>
-//     </ProtectedRoute>
-//   );
-// }
-
-
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   View, 
@@ -173,7 +7,6 @@ import {
   ActivityIndicator, 
   Image, 
   TextInput,
-  StyleSheet,
   Dimensions
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -181,51 +14,6 @@ import { FontAwesome } from '@expo/vector-icons';
 import ProtectedRoute from './components/protectedroute';
 import axios from 'axios';
 import styles from './styles/homestyles';
-
-const hotelStyles = StyleSheet.create({
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    marginBottom: 16,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  placeName: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 8,
-  },
-  hotelDetails: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 4,
-  },
-  buttonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 12,
-  },
-  button: {
-    backgroundColor: '#007BFF',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    marginVertical: 5,
-    width: 200,
-    height: 45,
-    justifyContent: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-});
 
 export default function HomeScreen() {
   // Retrieve city info from URL parameters.
@@ -399,19 +187,19 @@ export default function HomeScreen() {
           data={hotels}
           keyExtractor={(item) => (item._id ? item._id.toString() : item.hotel_name)}
           renderItem={({ item }) => (
-            <View style={hotelStyles.card}>
-              <Text style={hotelStyles.placeName}>{item.hotel_name}</Text>
-              <Text style={hotelStyles.hotelDetails}>{item.complete_address}</Text>
-              <Text style={hotelStyles.hotelDetails}>{item.hotel_class} Hotel</Text>
-              <View style={[hotelStyles.buttonsContainer, isSmallScreen && { flexDirection: 'column', alignItems: 'stretch' }]}>
-                <TouchableOpacity style={[hotelStyles.button, isSmallScreen && { width: '100%', marginBottom: 8 }]} onPress={() => handleNavigate(item.hotel_name)}>
-                  <Text style={hotelStyles.buttonText}>Navigate</Text>
+            <View style={styles.card}>
+              <Text style={styles.hotelPlaceName}>{item.hotel_name}</Text>
+              <Text style={styles.hotelDetails}>{item.complete_address}</Text>
+              <Text style={styles.hotelDetails}>{item.hotel_class} Hotel</Text>
+              <View style={[styles.buttonsContainer, isSmallScreen && { flexDirection: 'column', alignItems: 'stretch' }]}>
+                <TouchableOpacity style={[styles.button, isSmallScreen && { width: '100%', marginBottom: 8 }]} onPress={() => handleNavigate(item.hotel_name)}>
+                  <Text style={styles.buttonText}>Navigate</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[hotelStyles.button, isSmallScreen && { width: '100%', marginBottom: 8 }]} onPress={() => handleCheckReviews(item.hotel_name)}>
-                  <Text style={hotelStyles.buttonText}>Check Reviews</Text>
+                <TouchableOpacity style={[styles.button, isSmallScreen && { width: '100%', marginBottom: 8 }]} onPress={() => handleCheckReviews(item.hotel_name)}>
+                  <Text style={styles.buttonText}>Check Reviews</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[hotelStyles.button, isSmallScreen && { width: '100%' }]} onPress={() => handleMakeReservation(item.hotel_name)}>
-                  <Text style={hotelStyles.buttonText}>Make Reservation</Text>
+                <TouchableOpacity style={[styles.button, isSmallScreen && { width: '100%' }]} onPress={() => handleMakeReservation(item.hotel_name)}>
+                  <Text style={styles.buttonText}>Make Reservation</Text>
                 </TouchableOpacity>
               </View>
             </View>

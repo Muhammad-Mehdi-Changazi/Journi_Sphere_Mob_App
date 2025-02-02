@@ -171,6 +171,54 @@ const styles = StyleSheet.create({
   navIcon: {
     padding: 10,
   },
+  card: {
+    marginTop: 20,
+    backgroundColor: '#D6D5D5',
+    borderRadius: 20,
+    marginBottom: 16,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  hotelPlaceName: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  hotelDetails: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 4,
+  },
+  buttonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 12,
+  },
+  button: {
+    backgroundColor: '#007BFF',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginVertical: 5,
+    width: 80,
+    height: 45,
+    justifyContent: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 9,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontFamily: 'Abhaya Libre Medium',
+  },
+
 });
 
 export default styles;
+
+
+
