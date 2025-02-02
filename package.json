@@ -19,6 +19,7 @@
     "@mapbox/polyline": "^1.2.1",
     "@react-native-async-storage/async-storage": "^1.24.0",
     "@react-native-community/cli-server-api": "^15.1.2",
+    "@react-native-community/datetimepicker": "github:react-native-community/datetimepicker",
     "@react-native-community/geolocation": "^3.4.0",
     "@react-native-picker/picker": "^2.10.2",
     "@react-navigation/material-top-tabs": "^7.1.0",

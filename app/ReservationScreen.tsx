@@ -3,9 +3,9 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator
 import { useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 import io from 'socket.io-client';
-import DatePicker from 'react-native-date-picker';
 import moment from 'moment';
-import { Picker } from '@react-native-picker/picker'; // Import Picker
+import { Picker } from '@react-native-picker/picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 interface Room {
     _id: string;
@@ -27,7 +27,6 @@ interface RoomDetails {
     hotelID: string;
 }
 
-
 let socket: any;
 export default function ReservationScreen() {
     const { placeID } = useLocalSearchParams<{ placeID: string }>();
@@ -47,6 +46,10 @@ export default function ReservationScreen() {
         toDate: '' as string | null,
         paymentMethod: 'OTHERS', // Default value
     });
+
+    // Add state for showing the date pickers
+    const [showFromPicker, setShowFromPicker] = useState(false);
+    const [showToPicker, setShowToPicker] = useState(false);
 
     useEffect(() => {
         socket = io('http://34.226.13.20:3000');
@@ -68,7 +71,7 @@ export default function ReservationScreen() {
                         _id: data.room.roomID,
                         room_type: data.room.room_type,
                         room_number: data.room.room_number,
-                        hotel_id: data.room.hotelID, // Add this line
+                        hotel_id: data.room.hotelID,
                         rent: data.room.rent,
                         available: data.room.available,
                         bed_size: data.room.bed_size,
@@ -126,7 +129,7 @@ export default function ReservationScreen() {
                 ...reservationDetails,
                 roomID: reservationDetails.roomID,
                 placeID: reservationDetails.placeID,
-                reservationStatus, // Automatically set status
+                reservationStatus,
             });
 
             socket.emit('reservation-updated', { placeID, reservationDetails });
@@ -199,22 +202,45 @@ export default function ReservationScreen() {
                         <TextInput style={styles.modalInput} placeholder="Your Phone Number" value={reservationDetails.phone} onChangeText={(text) => setReservationDetails({ ...reservationDetails, phone: text })} />
 
                         <Text style={styles.dateText}>From Date:</Text>
-                        <DatePicker
-                            modal
-                            open={true}
-                            date={reservationDetails.fromDate ? new Date(reservationDetails.fromDate) : new Date()}
-                            onConfirm={(date) => setReservationDetails({ ...reservationDetails, fromDate: moment(date).format('YYYY-MM-DD') })}
-                            onCancel={() => {}}
-                        />
+                        <TouchableOpacity onPress={() => setShowFromPicker(true)}>
+                            <Text style={styles.modalInput}>
+                                {reservationDetails.fromDate ? reservationDetails.fromDate : 'Select Date'}
+                            </Text>
+                        </TouchableOpacity>
+                        {showFromPicker && (
+                            <DateTimePicker
+                                value={reservationDetails.fromDate ? new Date(reservationDetails.fromDate) : new Date()}
+                                mode="date"
+                                display="default"
+                                onChange={(event, selectedDate) => {
+                                    setShowFromPicker(false);
+                                    if (selectedDate) {
+                                        setReservationDetails({ ...reservationDetails, fromDate: moment(selectedDate).format('YYYY-MM-DD') });
+                                    }
+                                }}
+                            />
+                        )}
 
                         <Text style={styles.dateText}>To Date:</Text>
-                        <DatePicker
-                            modal
-                            open={true}
-                            date={reservationDetails.toDate ? new Date(reservationDetails.toDate) : new Date()}
-                            onConfirm={(date) => setReservationDetails({ ...reservationDetails, toDate: moment(date).format('YYYY-MM-DD') })}
-                            onCancel={() => {}}
-                        />
+                        <TouchableOpacity onPress={() => setShowToPicker(true)}>
+                            <Text style={styles.modalInput}>
+                                {reservationDetails.toDate ? reservationDetails.toDate : 'Select Date'}
+                            </Text>
+                        </TouchableOpacity>
+                        {showToPicker && (
+                            <DateTimePicker
+                                value={reservationDetails.toDate ? new Date(reservationDetails.toDate) : new Date()}
+                                mode="date"
+                                display="default"
+                                onChange={(event, selectedDate) => {
+                                    setShowToPicker(false);
+                                    if (selectedDate) {
+                                        setReservationDetails({ ...reservationDetails, toDate: moment(selectedDate).format('YYYY-MM-DD') });
+                                    }
+                                }}
+                            />
+                        )}
+
                         {/* Payment Method Picker */}
                         <Text style={styles.dateText}>Payment Method:</Text>
                         <Picker selectedValue={reservationDetails.paymentMethod} onValueChange={(itemValue) => setReservationDetails({ ...reservationDetails, paymentMethod: itemValue })}>
@@ -230,8 +256,6 @@ export default function ReservationScreen() {
         </ScrollView>
     );
 }
-
-
 
 const styles = StyleSheet.create({
     container: { padding: 15, alignItems: 'center' },
