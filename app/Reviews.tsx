@@ -40,7 +40,7 @@ export default function Reviews() {
   // Fetch reviews from the backend
   const fetchReviews = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/Reviews?placeName=${placeName}`);
+      const response = await axios.get(`http://34.226.13.20:3000/Reviews?placeName=${placeName}`);
         setReviews(response.data);
     } catch (error) {
       console.error('Error fetching reviews:', error);

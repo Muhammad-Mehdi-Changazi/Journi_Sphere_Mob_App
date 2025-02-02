@@ -17,7 +17,7 @@ export default function HomeScreen() {
   useEffect(() => {
     const fetchCities = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/cities'); // Replace with your API endpoint
+        const response = await axios.get('http://34.226.13.20:3000/api/cities'); // Replace with your API endpoint
         setCities(response.data);
         setLoading(false);
       } catch (error) {
@@ -33,7 +33,7 @@ export default function HomeScreen() {
     if (query.length >= 3) {
       setSearchLoading(true);
       try {
-        const response = await axios.get('http://localhost:3000/api/search', {
+        const response = await axios.get('http://34.226.13.20:3000/api/search', {
           params: { query },
         });
 

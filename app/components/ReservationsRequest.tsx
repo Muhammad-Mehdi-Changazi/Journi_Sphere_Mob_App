@@ -25,7 +25,7 @@ export default function ReservationRequests({ status, hotel_id }: ReservationReq
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        socket = io('http://localhost:3000');
+        socket = io('http://34.226.13.20:3000');
 
         socket.on('connect', () => console.log('Connected to Socket.IO server'));
         socket.on('reservation-created', (data: { placeID: string, reservationDetails: any }) => {
@@ -44,7 +44,7 @@ export default function ReservationRequests({ status, hotel_id }: ReservationReq
         const fetchReservations = async () => {
             try {
                 const statusQuery = Array.isArray(status) ? status.join(",") : status;
-                const response = await axios.get(`http://localhost:3000/GetReservations?status=${statusQuery}&hotel_id=${hotel_id}`);
+                const response = await axios.get(`http://34.226.13.20:3000/GetReservations?status=${statusQuery}&hotel_id=${hotel_id}`);
                 setReservations(response.data);
             } catch (error) {
                 console.error("Error fetching reservations:", error);
@@ -59,7 +59,7 @@ export default function ReservationRequests({ status, hotel_id }: ReservationReq
 
     const updateReservationStatus = async (id: string, newStatus: "CONFIRMED" | "CANCELLED") => {
         try {
-            await axios.put(`http://localhost:3000/UpdateReservationsStatus/${id}/updateStatus`, { status: newStatus });
+            await axios.put(`http://34.226.13.20:3000/UpdateReservationsStatus/${id}/updateStatus`, { status: newStatus });
             setReservations(reservations.map(res => res._id === id ? { ...res, reservationStatus: newStatus } : res));
         } catch (error) {
             console.error("Error updating reservation:", error);

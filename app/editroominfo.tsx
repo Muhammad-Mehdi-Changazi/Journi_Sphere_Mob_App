@@ -23,14 +23,14 @@ const EditRoomInfo = ({ hotel_id }: { hotel_id: string }) => {
     // Fetch all rooms from backend
     useEffect(() => {
 
-        socket = io('http://localhost:3000');
+        socket = io('http://34.226.13.20:3000');
 
         socket.on('connect', () => console.log('Connected to Socket.IO server'));
 
         console.log("Hotel ID:", hotel_id);
         const fetchRooms = async () => {
             try {
-                const response = await axios.get(`http://localhost:3000/${hotel_id}/rooms`);
+                const response = await axios.get(`http://34.226.13.20:3000/${hotel_id}/rooms`);
                 setRooms(response.data.rooms);
             } catch (error) {
                 console.error("Error fetching rooms:", error);
@@ -60,7 +60,7 @@ const EditRoomInfo = ({ hotel_id }: { hotel_id: string }) => {
     const handleUpdateRoom = async () => {
         if (!selectedRoom) return;
         try {
-            const response = await axios.put(`http://localhost:3000/editroominfo/${selectedRoom._id}`, updatedRoom);
+            const response = await axios.put(`http://34.226.13.20:3000/editroominfo/${selectedRoom._id}`, updatedRoom);
             console.log("Room updated successfully:", response.data);
 
             // Update the room list
