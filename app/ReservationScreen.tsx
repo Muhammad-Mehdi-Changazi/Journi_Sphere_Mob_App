@@ -1,73 +1,83 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, Image, Alert } from 'react-native';
-import axios from 'axios';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Modal, TextInput, Button, Alert } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
+import axios from 'axios';
 import io from 'socket.io-client';
+import DatePicker from 'react-datepicker';  // Import react-datepicker
+import "react-datepicker/dist/react-datepicker.css";  // Import the styles
+import moment from 'moment';
 
-let socket;
+// Your component code
 
+
+interface Room {
+    _id: string;
+    room_type: string;
+    room_number: number;
+    hotel_id: string;
+    rent: number;
+    available: boolean;
+    bed_size: string;
+}
+
+let socket: any;
 export default function ReservationScreen() {
-    const { placeName } = useLocalSearchParams<{ placeName: string }>();
-    const [hotelDetails, setHotelDetails] = useState<{ rooms: any[] } | null>(null);
+    const { placeID } = useLocalSearchParams<{ placeID: string }>();
+    const [rooms, setRooms] = useState<Room[]>([]);
+    const [expandedRoom, setExpandedRoom] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [phone, setPhone] = useState('');
-    const [roomType, setRoomType] = useState('');
-    const [errors, setErrors] = useState({ name: '', email: '', phone: '' });
-    const [loading, setLoading] = useState(true);
+    const [modalVisible, setModalVisible] = useState<boolean>(false);
+    const [reservationDetails, setReservationDetails] = useState({
+        name: '',
+        email: '',
+        CNIC: '',
+        phone: '',
+        roomID: '',
+        placeID: '',
+        fromDate: '' as string | null,
+        toDate: '' as string | null,
+    });
 
     useEffect(() => {
+
         socket = io('http://34.226.13.20:3000'); // Connect to the Socket.IO server
+        socket.on('connect', () => console.log('Connected to server'));
+        socket.on('disconnect', () => console.log('Disconnected from server'));
 
-        socket.on('connect', () => {
-            console.log('Connected to Socket.IO server');
-        });
 
-        socket.on('disconnect', () => {
-            console.log('Disconnected from Socket.IO server');
-        });
-
-        return () => {
-            socket.disconnect();
-        };
-    }, []);
-
-    useEffect(() => {
-        const fetchHotelDetails = async () => {
+        const fetchRooms = async () => {
             try {
-                if (!placeName) {
-                    throw new Error('placeName is missing.');
-                }
-
-                const response = await axios.get(`http://34.226.13.20:3000/api/hotels/${placeName}`);
-                setHotelDetails(response.data.hotel);
-                setLoading(false);
+                const response = await axios.get(`http://localhost:3000/getRooms/${placeID}`);
+                setRooms(response.data);
             } catch (err) {
-                setError(err.response?.data?.error || err.message);
+                setError('Failed to fetch rooms. Please try again.');
+            } finally {
                 setLoading(false);
             }
         };
 
-        fetchHotelDetails();
-    }, [placeName]);
+        fetchRooms();
+        return () => socket.disconnect();
+    }, [placeID]);
 
-    const handleReservation = async () => {
-        if (!validateFields()) return;
+    const handleExpandRoom = (roomID: string) => {
+        setExpandedRoom(expandedRoom === roomID ? null : roomID);
+    };
 
-        const reservationDetails = {
-            reservationDetails: {  // Wrap the reservation data under reservationDetails
-                placeName,
-                name,
-                email,
-                phone,
-                roomType,
-            },
-        };
-        console.log(reservationDetails);
+    const handleMakeReservation = (roomID: string, placeID: string) => {
+        setModalVisible(true);
+        setReservationDetails((prevDetails) => ({ ...prevDetails, roomID, placeID }));
+    };
 
+    const handleSubmitReservation = async () => {
+        if (!reservationDetails.name || !reservationDetails.email || !reservationDetails.phone || !reservationDetails.fromDate || !reservationDetails.toDate) {
+            Alert.alert('Error', 'All fields are required.');
+            return;
+        }
+        console.log('Reservation Details:', reservationDetails);
         try {
+
             // Send reservation details to the backend
             const response = await axios.post('http://34.226.13.20:3000/api/reservations', reservationDetails);
             
@@ -87,245 +97,137 @@ export default function ReservationScreen() {
             setPhone('');
             setRoomType('');
         } catch (error) {
-            console.error('Error making reservation:', error);
-            Alert.alert('Reservation Failed', 'An error occurred while making the reservation.');
+            Alert.alert('Error', 'Failed to create reservation.');
         }
-    };
-
-    const validateFields = () => {
-        const newErrors = { name: '', email: '', phone: '' };
-        if (!name) newErrors.name = 'Name is required.';
-        if (!email) newErrors.email = 'Email is required.';
-        if (!phone) newErrors.phone = 'Phone number is required.';
-        setErrors(newErrors);
-
-        return !Object.values(newErrors).some((error) => error !== '');
-    };
-
-    const roomImages = {
-        'Single Bed': require('./../assets/images/SingleBed.jpeg'),
-        'Double Bed': require('./../assets/images/DoubleBed.jpeg'),
-        'King Suite': require('../assets/images/KingSuite.jpeg'),
-        'Queen Suite': require('../assets/images/QueenSuite.jpeg'),
     };
 
     if (loading) {
         return (
-            <View style={styles.container}>
-                <Text style={styles.loadingText}>Loading hotel details...</Text>
+            <View style={styles.centeredContainer}>
+                <ActivityIndicator size="large" color="#007bff" />
+                <Text style={styles.loadingText}>Loading rooms...</Text>
             </View>
         );
     }
 
     if (error) {
         return (
-            <View style={styles.container}>
-                <Text style={styles.errorText}>Error: {error}</Text>
+            <View style={styles.centeredContainer}>
+                <Text style={styles.errorText}>{error}</Text>
             </View>
         );
     }
 
     return (
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-            <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
-                <Text style={styles.header}>Reserve a Stay at {placeName}</Text>
+        <ScrollView contentContainerStyle={styles.container}>
+            <Text style={styles.header}>Select a Room</Text>
+            {rooms.length > 0 ? (
+                rooms.map((room) => (
+                    <View key={room._id} style={[styles.roomBox, !room.available && styles.unavailableRoom]}>
+                        <TouchableOpacity onPress={() => handleExpandRoom(room._id)} style={styles.roomHeader}>
+                            <Text style={styles.roomNumber}>Room {room.room_number}</Text>
+                            <Text style={styles.roomNumber}>Room Type: {room.room_type}</Text>
+                        </TouchableOpacity>
 
-                <View>
-                    {hotelDetails && hotelDetails.description ? (
-                        <Text style={styles.hotelDescription}>{hotelDetails.description}</Text>
-                    ) : null}
+                        {expandedRoom === room._id && (
+                            <View style={styles.roomDetails}>
+                                <Text style={styles.text}>Bed Size: {room.bed_size}</Text>
+                                <Text style={styles.text}>Rent: ${room.rent}</Text>
+                                <Text style={[styles.text, { color: room.available ? 'green' : 'red' }]}>
+                                    {room.available ? 'Available' : 'Not Available'}
+                                </Text>
 
-                    <View style={styles.inputContainer}>
-                        <MaterialIcons name="person" size={24} color="#007bff" style={styles.icon} />
+                                {room.available && (
+                                    <TouchableOpacity style={styles.reserveButton} onPress={() => handleMakeReservation(room._id, room.hotel_id)}>
+                                        <Text style={styles.buttonText}>Make Reservation</Text>
+                                    </TouchableOpacity>
+                                )}
+                            </View>
+                        )}
+                    </View>
+                ))
+            ) : (
+                <Text style={styles.noRoomsText}>No rooms available in this hotel.</Text>
+            )}
+
+            {/* Reservation Form Modal */}
+            <Modal visible={modalVisible} animationType="slide" transparent={true}>
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalHeader}>Enter Reservation Details</Text>
                         <TextInput
-                            style={styles.input}
+                            style={styles.modalInput}
                             placeholder="Your Name"
-                            value={name}
-                            onChangeText={(text) => {
-                                setName(text);
-                                if (errors.name) setErrors((prev) => ({ ...prev, name: '' }));
-                            }}
+                            value={reservationDetails.name}
+                            onChangeText={(text) => setReservationDetails({ ...reservationDetails, name: text })}
                         />
-                    </View>
-                    {errors.name ? <Text style={styles.errorText}>{errors.name}</Text> : null}
-
-                    <View style={styles.inputContainer}>
-                        <MaterialIcons name="email" size={24} color="#007bff" style={styles.icon} />
                         <TextInput
-                            style={styles.input}
+                            style={styles.modalInput}
                             placeholder="Your Email"
-                            keyboardType="email-address"
-                            value={email}
-                            onChangeText={(text) => {
-                                setEmail(text);
-                                if (errors.email) setErrors((prev) => ({ ...prev, email: '' }));
-                            }}
+                            value={reservationDetails.email}
+                            onChangeText={(text) => setReservationDetails({ ...reservationDetails, email: text })}
                         />
-                    </View>
-                    {errors.email ? <Text style={styles.errorText}>{errors.email}</Text> : null}
-
-                    <View style={styles.inputContainer}>
-                        <FontAwesome5 name="phone" size={24} color="#007bff" style={styles.icon} />
                         <TextInput
-                            style={styles.input}
-                            placeholder="Your Phone Number"
-                            keyboardType="phone-pad"
-                            value={phone}
-                            onChangeText={(text) => {
-                                setPhone(text);
-                                if (errors.phone) setErrors((prev) => ({ ...prev, phone: '' }));
-                            }}
+                            style={styles.modalInput}
+                            placeholder="Your CNIC"
+                            value={reservationDetails.CNIC}
+                            onChangeText={(text) => setReservationDetails({ ...reservationDetails, CNIC: text })}
                         />
+                        <TextInput
+                            style={styles.modalInput}
+                            placeholder="Your Phone Number"
+                            value={reservationDetails.phone}
+                            onChangeText={(text) => setReservationDetails({ ...reservationDetails, phone: text })}
+                        />
+
+                        {/* Date Picker for From Date */}
+                        <Text style={styles.dateText}>From Date: {reservationDetails.fromDate ? reservationDetails.fromDate : 'Select Date'}</Text>
+                        <DatePicker
+                            selected={reservationDetails.fromDate ? new Date(reservationDetails.fromDate) : null}
+                            onChange={(date) => setReservationDetails({ ...reservationDetails, fromDate: moment(date).format('YYYY-MM-DD') })}
+                            dateFormat="yyyy/MM/dd"
+                            className="react-datepicker__input-container"
+                            placeholderText="Select Date"
+                        />
+
+                        {/* Date Picker for To Date */}
+                        <Text style={styles.dateText}>To Date: {reservationDetails.toDate ? reservationDetails.toDate : 'Select Date'}</Text>
+                        <DatePicker
+                            selected={reservationDetails.toDate ? new Date(reservationDetails.toDate) : null}
+                            onChange={(date) => setReservationDetails({ ...reservationDetails, toDate: moment(date).format('YYYY-MM-DD') })}
+                            dateFormat="yyyy/MM/dd"
+                            className="react-datepicker__input-container"
+                            placeholderText="Select Date"
+                        />
+
+                        <Button title="Submit Reservation" onPress={handleSubmitReservation} />
+                        <Button title="Cancel" onPress={() => setModalVisible(false)} />
                     </View>
-                    {errors.phone ? <Text style={styles.errorText}>{errors.phone}</Text> : null}
-
-                    <Text style={styles.label}>Choose a Room Type:</Text>
-
-                    <View style={styles.roomTypeContainer}>
-                        {hotelDetails?.rooms?.map((room, index) => {
-                            const roomTypeMapping = {
-                                'Deluxe Twin': 'Double Bed',
-                                'Pearl King': 'King Suite',
-                                'Standard Queen': 'Queen Suite',
-                            };
-
-                            const displayRoomType = roomTypeMapping[room.room_type] || room.room_type;
-
-                            return (
-                                <TouchableOpacity
-                                    key={index}
-                                    style={[styles.roomTypeCard, roomType === displayRoomType && styles.selectedCard]}
-                                    onPress={() => setRoomType(displayRoomType)}
-                                >
-                                    <Image source={roomImages[displayRoomType]} style={styles.roomImage} />
-                                    <Text style={styles.roomTypeText}>{displayRoomType}</Text>
-                                    <Text style={styles.roomPriceText}>Price: {room.price} PKR</Text>
-                                    <Text style={styles.roomAvailabilityText}>
-                                        Available: {room.available ? 'Yes' : 'No'}
-                                    </Text>
-                                </TouchableOpacity>
-                            );
-                        })}
-                    </View>
-
-                    <TouchableOpacity style={styles.button} onPress={handleReservation}>
-                        <Text style={styles.buttonText}>Confirm Reservation</Text>
-                    </TouchableOpacity>
                 </View>
-            </ScrollView>
-        </KeyboardAvoidingView>
+            </Modal>
+        </ScrollView>
     );
 }
 
+
 const styles = StyleSheet.create({
-    scrollContainer: {
-        flexGrow: 1,
-        padding: 16,
-        backgroundColor: '#f7f7f7',
-    },
-    header: {
-        fontSize: 30,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 20,
-        textAlign: 'center',
-    },
-    hotelDescription: {
-        fontSize: 18,
-        color: '#666',
-        marginBottom: 20,
-        textAlign: 'center',
-    },
-    inputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderBottomWidth: 1,
-        borderBottomColor: '#ddd',
-        marginBottom: 20,
-        paddingBottom: 8,
-    },
-    input: {
-        flex: 1,
-        padding: 14,
-        fontSize: 16,
-        borderRadius: 8,
-        backgroundColor: '#fff',
-        color: '#333',
-    },
-    errorText: {
-        color: 'red',
-        fontSize: 14,
-        marginBottom: 10,
-        textAlign: 'center',
-    },
-    roomTypeContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-        marginBottom: 30,
-    },
-    roomTypeCard: {
-        width: '48%',
-        borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 15,
-        backgroundColor: '#fff',
-        padding: 20,
-        marginBottom: 20,
-        elevation: 5,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 6,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    selectedCard: {
-        borderColor: '#007bff',
-        backgroundColor: '#e7f3ff',
-    },
-    roomImage: {
-        width: 130,
-        height: 100,
-        borderRadius: 8,
-        marginBottom: 10,
-    },
-    roomTypeText: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#333',
-    },
-    roomPriceText: {
-        fontSize: 14,
-        color: '#555',
-    },
-    roomAvailabilityText: {
-        fontSize: 12,
-        color: '#777',
-    },
-    button: {
-        backgroundColor: '#007bff',
-        paddingVertical: 15,
-        borderRadius: 10,
-        alignItems: 'center',
-        marginTop: 20,
-        elevation: 3,
-    },
-    buttonText: {
-        color: '#fff',
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    label: {
-        fontSize: 16,
-        color: '#333',
-        marginBottom: 15,
-        fontWeight: 'bold',
-    },
-    loadingText: {
-        fontSize: 18,
-        color: '#777',
-        textAlign: 'center',
-        marginTop: 20,
-    },
+    container: { padding: 15, alignItems: 'center' },
+    centeredContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+    header: { fontSize: 22, fontWeight: 'bold', marginBottom: 20 },
+    roomBox: { width: '90%', backgroundColor: 'white', padding: 15, marginBottom: 10, borderRadius: 8, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, borderWidth: 1, borderColor: '#ddd' },
+    unavailableRoom: { backgroundColor: '#ffcccc', borderColor: 'red' },
+    roomHeader: { alignItems: 'center' },
+    roomNumber: { fontSize: 18, fontWeight: 'bold' },
+    roomDetails: { marginTop: 10, alignItems: 'center' },
+    text: { fontSize: 16, marginBottom: 5 },
+    reserveButton: { marginTop: 10, backgroundColor: '#007bff', padding: 10, borderRadius: 5 },
+    buttonText: { color: 'white', fontSize: 16 },
+    errorText: { fontSize: 16, color: 'red' },
+    loadingText: { fontSize: 16, marginTop: 10 },
+    noRoomsText: { fontSize: 16, color: '#555' },
+    modalOverlay: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' },
+    modalContent: { backgroundColor: 'white', padding: 20, borderRadius: 10, width: '80%' },
+    modalHeader: { fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
+    modalInput: { borderWidth: 1, borderColor: '#ddd', padding: 10, marginBottom: 10, borderRadius: 5 },
+    dateText: { fontSize: 16, color: '#007bff', marginBottom: 10 },
 });

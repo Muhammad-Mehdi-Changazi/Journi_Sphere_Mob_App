@@ -1,17 +1,17 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Stack } from 'expo-router';
-import { AuthProvider } from './contexts/authcontext';  // Adjust the import path if necessary
-import Header from './components/Header';  // Import the Header component
-import { MenuProvider } from 'react-native-popup-menu';  // Import MenuProvider
+import { AuthProvider } from './contexts/authcontext';  // Adjusted path
+import Header from './components/Header';  // Adjusted path
+import { MenuProvider } from 'react-native-popup-menu';
 
 export default function RootLayout() {
   return (
-    <MenuProvider>  {/* Provides popup menu support */}
-      <AuthProvider>  {/* Authentication Context Provider */}
+    <MenuProvider>
+      <AuthProvider>
         <View style={styles.container}>
-          {/* <Header />  Custom Header Component */}
-          <Stack screenOptions={{ headerShown: false }} />  {/* Expo Router Stack */}
+          {/* <Header />  Uncomment if needed */}
+          <Stack screenOptions={{ headerShown: false }} />
         </View>
       </AuthProvider>
     </MenuProvider>

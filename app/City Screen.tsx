@@ -10,12 +10,14 @@ const fetchRecommendations = async (cityName: string) => {
     // Fetch hotels from your database (replace with your actual backend API URL)
     const hotelsResponse = await axios.get(`http://34.226.13.20:3000/hotels/city/${cityName}`);
     // console.log("Hi", cityName);
+    
     const hotels = hotelsResponse.data.hotels; // Assuming the backend returns an array of hotels
 
 
     // Fetch restaurants from the custom recommendation API
 
     const restaurantsResponse = await axios.get(`http://34.226.13.20:3000/recommendations?city=${cityName}`);
+
 
     const restaurants = restaurantsResponse.data.restaurants; // Assuming the API returns an array of restaurants
 
@@ -80,14 +82,17 @@ export default function CityScreen() {
 
   const handleNavigate = (placeName: string) => {
     router.push(`/GoogleMapScreen?placeName=${encodeURIComponent(placeName)}`); // Navigate to GoogleMap screen
+
   };
 
-  const handleCheckReviews = (placeName: string) => {
-    router.push(`/Reviews?placeName=${encodeURIComponent(placeName)}`); // Navigate to Reviews page
+  const handleCheckReviews = (placeID: string) => {
+    router.push(`/Reviews?placeID=${encodeURIComponent(placeID)}`); // Navigate to Reviews page
   };
 
-  const handleMakeReservation = (placeName: string) => {
-    router.push(`/ReservationScreen?placeName=${encodeURIComponent(placeName)}`); // Navigate to ReservationScreen
+  const handleMakeReservation = (placeID: string) => {
+    
+    // console.log("Place ID:", placeID);
+    router.push(`/ReservationScreen?placeID=${encodeURIComponent(placeID)}`); // Navigate to ReservationScreen
   };
 
   // Function to render the hotel item (now showing name only)
@@ -97,13 +102,13 @@ export default function CityScreen() {
         <Text style={styles.placeName}>{place.hotel_name}</Text>
 
         <View style={[styles.buttonsContainer, isSmallScreen && styles.buttonsContainerVertical]}>
-          <TouchableOpacity style={styles.button} onPress={() => handleNavigate(place.name)}>
+          <TouchableOpacity style={styles.button} onPress={() => handleNavigate(place._id)}>
             <Text style={styles.buttonText}>Navigate</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => handleCheckReviews(place.name)}>
+          <TouchableOpacity style={styles.button} onPress={() => handleCheckReviews(place._id)}>
             <Text style={styles.buttonText}>Check Reviews</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => handleMakeReservation(place.name)}>
+          <TouchableOpacity style={styles.button} onPress={() => handleMakeReservation(place._id)}>
             <Text style={styles.buttonText}>Make Reservation</Text>
           </TouchableOpacity>
         </View>

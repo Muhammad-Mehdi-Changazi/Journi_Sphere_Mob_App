@@ -8,11 +8,11 @@ export default function Index() {
   const router = useRouter();
 
   const handleLogin = () => {
-    router.push('/Login'); // Navigate to LoginScreen
+    router.push({ pathname: '/Login' }); // Navigate to LoginScreen
   };
 
   const handleSignup = () => {
-    router.push('/SignupScreen'); // Navigate to SignupScreen
+    router.push({ pathname: '/SignupScreen' }); // Navigate to SignupScreen
   };
 
   return (
