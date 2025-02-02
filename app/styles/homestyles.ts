@@ -21,14 +21,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   temperature: {
-    fontSize: 24,
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#000000',
-    justifyContent: 'flex-end',
-    flexDirection: 'row',
-    paddingHorizontal: 20,
+    paddingHorizontal: 130,
     paddingEnd: 10,
     fontFamily: 'monospace',
+    marginTop: 6,
   },
   searchContainer: {
     marginTop: 13,
@@ -37,7 +36,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#A8CCF0',
     borderRadius: 30,
     paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingVertical: 10,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 1,
@@ -215,10 +214,48 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Abhaya Libre Medium',
   },
-
 });
 
-export default styles;
+
+
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+    // borderWidth: 0.1,
+    borderColor: '#A8CCF0',
+    borderRadius: 880,
+    borderCurve: 'circular',
+    color: 'black',
+    paddingRight: 30, // to ensure the text is never behind the icon
+    backgroundColor: '#A8CCF0',
+    marginTop: -60,
+    marginEnd: -10,
+    width: 150,
+    alignSelf: 'flex-end',
+
+  },
+  inputAndroid: {
+    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+    // borderWidth: 0.1,
+    borderColor: '#A8CCF0',
+    borderRadius: 880,
+    borderCurve: 'circular',
+    color: 'black',
+    paddingRight: 30, // to ensure the text is never behind the icon
+    backgroundColor: '#A8CCF0',
+    marginTop: -60,
+    marginEnd: -10,
+    width: 150,
+    alignSelf: 'flex-end',
+  },
+});
+
+export { styles, pickerSelectStyles };
 
 
 

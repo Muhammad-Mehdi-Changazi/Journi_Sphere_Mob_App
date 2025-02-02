@@ -50,7 +50,7 @@ export default function ReservationScreen() {
     });
 
     useEffect(() => {
-        socket = io('http://localhost:3000');
+        socket = io('http://34.226.13.20:3000');
         socket.on('connect', () => console.log('Connected to server'));
 
         socket.on("room_reserved", (data: { room: RoomDetails }) => {
@@ -83,8 +83,9 @@ export default function ReservationScreen() {
         socket.on('disconnect', () => console.log('Disconnected from server'));
 
         const fetchRooms = async () => {
-            try {
-                const response = await axios.get(`http://localhost:3000/getRooms/${placeID}`);
+            console.log("Fetching rooms for placeID:", placeID);
+            try { 
+                const response = await axios.get(`http://34.226.13.20:3000/getRooms/${placeID}`);
                 setRooms(response.data);
             } catch (err) {
                 setError('Failed to fetch rooms. Please try again.');
@@ -115,7 +116,7 @@ export default function ReservationScreen() {
         const reservationStatus = reservationDetails.paymentMethod === 'ONLINE' ? 'CONFIRMED' : 'PENDING';
 
         try {
-            const response = await axios.post('http://localhost:3000/api/reservations', {
+            const response = await axios.post('http://34.226.13.20:3000/api/reservations', {
                 ...reservationDetails,
                 roomID: reservationDetails.roomID,
                 placeID: reservationDetails.placeID,

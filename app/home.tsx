@@ -13,7 +13,17 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import ProtectedRoute from './components/protectedroute';
 import axios from 'axios';
-import styles from './styles/homestyles';
+import RNPickerSelect from 'react-native-picker-select';
+import { styles, pickerSelectStyles } from './styles/homestyles';
+
+
+const cities = [
+  { label: 'Islamabad', value: 'Islamabad' },
+  { label: 'Karachi', value: 'Karachi' },
+  { label: 'Lahore', value: 'Lahore' },
+  { label: 'Quetta', value: 'Quetta' },
+];
+
 
 export default function HomeScreen() {
   // Retrieve city info from URL parameters.
@@ -34,6 +44,10 @@ export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
+  
+  // DROP DOWN MENU MAN
+  const [selectedCity, setSelectedCity] = useState(cityData.name);
+  
   // New state to hold city coordinates
   const [cityCoords, setCityCoords] = useState<{ lat: number; lng: number } | null>(null);
   // Active tab: "touristSpots", "hotels", "food", or "carRentals"
@@ -150,8 +164,9 @@ export default function HomeScreen() {
   const handleCheckReviews = (hotelName: string) => {
     router.push(`/Reviews?placeName=${encodeURIComponent(hotelName)}`);
   };
-  const handleMakeReservation = (hotelName: string) => {
-    router.push(`/ReservationScreen?placeName=${encodeURIComponent(hotelName)}`);
+  const handleMakeReservation = (placeID: string) => {
+    console.log("Place Name:", placeID);
+    router.push(`/ReservationScreen?placeID=${encodeURIComponent(placeID)}`);
   };
 
   // Render content based on the active tab.
@@ -198,7 +213,7 @@ export default function HomeScreen() {
                 <TouchableOpacity style={[styles.button, isSmallScreen && { width: '100%', marginBottom: 8 }]} onPress={() => handleCheckReviews(item.hotel_name)}>
                   <Text style={styles.buttonText}>Check Reviews</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.button, isSmallScreen && { width: '100%' }]} onPress={() => handleMakeReservation(item.hotel_name)}>
+                <TouchableOpacity style={[styles.button, isSmallScreen && { width: '100%' }]} onPress={() => handleMakeReservation(item._id)}>
                   <Text style={styles.buttonText}>Make Reservation</Text>
                 </TouchableOpacity>
               </View>
@@ -222,24 +237,41 @@ export default function HomeScreen() {
     }
   };
 
+  const handleCityChange = (value: string) => {
+  setSelectedCity(value);
+  const newCityData = JSON.stringify({ name: value, places: [], foods: [] });
+  router.replace({
+    pathname: "/home",
+    params: { city: newCityData },
+  });
+};
+
   return (
     <ProtectedRoute>
       <View style={styles.container}>
-        {/* Header */}
+        {/* Drop down menu */}
         <View style={styles.headerContainer}>
           <Text style={styles.headerTitle}>Explore</Text>
           <Text style={styles.cityName}>{cityData.name}</Text>
+          
+          <RNPickerSelect
+            onValueChange={handleCityChange}
+            items={cities}
+            value={selectedCity}
+            style={pickerSelectStyles}
+          />
         </View>
+
         {/* Temperature Display */}
         <View style={styles.temperature}>
-          <Text>{temperature ? `~ ${temperature}` : "Loading..."}</Text>
+          <Text style={styles.temperature}>{temperature ? `~ ${temperature}` : "Loading..."}</Text>
         </View>
         {/* Search Bar */}
         <View style={styles.searchContainer}>
           <FontAwesome name="search" size={20} color="#999" style={styles.searchIcon} />
           <TextInput
             style={styles.searchBar}
-            placeholder="Search for locations"
+            placeholder="Find things here..."
             value={searchQuery}
             onChangeText={handleSearch}
             autoCorrect={false}
