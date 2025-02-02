@@ -54,8 +54,9 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   tabsContainer: {
+    marginLeft: -15,
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     marginTop: 33,
     backgroundColor: '#FFF',
     borderRadius: 15,
