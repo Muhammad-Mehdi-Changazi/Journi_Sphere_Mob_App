@@ -59,6 +59,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
     color: '#fff',
+    fontFamily: 'Ruslan Display',
   },
   subtitle: {
     fontSize: 18,
