@@ -23,7 +23,7 @@ const EditRoomInfo = ({ hotel_id }: { hotel_id: string }) => {
     // Fetch all rooms from backend
     useEffect(() => {
 
-        socket = io('http://localhost:3000');
+        socket = io('http://34.226.13.20:3000');
 
         socket.on('connect', () => console.log('Connected to Socket.IO server'));
 
