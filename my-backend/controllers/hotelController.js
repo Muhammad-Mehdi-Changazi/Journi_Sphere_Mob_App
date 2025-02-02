@@ -4,7 +4,6 @@ const Reservation = require('../models/reservation')
 mongoose = require('mongoose');
 const Room = require('../models/Room');
 const { getSocket } = require('../socket')
-const io = getSocket();
 
 // Create a new hotel
 exports.createHotel = async (req, res) => {

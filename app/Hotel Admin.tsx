@@ -8,6 +8,7 @@ import { BarChart } from 'react-native-chart-kit';
 import EditRoomInfo from './editroominfo';
 import ReservationRequests from './components/ReservationsRequest';
 
+
 let socket;
 
 function HotelAdmin() {
@@ -79,7 +80,7 @@ function HotelAdmin() {
         ],
     };
 
-    // const sidebarWidth = windowWidth > 768 && isSidebarOpen ? 250 : 0; // Sidebar width based on screen size and its state
+    // const sidebarWidth = windowWidth > 768 && isSidebarOpen ? 350 : 0; // Sidebar width based on screen size and its state
 
     useEffect(() => {
         // Connect to Socket.IO server
@@ -178,9 +179,14 @@ function HotelAdmin() {
         };
 
         fetchReservations();
-
-
         fetchHotelData();
+        socket.on('room_updated', (updatedRoom: Room) => {
+            console.log('Room updated:', updatedRoom);
+
+            setRooms((prevRooms) =>
+                prevRooms.map((room) => (room._id === updatedRoom._id ? updatedRoom : room))
+            );
+        });
     }, [hotel_id]);
 
     useEffect(() => {
@@ -378,10 +384,13 @@ function HotelAdmin() {
     return (
         <View style={styles.container}>
 
-            {/* Notification Icon */}
-            <View style={[styles.notificationContainer]}>
+            {/* Fixed Header */}
+            <View style={styles.header}>
+                <Icon style={{ alignSelf: "flex-start", paddingTop: 10 }} name="person-circle" size={50} color="white" />
+                <Text style={styles.sidebarHeaderText}>Hotel Admin Panel</Text>
+                <Text style={styles.headerText}>Welcome, {username}</Text>
                 <TouchableOpacity style={styles.notificationIcon}>
-                    <Icon name="notifications" size={35} color="black" />
+                    <Icon name="notifications" size={35} color="white" />
                 </TouchableOpacity>
             </View>
             {/* Hamburger icon for small screens */}
@@ -399,48 +408,51 @@ function HotelAdmin() {
             )}
 
             {/* Sidebar */}
-            <View style={[styles.sidebar, windowWidth > 768 && { position: 'relative', width: '20%' }, isSidebarOpen && { left: 0 }, !isSidebarOpen && { left: -250 }]}>
+            <View style={[styles.sidebar, windowWidth > 768 && { position: 'relative', width: '18%' }, isSidebarOpen && { left: 0 }, !isSidebarOpen && { left: -250 }]}>
                 {/* Admin Panel Text and Icon */}
-
-                <View style={styles.sidebarHeader}>
-
-                    <Icon style={{ alignSelf: "flex-start" }} name="person-circle" size={50} color="black" />
-                    <Text style={styles.sidebarHeaderText}>Hotel Admin Panel</Text>
-                </View>
-
-
                 <TouchableOpacity
                     style={[styles.menuButton, selectedTab === "Hotel Details" && styles.selectedTab]}
                     onPress={() => handleTabSelect("Hotel Details")}
                 >
-                    <Text style={styles.menuText}>Dashboard</Text>
+                    <Text style={[styles.menuText, selectedTab === "Hotel Details" && styles.selectedMenuText]}>
+                        Dashboard
+                    </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style={[styles.menuButton, selectedTab === "Offers" && styles.selectedTab]}
                     onPress={() => handleTabSelect("Offers")}
                 >
-                    <Text style={styles.menuText}>Offers</Text>
+                    <Text style={[styles.menuText, selectedTab === "Offers" && styles.selectedMenuText]}>
+                        Offers
+                    </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style={[styles.menuButton, selectedTab === "Staff Info" && styles.selectedTab]}
                     onPress={() => handleTabSelect("Staff Info")}
                 >
-                    <Text style={styles.menuText}>Staff Info</Text>
+                    <Text style={[styles.menuText, selectedTab === "Staff Info" && styles.selectedMenuText]}>
+                        Staff Info
+                    </Text>
                 </TouchableOpacity>
 
-
-                {/* Sidebar Menu */}
-                {[{ title: "Rooms", subItems: ["Room Information", "Edit Room Info"] }, { title: "Reservations", subItems: ["Ongoing Reservations", "Reservation History", "Reservation Requests"] }, { title: "Account Settings", subItems: ["Edit Account", "Logout"] }].map((menu) => (
+                {[
+                    { title: "Rooms", subItems: ["Room Information", "Edit Room Info"] },
+                    { title: "Reservations", subItems: ["Ongoing Reservations", "Reservation History", "Reservation Requests"] },
+                    { title: "Account Settings", subItems: ["Edit Account", "Logout"] }
+                ].map((menu) => (
                     <View key={menu.title}>
                         <TouchableOpacity
                             style={[styles.menuButton, selectedTab === menu.title && styles.selectedTab]}
                             onPress={() => setExpandedTab(expandedTab === menu.title ? null : menu.title)}
                         >
-                            <Text style={styles.menuText}>{menu.title}</Text>
+                            <Text style={[styles.menuText, selectedTab === menu.title && styles.selectedMenuText]}>
+                                {menu.title}
+                            </Text>
                             <Icon name={expandedTab === menu.title ? "chevron-up" : "chevron-down"} size={20} color="black" />
                         </TouchableOpacity>
+
                         {expandedTab === menu.title &&
                             menu.subItems.map((subItem) => (
                                 <TouchableOpacity
@@ -448,16 +460,18 @@ function HotelAdmin() {
                                     style={[styles.menuButton, selectedTab === subItem && styles.selectedTab]}
                                     onPress={() => handleTabSelect(subItem)}
                                 >
-                                    <Text style={styles.subMenuText}>{subItem}</Text>
+                                    <Text style={[styles.subMenuText, selectedTab === subItem && styles.selectedMenuText]}>
+                                        {subItem}
+                                    </Text>
                                 </TouchableOpacity>
                             ))}
                     </View>
                 ))}
+
             </View>
 
             {/* Main Content */}
-            <ScrollView style={[styles.content, windowWidth > 768 ? { flex: 1, paddingLeft: 20 } : { flex: 1, paddingLeft: 20 }]}>
-                <Text style={styles.headerText}>Welcome, {username}</Text>
+            <ScrollView style={[styles.content, windowWidth > 768 ? { flex: 1, paddingLeft: 20, paddingTop: 50 } : { flex: 1, paddingLeft: 20 }]}>
                 {renderContent()}
             </ScrollView>
         </View>
@@ -465,6 +479,23 @@ function HotelAdmin() {
 }
 
 const styles = StyleSheet.create({
+    selectedMenuText: {
+        color: 'white', // Change text color when selected
+        fontWeight: 'bold',
+    },
+    header: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: 75,
+        backgroundColor: '#176FF2',
+        flexDirection: 'row',
+        // alignItems: 'center',
+        // justifyContent: 'space-between',
+        paddingHorizontal: 15,
+        zIndex: 3,
+    },
     section: {
         padding: 20,
     },
@@ -526,13 +557,13 @@ const styles = StyleSheet.create({
     centeredContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
     container: { flex: 1, flexDirection: 'row', backgroundColor: '#f4f7fc' },
     notificationContainer: { position: 'absolute', top: 10, right: 10, zIndex: 2 },
-    notificationIcon: { padding: 10, marginRight: 10},
-    sidebar: { backgroundColor: '#f0f0f0', padding: 10, paddingTop: 20, position: 'absolute', top: 0, bottom: 0, left: -250, zIndex: 1, transition: 'left 0.3s' },
-    sidebarHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 20, marginTop: 10 },
-    sidebarHeaderText: { fontSize: 20, fontWeight: 'bold', marginLeft: 10 },
-    menuButton: { padding: 12, backgroundColor: 'white', marginBottom: 10, borderRadius: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+    notificationIcon: { marginLeft: '58%', marginRight: 0, right:0, marginTop: 20},
+    sidebar: { backgroundColor: '#f0f0f0', padding: 0, paddingTop: 90, position: 'absolute', top: 0, bottom: 0, left: -250, zIndex: 1, transition: 'left 0.3s' },
+    // sidebarHeader: { flexDirection: 'row', alignItems: 'center', marginBottom:0, marginTop:0 },
+    sidebarHeaderText: { fontSize: 17, fontWeight: 'bold', marginLeft: 5, color:'white', textAlign: 'left', marginTop:28 },
+    menuButton: {marginLeft:10, marginRight:10, padding: 12, backgroundColor: 'white', marginBottom: 10, borderRadius: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
     menuText: { fontSize: 16, color: 'black', textAlign: 'center', paddingLeft: 15 },
-    selectedTab: { backgroundColor: '#dcdcdc' },
+    selectedTab: { backgroundColor: '#176FF2' },
     text: { fontSize: 16, margin: 5 },
     loadingText: { fontSize: 18 },
     errorText: { fontSize: 18, color: 'red' },
@@ -542,7 +573,7 @@ const styles = StyleSheet.create({
     roomDetail: { marginTop: 10, padding: 10, backgroundColor: '#f9f9f9' },
     // section: { padding: 20, backgroundColor: 'white', borderRadius: 10, marginBottom: 20 },
     // roomDetailText: { fontSize: 16, marginBottom: 5 },
-    headerText: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
+    headerText: { fontSize: 24, fontWeight: 'bold', marginLeft: '5%', color:'white', marginTop: 20 },
     hamburgerIcon: { position: 'absolute', top: 20, left: 10, zIndex: 2 },
     arrowIcon: { position: 'absolute', top: 20, left: 200, zIndex: 2 },
     content: { padding: 20, marginTop: 20 },

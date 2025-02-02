@@ -94,6 +94,13 @@ export default function ReservationScreen() {
         };
 
         fetchRooms();
+        socket.on('room_updated', (updatedRoom: Room) => {
+            console.log('Room updated:', updatedRoom);
+
+            setRooms((prevRooms) =>
+                prevRooms.map((room) => (room._id === updatedRoom._id ? updatedRoom : room))
+            );
+        });
         return () => socket.disconnect();
     }, [placeID]);
 

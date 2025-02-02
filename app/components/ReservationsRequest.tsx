@@ -16,7 +16,7 @@ interface Reservation {
 
 interface ReservationRequestsProps {
     status: string | string[];
-    hotel_id: string; // Added hotel_id prop
+    hotel_id: string;
 }
 
 export default function ReservationRequests({ status, hotel_id }: ReservationRequestsProps) {
@@ -27,35 +27,29 @@ export default function ReservationRequests({ status, hotel_id }: ReservationReq
     useEffect(() => {
         socket = io('http://localhost:3000');
 
-        socket.on('connect', () => console.log('Connection to Socket.IO server'));
+        socket.on('connect', () => console.log('Connected to Socket.IO server'));
         socket.on('reservation-created', (data: { placeID: string, reservationDetails: any }) => {
             console.log("Received reservation-created event:", data);
 
-            if (data.placeID === hotel_id) {
-                // Validate reservation data before updating the state
-                if (data.reservationDetails && data.reservationDetails._id) {
-                    setReservations((prevReservations) => {
-                        // Check if the reservation already exists to avoid duplicates
-                        if (!prevReservations.some((res) => res._id === data.reservationDetails._id)) {
-                            return [...prevReservations, data.reservationDetails];
-                        }
-                        return prevReservations;
-                    });
-                }
+            if (data.placeID === hotel_id && data.reservationDetails?._id) {
+                setReservations((prevReservations) =>
+                    prevReservations.some((res) => res._id === data.reservationDetails._id) ? prevReservations
+                        : [...prevReservations, data.reservationDetails]
+                );
             }
         });
+
         socket.on('disconnect', () => console.log('Disconnected from Socket.IO server'));
 
         const fetchReservations = async () => {
-            console.log("hotel_id", hotel_id);
             try {
                 const statusQuery = Array.isArray(status) ? status.join(",") : status;
                 const response = await axios.get(`http://localhost:3000/GetReservations?status=${statusQuery}&hotel_id=${hotel_id}`);
                 setReservations(response.data);
-                setLoading(false);
             } catch (error) {
                 console.error("Error fetching reservations:", error);
                 setError("Failed to fetch reservations.");
+            } finally {
                 setLoading(false);
             }
         };
@@ -99,6 +93,8 @@ export default function ReservationRequests({ status, hotel_id }: ReservationReq
             <FlatList
                 data={reservations}
                 keyExtractor={(item) => item._id}
+                numColumns={2}
+                columnWrapperStyle={styles.row}
                 renderItem={({ item }) => (
                     <View style={styles.card}>
                         <Text style={styles.text}><Text style={styles.bold}>Guest:</Text> {item.customer_name}</Text>
@@ -107,16 +103,20 @@ export default function ReservationRequests({ status, hotel_id }: ReservationReq
                         <Text style={styles.text}><Text style={styles.bold}>Email:</Text> {item.email}</Text>
                         <Text style={styles.text}><Text style={styles.bold}>Check-in:</Text> {new Date(item.reservation_date.from).toDateString()}</Text>
                         <Text style={styles.text}><Text style={styles.bold}>Check-out:</Text> {new Date(item.reservation_date.to).toDateString()}</Text>
-                        <Text style={[styles.status, { backgroundColor: getStatusColor(item.reservationStatus) }]}>
-                            {item.reservationStatus}
-                        </Text>
+
+                        {/* Status */}
+                        <View style={[styles.statusContainer, { borderColor: getStatusColor(item.reservationStatus) }]}>
+                            <Text style={[styles.statusText, { color: getStatusColor(item.reservationStatus) }]}>
+                                {item.reservationStatus}
+                            </Text>
+                        </View>
 
                         {status === "PENDING" && (
                             <View style={styles.buttonContainer}>
-                                <TouchableOpacity style={[styles.button, styles.approveButton]} onPress={() => updateReservationStatus(item._id, "CONFIRMED")}>
-                                    <Text style={styles.buttonText}>Approve</Text>
+                                <TouchableOpacity style={[styles.button, styles.acceptButton]} onPress={() => updateReservationStatus(item._id, "CONFIRMED")}>
+                                    <Text style={styles.buttonText}>Accept</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={() => updateReservationStatus(item._id, "CANCELLED")}>
+                                <TouchableOpacity style={[styles.button, styles.rejectButton]} onPress={() => updateReservationStatus(item._id, "CANCELLED")}>
                                     <Text style={styles.buttonText}>Cancel</Text>
                                 </TouchableOpacity>
                             </View>
@@ -131,11 +131,11 @@ export default function ReservationRequests({ status, hotel_id }: ReservationReq
 // Function to set color based on reservation status
 const getStatusColor = (status: string) => {
     switch (status) {
-        case "PENDING": return "orange";
-        case "CONFIRMED": return "green";
-        case "CANCELLED": return "red";
-        case "COMPLETED": return "blue";
-        default: return "gray";
+        case "PENDING": return "#FFA500"; // Orange
+        case "CONFIRMED": return "#008000"; // Green
+        case "CANCELLED": return "#FF0000"; // Red
+        case "COMPLETED": return "#0000FF"; // Blue
+        default: return "#808080"; // Gray
     }
 };
 
@@ -143,15 +143,37 @@ const styles = StyleSheet.create({
     container: { flex: 1, padding: 20, backgroundColor: "#f4f7fc" },
     centeredContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
     headerText: { fontSize: 22, fontWeight: "bold", marginBottom: 15, textAlign: "center" },
-    card: { backgroundColor: "#fff", padding: 15, borderRadius: 8, marginBottom: 15, elevation: 3 },
+
+    row: { justifyContent: "space-between" },
+    card: {
+        flex: 1,
+        backgroundColor: "#fff",
+        padding: 15,
+        borderRadius: 8,
+        marginBottom: 15,
+        elevation: 3,
+        marginHorizontal: 5,
+    },
+
     text: { fontSize: 16, marginBottom: 5 },
     bold: { fontWeight: "bold" },
-    status: { padding: 5, borderRadius: 5, textAlign: "center", fontWeight: "bold", color: "#fff", marginVertical: 5 },
+
+    statusContainer: {
+        borderWidth: 2,
+        borderRadius: 5,
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        marginTop: 5,
+        alignSelf: "flex-start",
+    },
+    statusText: { fontWeight: "bold" },
+
     buttonContainer: { flexDirection: "row", justifyContent: "space-between", marginTop: 10 },
     button: { flex: 1, padding: 10, borderRadius: 5, alignItems: "center", marginHorizontal: 5 },
-    approveButton: { backgroundColor: "green" },
-    cancelButton: { backgroundColor: "red" },
+    acceptButton: { backgroundColor: "green" },
+    rejectButton: { backgroundColor: "red" },
     buttonText: { color: "white", fontWeight: "bold" },
-    errorText: { fontSize: 18, color: "red" },
+
+    errorText: { fontSize: 18, color: "red", textAlign: "center" },
 });
 
