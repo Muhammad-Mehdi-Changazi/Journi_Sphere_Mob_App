@@ -267,6 +267,7 @@ exports.updateReservationStatus = async (req, res) => {
     await updatedReservation.save();
 
     res.status(200).json(updatedReservation);
+    
   } catch (error) {
     console.error("Error updating reservation:", error);
     res.status(500).json({ error: "Server error" });

@@ -8,7 +8,6 @@ import { BarChart } from 'react-native-chart-kit';
 import EditRoomInfo from './editroominfo';
 import ReservationRequests from './components/ReservationsRequest';
 
-
 let socket;
 
 function HotelAdmin() {
@@ -180,7 +179,7 @@ function HotelAdmin() {
 
         fetchReservations();
         fetchHotelData();
-        socket.on('room_updated', (updatedRoom: Room) => {
+         socket.on('room_updated', (updatedRoom: Room) => {
             console.log('Room updated:', updatedRoom);
 
             setRooms((prevRooms) =>

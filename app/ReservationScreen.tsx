@@ -170,7 +170,7 @@ export default function ReservationScreen() {
                         {expandedRoom === room._id && (
                             <View style={styles.roomDetails}>
                                 <Text style={styles.text}>Bed Size: {room.bed_size}</Text>
-                                <Text style={styles.text}>Rent: ${room.rent}</Text>
+                                <Text style={styles.text}>Rent: {room.rent} Pkr</Text>
                                 <Text style={[styles.text, { color: room.available ? 'green' : 'red' }]}>
                                     {room.available ? 'Available' : 'Not Available'}
                                 </Text>
