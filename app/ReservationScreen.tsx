@@ -3,8 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator
 import { useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 import io from 'socket.io-client';
-import DatePicker from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from 'react-native-date-picker';
 import moment from 'moment';
 import { Picker } from '@react-native-picker/picker'; // Import Picker
 
@@ -200,11 +199,22 @@ export default function ReservationScreen() {
                         <TextInput style={styles.modalInput} placeholder="Your Phone Number" value={reservationDetails.phone} onChangeText={(text) => setReservationDetails({ ...reservationDetails, phone: text })} />
 
                         <Text style={styles.dateText}>From Date:</Text>
-                        <DatePicker selected={reservationDetails.fromDate ? new Date(reservationDetails.fromDate) : null} onChange={(date) => setReservationDetails({ ...reservationDetails, fromDate: moment(date).format('YYYY-MM-DD') })} dateFormat="yyyy/MM/dd" />
+                        <DatePicker
+                            modal
+                            open={true}
+                            date={reservationDetails.fromDate ? new Date(reservationDetails.fromDate) : new Date()}
+                            onConfirm={(date) => setReservationDetails({ ...reservationDetails, fromDate: moment(date).format('YYYY-MM-DD') })}
+                            onCancel={() => {}}
+                        />
 
                         <Text style={styles.dateText}>To Date:</Text>
-                        <DatePicker selected={reservationDetails.toDate ? new Date(reservationDetails.toDate) : null} onChange={(date) => setReservationDetails({ ...reservationDetails, toDate: moment(date).format('YYYY-MM-DD') })} dateFormat="yyyy/MM/dd" />
-
+                        <DatePicker
+                            modal
+                            open={true}
+                            date={reservationDetails.toDate ? new Date(reservationDetails.toDate) : new Date()}
+                            onConfirm={(date) => setReservationDetails({ ...reservationDetails, toDate: moment(date).format('YYYY-MM-DD') })}
+                            onCancel={() => {}}
+                        />
                         {/* Payment Method Picker */}
                         <Text style={styles.dateText}>Payment Method:</Text>
                         <Picker selectedValue={reservationDetails.paymentMethod} onValueChange={(itemValue) => setReservationDetails({ ...reservationDetails, paymentMethod: itemValue })}>
