@@ -3,12 +3,10 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator
 import { useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 import io from 'socket.io-client';
-import DatePicker from 'react-datepicker';  // Import react-datepicker
-import "react-datepicker/dist/react-datepicker.css";  // Import the styles
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
 import moment from 'moment';
-
-// Your component code
-
+import { Picker } from '@react-native-picker/picker'; // Import Picker
 
 interface Room {
     _id: string;
@@ -19,6 +17,17 @@ interface Room {
     available: boolean;
     bed_size: string;
 }
+
+interface RoomDetails {
+    roomID: string;
+    room_type: string;
+    room_number: number;
+    rent: number;
+    available: boolean;
+    bed_size: string;
+    hotelID: string;
+}
+
 
 let socket: any;
 export default function ReservationScreen() {
@@ -37,14 +46,41 @@ export default function ReservationScreen() {
         placeID: '',
         fromDate: '' as string | null,
         toDate: '' as string | null,
+        paymentMethod: 'OTHERS', // Default value
     });
 
     useEffect(() => {
-
-        socket = io('http://34.226.13.20:3000'); // Connect to the Socket.IO server
+        socket = io('http://localhost:3000');
         socket.on('connect', () => console.log('Connected to server'));
-        socket.on('disconnect', () => console.log('Disconnected from server'));
 
+        socket.on("room_reserved", (data: { room: RoomDetails }) => {
+            console.log("Room Reserved Update:", data);
+
+            setRooms((prevRooms) => {
+                const updatedRooms = [...prevRooms];
+
+                // Check if room already exists, if yes, update availability
+                const roomIndex = updatedRooms.findIndex(room => room._id === data.room.roomID);
+
+                if (roomIndex !== -1) {
+                    updatedRooms[roomIndex] = { ...updatedRooms[roomIndex], available: data.room.available };
+                } else {
+                    updatedRooms.push({
+                        _id: data.room.roomID,
+                        room_type: data.room.room_type,
+                        room_number: data.room.room_number,
+                        hotel_id: data.room.hotelID, // Add this line
+                        rent: data.room.rent,
+                        available: data.room.available,
+                        bed_size: data.room.bed_size,
+                    });
+                }
+
+                return updatedRooms;
+            });
+        });
+
+        socket.on('disconnect', () => console.log('Disconnected from server'));
 
         const fetchRooms = async () => {
             try {
@@ -75,27 +111,22 @@ export default function ReservationScreen() {
             Alert.alert('Error', 'All fields are required.');
             return;
         }
-        console.log('Reservation Details:', reservationDetails);
+
+        const reservationStatus = reservationDetails.paymentMethod === 'ONLINE' ? 'CONFIRMED' : 'PENDING';
+
         try {
+            const response = await axios.post('http://localhost:3000/api/reservations', {
+                ...reservationDetails,
+                roomID: reservationDetails.roomID,
+                placeID: reservationDetails.placeID,
+                reservationStatus, // Automatically set status
+            });
 
-            // Send reservation details to the backend
-            const response = await axios.post('http://34.226.13.20:3000/api/reservations', reservationDetails);
-            
-            console.log('Reservation Response:', response.data);
+            socket.emit('reservation-updated', { placeID, reservationDetails });
 
-            // Emit the reservation details to the Socket.IO server
-            socket.emit('reservation-updated', reservationDetails);
-
-            Alert.alert(
-                'Reservation Successful',
-                `Your reservation at ${placeName} for a ${roomType} has been confirmed.`
-            );
-
-            // Reset fields after reservation
-            setName('');
-            setEmail('');
-            setPhone('');
-            setRoomType('');
+            Alert.alert('Success', response.data.message);
+            setModalVisible(false);
+            setReservationDetails({ name: '', email: '', CNIC: '', phone: '', roomID: '', placeID: '', fromDate: null, toDate: null, paymentMethod: 'OTHERS' });
         } catch (error) {
             Alert.alert('Error', 'Failed to create reservation.');
         }
@@ -155,50 +186,23 @@ export default function ReservationScreen() {
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
                         <Text style={styles.modalHeader}>Enter Reservation Details</Text>
-                        <TextInput
-                            style={styles.modalInput}
-                            placeholder="Your Name"
-                            value={reservationDetails.name}
-                            onChangeText={(text) => setReservationDetails({ ...reservationDetails, name: text })}
-                        />
-                        <TextInput
-                            style={styles.modalInput}
-                            placeholder="Your Email"
-                            value={reservationDetails.email}
-                            onChangeText={(text) => setReservationDetails({ ...reservationDetails, email: text })}
-                        />
-                        <TextInput
-                            style={styles.modalInput}
-                            placeholder="Your CNIC"
-                            value={reservationDetails.CNIC}
-                            onChangeText={(text) => setReservationDetails({ ...reservationDetails, CNIC: text })}
-                        />
-                        <TextInput
-                            style={styles.modalInput}
-                            placeholder="Your Phone Number"
-                            value={reservationDetails.phone}
-                            onChangeText={(text) => setReservationDetails({ ...reservationDetails, phone: text })}
-                        />
+                        <TextInput style={styles.modalInput} placeholder="Your Name" value={reservationDetails.name} onChangeText={(text) => setReservationDetails({ ...reservationDetails, name: text })} />
+                        <TextInput style={styles.modalInput} placeholder="Your Email" value={reservationDetails.email} onChangeText={(text) => setReservationDetails({ ...reservationDetails, email: text })} />
+                        <TextInput style={styles.modalInput} placeholder="Your CNIC" value={reservationDetails.CNIC} onChangeText={(text) => setReservationDetails({ ...reservationDetails, CNIC: text })} />
+                        <TextInput style={styles.modalInput} placeholder="Your Phone Number" value={reservationDetails.phone} onChangeText={(text) => setReservationDetails({ ...reservationDetails, phone: text })} />
 
-                        {/* Date Picker for From Date */}
-                        <Text style={styles.dateText}>From Date: {reservationDetails.fromDate ? reservationDetails.fromDate : 'Select Date'}</Text>
-                        <DatePicker
-                            selected={reservationDetails.fromDate ? new Date(reservationDetails.fromDate) : null}
-                            onChange={(date) => setReservationDetails({ ...reservationDetails, fromDate: moment(date).format('YYYY-MM-DD') })}
-                            dateFormat="yyyy/MM/dd"
-                            className="react-datepicker__input-container"
-                            placeholderText="Select Date"
-                        />
+                        <Text style={styles.dateText}>From Date:</Text>
+                        <DatePicker selected={reservationDetails.fromDate ? new Date(reservationDetails.fromDate) : null} onChange={(date) => setReservationDetails({ ...reservationDetails, fromDate: moment(date).format('YYYY-MM-DD') })} dateFormat="yyyy/MM/dd" />
 
-                        {/* Date Picker for To Date */}
-                        <Text style={styles.dateText}>To Date: {reservationDetails.toDate ? reservationDetails.toDate : 'Select Date'}</Text>
-                        <DatePicker
-                            selected={reservationDetails.toDate ? new Date(reservationDetails.toDate) : null}
-                            onChange={(date) => setReservationDetails({ ...reservationDetails, toDate: moment(date).format('YYYY-MM-DD') })}
-                            dateFormat="yyyy/MM/dd"
-                            className="react-datepicker__input-container"
-                            placeholderText="Select Date"
-                        />
+                        <Text style={styles.dateText}>To Date:</Text>
+                        <DatePicker selected={reservationDetails.toDate ? new Date(reservationDetails.toDate) : null} onChange={(date) => setReservationDetails({ ...reservationDetails, toDate: moment(date).format('YYYY-MM-DD') })} dateFormat="yyyy/MM/dd" />
+
+                        {/* Payment Method Picker */}
+                        <Text style={styles.dateText}>Payment Method:</Text>
+                        <Picker selectedValue={reservationDetails.paymentMethod} onValueChange={(itemValue) => setReservationDetails({ ...reservationDetails, paymentMethod: itemValue })}>
+                            <Picker.Item label="Online" value="ONLINE" />
+                            <Picker.Item label="Others" value="OTHERS" />
+                        </Picker>
 
                         <Button title="Submit Reservation" onPress={handleSubmitReservation} />
                         <Button title="Cancel" onPress={() => setModalVisible(false)} />
@@ -208,6 +212,7 @@ export default function ReservationScreen() {
         </ScrollView>
     );
 }
+
 
 
 const styles = StyleSheet.create({

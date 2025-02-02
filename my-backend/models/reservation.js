@@ -12,6 +12,16 @@ const reservationSchema = new mongoose.Schema({
         from: { type: Date, required: true }, // Start date of the reservation
         to: { type: Date, required: true },   // End date of the reservation
     },
+    paymentMethod: {
+        type: String,
+        enum: ["ONLINE", "OTHERS"],
+        required: true
+    }, // Payment method field
+    reservationStatus: {
+        type: String,
+        enum: ["PENDING", "CONFIRMED", "CANCELLED", "COMPLETED"],
+        default: "PENDING"
+    }, // Reservation status
     createdAt: { type: Date, default: Date.now }, // Automatically add reservation timestamp
 });
 
