@@ -22,7 +22,17 @@ function HotelAdmin() {
         functional: boolean;
     }
 
+    interface RoomDetails {
+        roomID: string;
+        room_type: string;
+        room_number: number;
+        rent: number;
+        available: boolean;
+        bed_size: string;
+    }
+
     interface Room {
+        _id: string;
         room_type: string;
         room_number: number;
         rent: number;
@@ -75,14 +85,42 @@ function HotelAdmin() {
         // Connect to Socket.IO server
         socket = io('http://localhost:3000');
 
-        socket.on('connect', () => console.log('Connected to Socket.IO server'));
-        socket.on('reservation-updated', (data: { placeID: string; reservationDetails: any }) => {
-            // If the hotel_id matches, update the reservations list
-            console.log("Data:", data);
+        socket.on('connect', () => console.log('Connection to Socket.IO server'));
+        socket.on('reservation-created', (data: { placeID: string, reservationDetails: any }) => {
             if (data.placeID === hotel_id) {
             setCurrentReservationRequests((prevCount: number) => prevCount + 1);  // Update based on your logic
             }
         });
+
+        socket.on("room_reserved", (data: { room: RoomDetails }) => {
+            console.log("Room Reserved Update:", data);
+
+            setRooms((prevRooms) => {
+                const updatedRooms = [...prevRooms];
+
+                // Check if room already exists, if yes, update availability
+                const roomIndex = updatedRooms.findIndex(room => room._id === data.room.roomID);
+
+                if (roomIndex !== -1) {
+                    updatedRooms[roomIndex] = { ...updatedRooms[roomIndex], available: data.room.available };
+                } else {
+                    updatedRooms.push({
+                        _id: data.room.roomID,
+                        room_type: data.room.room_type,
+                        room_number: data.room.room_number,
+                        rent: data.room.rent,
+                        available: data.room.available,
+                        bed_size: data.room.bed_size,
+                    });
+                }
+
+                return updatedRooms;
+            });
+
+            setCurrentReservationRequests((prevCount: number) => prevCount + 1);  // Update based on your logic
+            
+        });
+
 
         socket.on('disconnect', () => console.log('Disconnected from Socket.IO server'));
 
@@ -95,14 +133,15 @@ function HotelAdmin() {
         const fetchHotelData = async () => {
             try {
                 const hotelResponse: { data: { hotel: HotelDetails } } = await axios.get(`http://localhost:3000/hotels/${hotel_id}`);
-                    setHotelDetails(hotelResponse.data.hotel);
+                setHotelDetails(hotelResponse.data.hotel);
 
                 const roomsResponse = await axios.get(`http://localhost:3000/${hotel_id}/rooms`);
-                setRooms(roomsResponse.data.rooms);
 
+                // Ensure uniqueness before updating the state
+                setRooms(roomsResponse.data.rooms);
                 setLoading(false);
             } catch (err) {
-                setError('Error fetching data');
+                setError("Error fetching data");
                 setLoading(false);
             }
         };

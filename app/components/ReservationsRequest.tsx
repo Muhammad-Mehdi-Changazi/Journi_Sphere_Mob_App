@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import axios from 'axios';
+import io from 'socket.io-client';
 
+let socket;
 interface Reservation {
     _id: string;
     customer_name: string;
@@ -23,6 +25,27 @@ export default function ReservationRequests({ status, hotel_id }: ReservationReq
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        socket = io('http://localhost:3000');
+
+        socket.on('connect', () => console.log('Connection to Socket.IO server'));
+        socket.on('reservation-created', (data: { placeID: string, reservationDetails: any }) => {
+            console.log("Received reservation-created event:", data);
+
+            if (data.placeID === hotel_id) {
+                // Validate reservation data before updating the state
+                if (data.reservationDetails && data.reservationDetails._id) {
+                    setReservations((prevReservations) => {
+                        // Check if the reservation already exists to avoid duplicates
+                        if (!prevReservations.some((res) => res._id === data.reservationDetails._id)) {
+                            return [...prevReservations, data.reservationDetails];
+                        }
+                        return prevReservations;
+                    });
+                }
+            }
+        });
+        socket.on('disconnect', () => console.log('Disconnected from Socket.IO server'));
+
         const fetchReservations = async () => {
             console.log("hotel_id", hotel_id);
             try {
@@ -39,7 +62,6 @@ export default function ReservationRequests({ status, hotel_id }: ReservationReq
 
         fetchReservations();
     }, [status, hotel_id]);
-    
 
     const updateReservationStatus = async (id: string, newStatus: "CONFIRMED" | "CANCELLED") => {
         try {
@@ -132,3 +154,4 @@ const styles = StyleSheet.create({
     buttonText: { color: "white", fontWeight: "bold" },
     errorText: { fontSize: 18, color: "red" },
 });
+

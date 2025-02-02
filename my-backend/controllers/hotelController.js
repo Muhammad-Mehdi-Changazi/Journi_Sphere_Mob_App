@@ -3,10 +3,12 @@ const Hotel = require('../models/Hotel');
 const Reservation = require('../models/reservation')
 mongoose = require('mongoose');
 const Room = require('../models/Room');
-const { io } = require('../server'); // Adjust the path based on where your server file is located
+const { getSocket } = require('../socket')
+const io = getSocket();
 
 // Create a new hotel
 exports.createHotel = async (req, res) => {
+  const io = getSocket();
   try {
     const hotel = new Hotel(req.body);
     await hotel.save();
@@ -64,60 +66,104 @@ exports.getHotelById = async (req, res) => {
   }
 };
 
+
+
 // Create a reservation
 exports.createReservation = async (req, res) => {
+  const io = getSocket();
   try {
-    // console.log("Request Body", req.body);
-    const { reservationDetails } = req.body;
+    console.log("Request Body", req.body);
 
-    // Check if reservation details are provided
+    // Ensure reservationDetails is extracted correctly
+    const reservationDetails = req.body.reservationDetails || req.body;
+
     if (!reservationDetails) {
-      return res.status(400).json({ error: 'Reservation details are required.' });
+      return res.status(400).json({ error: "Reservation details are required." });
     }
 
-    // Get room_id and place_id from the request body
+    // Validate ObjectId format before converting
+    if (!mongoose.Types.ObjectId.isValid(reservationDetails.roomID)) {
+      return res.status(400).json({ error: "Invalid roomID format" });
+    }
+    if (!mongoose.Types.ObjectId.isValid(reservationDetails.placeID)) {
+      return res.status(400).json({ error: "Invalid placeID format" });
+    }
+
+    // Convert to ObjectId
     const roomId = new mongoose.Types.ObjectId(reservationDetails.roomID);
     const placeId = new mongoose.Types.ObjectId(reservationDetails.placeID);
 
-    // Validate the ObjectId format for room_id and place_id
-    if (!mongoose.Types.ObjectId.isValid(roomId)) {
-      return res.status(400).json({ error: 'Invalid room_id format' });
-    }
-    if (!mongoose.Types.ObjectId.isValid(placeId)) {
-      return res.status(400).json({ error: 'Invalid place_id format' });
-    }
-
-    reservationDetails.customer_name = reservationDetails.name;  // Map name to customer_name
-    reservationDetails.phone_number = reservationDetails.phone; // Map phone to phone_number
-    reservationDetails.room_ID = roomId; // Set room_ID
-    reservationDetails.hotel_ID = placeId; // Set hotel_ID
-    reservationDetails.CNIC = reservationDetails.CNIC; 
-
-    // Ensure reservation date fields are set correctly
-    reservationDetails.reservation_date = {
-      from: new Date(reservationDetails.fromDate), // Assuming front-end uses 'fromDate' and 'toDate'
-      to: new Date(reservationDetails.toDate),
+    // Construct reservation object
+    const newReservation = {
+      customer_name: reservationDetails.name,
+      phone_number: reservationDetails.phone,
+      email: reservationDetails.email,
+      CNIC: reservationDetails.CNIC,
+      paymentMethod: reservationDetails.paymentMethod,
+      reservationStatus: reservationDetails.reservationStatus,
+      room_ID: roomId,
+      hotel_ID: placeId,
+      reservation_date: {
+        from: new Date(reservationDetails.fromDate),
+        to: new Date(reservationDetails.toDate),
+      },
     };
 
-    // Create reservation
-    const reservation = new Reservation(reservationDetails);
-    await reservation.save();
+    // Save reservation
+    const reservation = new Reservation(newReservation);
+    const savedReservation = await reservation.save();
+
+    let room = null;
+
+    // If reservation is confirmed, update room availability
+    if (reservationDetails.reservationStatus === "CONFIRMED") {
+      room = await Room.findById(roomId);
+      if (!room) {
+        return res.status(404).json({ error: "Room not found" });
+      }
+
+      // Update room availability status
+      room.available = false;
+      await room.save();
+
+      console.log(`Room ${room.room_number} availability updated to false`);
+
+      // Emit real-time update to both admin and reservation screens
+      if (io) {
+        const roomData = {
+          roomID: room._id,
+          roomType: room.room_type,
+          roomNumber: room.room_number,
+          hotelID: room.hotel_id,
+          rent: room.rent,
+          available: room.available,
+          bedSize: room.bed_size,
+        };
+
+        io.emit("room_reserved", {room: roomData });
+      } else {
+        console.error("Socket.IO instance is undefined!");
+      }
+    }
 
     res.status(201).json({
-      message: 'Reservation created successfully',
-      reservation,
+      message: "Reservation created successfully",
+      reservation: savedReservation,
+      room: room, // Include room info in response
     });
 
-    // Emit event via Socket.IO
-    console.log(io);
+    // Emit event for new reservations
     if (io) {
-      console.log('Emitting reservation-created event');
-      io.emit('reservation-updated', { hotel_ID, reservationDetails });
+      io.emit("reservation-created", { placeID: placeId, reservationDetails: savedReservation });
+    } else {
+      console.error("Socket.IO instance is undefined!");
     }
   } catch (error) {
+    console.error("Error creating reservation:", error);
     res.status(500).json({ error: error.message });
   }
 };
+
 
 
 exports.getReservationsByHotelId = async (req, res) => {
