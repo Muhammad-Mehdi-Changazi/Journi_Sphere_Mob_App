@@ -40,9 +40,11 @@ export default function ReservationScreen() {
     });
 
     useEffect(() => {
-        socket = io('http://localhost:3000');
+
+        socket = io('http://34.226.13.20:3000'); // Connect to the Socket.IO server
         socket.on('connect', () => console.log('Connected to server'));
         socket.on('disconnect', () => console.log('Disconnected from server'));
+
 
         const fetchRooms = async () => {
             try {
@@ -75,20 +77,25 @@ export default function ReservationScreen() {
         }
         console.log('Reservation Details:', reservationDetails);
         try {
-            const response = await axios.post('http://localhost:3000/api/reservations', {
-                reservationDetails: {
-                    ...reservationDetails,
-                    roomID: reservationDetails.roomID,
-                    placeID: reservationDetails.placeID,
-                },
-            });
-            console.log('Reservation Sent!');
 
-            socket.emit('reservation-updated', { placeID, reservationDetails });
+            // Send reservation details to the backend
+            const response = await axios.post('http://34.226.13.20:3000/api/reservations', reservationDetails);
+            
+            console.log('Reservation Response:', response.data);
 
-            Alert.alert('Success', response.data.message);
-            setModalVisible(false);
-            setReservationDetails({ name: '', email: '', CNIC: '', phone: '', roomID: '', placeID: '', fromDate: null, toDate: null });
+            // Emit the reservation details to the Socket.IO server
+            socket.emit('reservation-updated', reservationDetails);
+
+            Alert.alert(
+                'Reservation Successful',
+                `Your reservation at ${placeName} for a ${roomType} has been confirmed.`
+            );
+
+            // Reset fields after reservation
+            setName('');
+            setEmail('');
+            setPhone('');
+            setRoomType('');
         } catch (error) {
             Alert.alert('Error', 'Failed to create reservation.');
         }

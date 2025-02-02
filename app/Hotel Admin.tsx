@@ -50,6 +50,7 @@ function HotelAdmin() {
     const [modalVisible, setModalVisible] = useState(false); // For controlling modal visibility
 
 
+
     const handleRoomClick = (room) => {
         setExpandedRoom(room);
         setModalVisible(true); // Show the modal when a room is clicked
@@ -69,20 +70,25 @@ function HotelAdmin() {
 
     const sidebarWidth = windowWidth > 768 && isSidebarOpen ? 250 : 0; // Sidebar width based on screen size and its state
 
-    useEffect(() => {
-        // Connect to Socket.IO server
-        socket = io('http://localhost:3000');
-
-        socket.on('connect', () => console.log('Connected to Socket.IO server'));
-        socket.on('disconnect', () => console.log('Disconnected from Socket.IO server'));
-
-        return () => {
-            socket.disconnect();
-        };
-    }, []);
 
     useEffect(() => {
-        const fetchHotelData = async () => {
+            socket = io('http://34.226.13.20:3000'); // Connect to Socket.IO server
+
+            socket.on('connect', () => {
+                console.log('Connected to Socket.IO server');
+            });
+
+            socket.on('disconnect', () => {
+                console.log('Disconnected from Socket.IO server');
+            });
+
+            return () => {
+                socket.disconnect();
+            };
+        }, []);
+
+    useEffect(() => {
+        const fetchHotelDetails = async () => {
             try {
                 const hotelResponse: { data: { hotel: HotelDetails } } = await axios.get(`http://localhost:3000/hotels/${hotel_id}`);
                     setHotelDetails(hotelResponse.data.hotel);
@@ -90,15 +96,66 @@ function HotelAdmin() {
                 const roomsResponse = await axios.get(`http://localhost:3000/${hotel_id}/rooms`);
                 setRooms(roomsResponse.data.rooms);
 
+                const response = await axios.get(`http://34.226.13.20:3000/api/hotels/${username}`);
+                setHotelDetails(response.data.hotel);
                 setLoading(false);
             } catch (err) {
-                setError('Error fetching data');
+                setError(err.response?.data?.error || err.message);
                 setLoading(false);
             }
         };
 
-        fetchHotelData();
-    }, [hotel_id]);
+        const fetchReservationRequests = async () => {
+            try {
+                if (!hotelDetails?.hotel_name) {
+                    throw new Error('Hotel name is missing');
+                }
+
+                const response = await axios.get(`http://34.226.13.20:3000/api/reservations/requests`, {
+                    params: { hotelName: hotelDetails.hotel_name }
+                });
+
+                setReservationRequests(response.data.requests);
+            } catch (err) {
+                console.error('Failed to fetch reservation requests', err);
+            }
+        };
+
+        fetchHotelDetails();
+
+        // Fetch reservation requests after hotel details are fetched
+        if (hotelDetails?.hotel_name) {
+            fetchReservationRequests();
+        }
+
+        // Listen for real-time reservation updates
+        socket.on('reservation-updated', (reservation) => {
+            try {
+                setReservationRequests((prevRequests) => [...prevRequests, reservation]);
+            } catch (err) {
+                console.error('Error handling reservation update', err);
+            }
+        });
+
+        return () => {
+            socket.off('reservation-updated');
+        };
+    }, [username, hotelDetails]);
+
+    const handleEditRoom = async (roomId) => {
+        try {
+            const response = await axios.put(`http://34.226.13.20:3000/api/rooms/${roomId}`, editedRoom);
+            setHotelDetails((prevDetails) => ({
+                ...prevDetails,
+                rooms: prevDetails.rooms.map((room) =>
+                    room._id === roomId ? response.data.room : room
+                ),
+            }));
+            setEditedRoom(null); // Clear the form
+        } catch (err) {
+            console.error('Error updating room details', err);
+        }
+    };
 
     useEffect(() => {
         const onChange = () => setWindowWidth(Dimensions.get('window').width);
@@ -109,20 +166,19 @@ function HotelAdmin() {
 
     if (loading) {
         return (
-            <View style={styles.centeredContainer}>
-                <Text style={styles.loadingText}>Loading hotel and room details...</Text>
+            <View style={styles.container}>
+                <Text style={styles.loadingText}>Loading hotel details...</Text>
             </View>
         );
     }
 
     if (error) {
         return (
-            <View style={styles.centeredContainer}>
+            <View style={styles.container}>
                 <Text style={styles.errorText}>Error: {error}</Text>
             </View>
         );
     }
-
     // Render content based on the selected screen
     const renderContent = () => {
         switch (activeScreen) {
@@ -308,7 +364,13 @@ function HotelAdmin() {
                 <TouchableOpacity style={styles.arrowIcon} onPress={() => setIsSidebarOpen(false)}>
                     <Icon name="arrow-back" size={30} color="black" />
                 </TouchableOpacity>
-            )}
+                <TouchableOpacity onPress={() => setActiveTab('requests')} style={[styles.tab, activeTab === 'requests' && styles.activeTab]}>
+                    <Text style={[styles.tabText, activeTab === 'requests' && styles.activeTabText]}>Reservation Requests</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setActiveTab('edit')} style={[styles.tab, activeTab === 'edit' && styles.activeTab]}>
+                    <Text style={[styles.tabText, activeTab === 'edit' && styles.activeTabText]}>Edit Room Info</Text>
+                </TouchableOpacity>
+            </View>
 
             {/* Sidebar */}
             <View style={[styles.sidebar, windowWidth > 768 && { position: 'relative', width: '20%' }, isSidebarOpen && { left: 0 }, !isSidebarOpen && { left: -250 }]}>
@@ -373,6 +435,90 @@ function HotelAdmin() {
                 {renderContent()}
             </ScrollView>
         </View>
+    ))
+) : (
+    <Text style={styles.text}>No rooms available</Text>
+)}
+                </View>
+            )}
+
+            {/* Reservation Requests Tab */}
+            {activeTab === 'requests' && (
+                <View style={styles.section}>
+                    <Text style={styles.sectionHeader}>Reservation Requests</Text>
+                    {reservationRequests.length > 0 ? (
+                        reservationRequests.map((reservation, index) => (
+                            <View key={index} style={styles.requestCard}>
+                                <Text style={styles.text}>Name: {reservation.name}</Text>
+                                <Text style={styles.text}>Email: {reservation.email}</Text>
+                                <Text style={styles.text}>Phone: {reservation.phone}</Text>
+                                <Text style={styles.text}>Room Type: {reservation.roomType}</Text>
+                            </View>
+                        ))
+                    ) : (
+                        <Text style={styles.text}>No reservation requests</Text>
+                    )}
+                </View>
+            )}
+            {activeTab === 'edit' && (
+    <View style={styles.section}>
+        <Text style={styles.sectionHeader}>Edit Room Info</Text>
+        {hotelDetails.rooms && hotelDetails.rooms.length > 0 ? (
+            hotelDetails.rooms.map((room, index) => (
+                <TouchableOpacity
+                    key={room._id || index}
+                    style={styles.roomCard}
+                    onPress={() => setEditedRoom(room)}
+                >
+                    <Text style={styles.roomHeader}>Room Type: {room.room_type}</Text>
+                    <Text style={styles.text}>Price: PKR {room.price}</Text>
+                    <Text style={styles.text}>Available: {room.available ? 'Yes' : 'No'}</Text>
+                    <Text style={styles.text}>Duplicates: {room.duplicates}</Text>
+                </TouchableOpacity>
+            ))
+        ) : (
+            <Text style={styles.text}>No rooms available</Text>
+        )}
+        {editedRoom && (
+            <View style={styles.section}>
+                <Text style={styles.sectionHeader}>Editing Room: {editedRoom.room_type}</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Price"
+                    keyboardType="numeric"
+                    value={String(editedRoom.price)}
+                    onChangeText={(value) =>
+                        setEditedRoom({ ...editedRoom, price: parseFloat(value) })
+                    }
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Duplicates"
+                    keyboardType="numeric"
+                    value={String(editedRoom.duplicates)}
+                    onChangeText={(value) =>
+                        setEditedRoom({ ...editedRoom, duplicates: parseInt(value, 10) })
+                    }
+                />
+                <TouchableOpacity
+                    style={[styles.tab, { backgroundColor: editedRoom.available ? 'green' : 'red' }]}
+                    onPress={() =>
+                        setEditedRoom((prev) => ({ ...prev, available: !prev.available }))
+                    }
+                >
+                    <Text style={{ color: 'white', fontWeight: 'bold' }}>
+                        Available: {editedRoom.available ? 'Yes' : 'No'}
+                    </Text>
+                </TouchableOpacity>
+                <Button
+                    title="Save Changes"
+                    onPress={() => handleEditRoom(editedRoom._id)}
+                />
+            </View>
+        )}
+    </View>
+)}
+        </ScrollView>
     );
 }
 
@@ -501,3 +647,4 @@ const styles = StyleSheet.create({
 });
 
 export default HotelAdmin;
+
