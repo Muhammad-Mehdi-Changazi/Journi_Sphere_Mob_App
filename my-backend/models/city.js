@@ -9,7 +9,7 @@ const citySchema = new mongoose.Schema({
   description: { type: String, required: false }, // Existing field
   places: { type: [String], required: false },
   food: { type: [String], required: false },
-  tourist: { type: [], required: false },
+  //tourist: { type: [], required: false },
 });
 
 const City = mongoose.model('City', citySchema, 'city'); // Collection name is 'city'
