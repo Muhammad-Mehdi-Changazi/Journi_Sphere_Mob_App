@@ -1,31 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, FlatList, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, FlatList, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter, useLocalSearchParams } from 'expo-router'; // Use expo-router imports
-import ProtectedRoute from './components/protectedroute'; // Import ProtectedRoute component
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import ProtectedRoute from './components/protectedroute';
 
 interface Review {
   id: string;
   user: string;
   rating: number;
   comment: string;
-  userProfileImage: string; // Adding profile image for the user
+  userProfileImage: string;
 }
 
-const STAR_ICON = "★"; // Star icon for rating
+const STAR_ICON = "★";
 
-// Function to display star rating
-const renderStars = (rating: number) => {
-  const stars = Array(5).fill(STAR_ICON).map((star, index) =>
-    index < rating ? <Text key={index} style={styles.starFilled}>{star}</Text> : <Text key={index} style={styles.starEmpty}>{star}</Text>
+const renderStars = (rating: number, setRating?: (value: number) => void) => {
+  return (
+    <View style={styles.ratingContainer}>
+      {[1, 2, 3, 4, 5].map((star) => (
+        <TouchableOpacity key={star} onPress={() => setRating && setRating(star)}>
+          <Text style={star <= rating ? styles.starFilled : styles.starEmpty}>{STAR_ICON}</Text>
+        </TouchableOpacity>
+      ))}
+    </View>
   );
-  return <View style={styles.ratingContainer}>{stars}</View>;
 };
 
 export default function Reviews() {
-  const router = useRouter(); // Use expo-router's useRouter for navigation
-  const { placeName } = useLocalSearchParams<{ placeName: string }>(); // Use useLocalSearchParams for URL params
+  const router = useRouter();
+  const { placeName } = useLocalSearchParams<{ placeName: string }>();
 
   const [reviews, setReviews] = useState<Review[]>([]);
   const [newReview, setNewReview] = useState('');
@@ -37,42 +41,28 @@ export default function Reviews() {
     loadUsername();
   }, []);
 
-  // Fetch reviews from the backend
   const fetchReviews = async () => {
     try {
       const response = await axios.get(`http://34.226.13.20:3000/Reviews?placeName=${placeName}`);
-        setReviews(response.data);
+      setReviews(response.data);
     } catch (error) {
       console.error('Error fetching reviews:', error);
     }
   };
 
-  // Load the username from AsyncStorage
   const loadUsername = async () => {
     try {
       const storedUsername = await AsyncStorage.getItem('username');
-      if (storedUsername) {
-        setUsername(storedUsername);
-        console.log('Loaded username:', storedUsername);
-      }
+      if (storedUsername) setUsername(storedUsername);
     } catch (error) {
       console.error('Error loading username:', error);
     }
   };
 
-  // Submit a new review
   const submitReview = async () => {
     if (!newReview || rating <= 0 || !username) return;
 
-    const token = await AsyncStorage.getItem('authToken');
-
-    if (!token) {
-      console.error('User not authenticated');
-      return;
-    }
-
     try {
-      // Send the review to the backend
       await axios.post(`http://34.226.13.20:3000/Reviews`, {
         placeName,
         user: username,
@@ -91,17 +81,15 @@ export default function Reviews() {
   return (
     <ProtectedRoute>
       <View style={styles.container}>
-        <Text style={styles.header}>Reviews for {placeName}</Text>
+        <Text style={styles.header}>Reviews of</Text>
+        <Text style={styles.header1}>{placeName} </Text>
         <FlatList
           data={reviews}
           keyExtractor={(review) => review.id}
           renderItem={({ item }) => (
             <View style={styles.reviewCard}>
               <View style={styles.reviewHeader}>
-                <Image
-                  source={{ uri: item.userProfileImage || 'https://via.placeholder.com/40' }}
-                  style={styles.profileImage}
-                />
+                <Image source={{ uri: item.userProfileImage || 'https://via.placeholder.com/40' }} style={styles.profileImage} />
                 <Text style={styles.userName}>{item.user}</Text>
               </View>
               {renderStars(item.rating)}
@@ -110,20 +98,11 @@ export default function Reviews() {
           )}
         />
         <Text style={styles.subHeader}>Add a Review</Text>
-        <TextInput
-          placeholder="Write your review"
-          value={newReview}
-          onChangeText={setNewReview}
-          style={styles.input}
-        />
-        <TextInput
-          placeholder="Rating (1-5)"
-          value={rating.toString()}
-          onChangeText={(text) => setRating(Number(text))}
-          keyboardType="numeric"
-          style={styles.input}
-        />
-        <Button title="Submit" onPress={submitReview} />
+        <TextInput placeholder="Write your review ..." value={newReview} onChangeText={setNewReview} style={styles.input} />
+        {renderStars(rating, setRating)}
+        <TouchableOpacity style={styles.submitButton} onPress={submitReview}>
+          <Text style={styles.submitText}>Submit</Text>
+        </TouchableOpacity>
       </View>
     </ProtectedRoute>
   );
@@ -132,22 +111,34 @@ export default function Reviews() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: 20,
+    backgroundColor: '#f9f9f9',
   },
   header: {
-    fontSize: 24,
+    marginTop: 10,
+    fontSize: 20,
+    fontWeight: 'semibold',
+    fontFamily: 'Abhaya Libre Medium',
+    marginBottom: 5,
+    color: '#333',
+    marginHorizontal: 'auto',
+  },
+  header1: {
+    fontSize: 28,
+    fontFamily: 'montserrat',
     fontWeight: 'bold',
     marginBottom: 16,
     color: '#333',
+    marginHorizontal: 'auto',
   },
   reviewCard: {
     backgroundColor: '#fff',
-    padding: 16,
+    padding: 12,
     marginVertical: 8,
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
+    borderRadius: 20,
+    shadowColor: '#000000',
+    shadowOpacity: 0.9,
+    shadowRadius: 10,
     elevation: 3,
   },
   reviewHeader: {
@@ -160,6 +151,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     marginRight: 12,
+    backgroundColor: '#ccc',
   },
   userName: {
     fontWeight: 'bold',
@@ -172,11 +164,13 @@ const styles = StyleSheet.create({
   },
   starFilled: {
     color: '#FFD700',
-    fontSize: 18,
+    fontSize: 27,
+    marginRight: 4,
   },
   starEmpty: {
     color: '#D3D3D3',
-    fontSize: 18,
+    fontSize: 27,
+    marginRight: 4,
   },
   comment: {
     fontSize: 14,
@@ -191,8 +185,23 @@ const styles = StyleSheet.create({
   input: {
     borderColor: '#ccc',
     borderWidth: 1,
-    padding: 8,
-    marginBottom: 8,
-    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 20,
+    backgroundColor: '#fff',
+  },
+  submitButton: {
+    backgroundColor: '#007bff',
+    paddingVertical: 12,
+    borderRadius: 20,
+    alignItems: 'center',
+    marginTop: 10,
+    width: '90%',
+    marginHorizontal: 'auto',
+  },
+  submitText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
