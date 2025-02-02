@@ -46,7 +46,7 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://34.226.13.20:3000/login', { email, password });
+      const response = await axios.post('https://d1lxguzc6q41zr.cloudfront.net/login', { email, password });
       const { token } = response.data;
 
       await AsyncStorage.setItem('authToken', token);

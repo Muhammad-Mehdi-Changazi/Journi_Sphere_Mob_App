@@ -22,7 +22,7 @@ const HotelsList: React.FC = () => {
   useEffect(() => {
     const fetchHotels = async () => {
       try {
-        const response = await axios.get('http://34.226.13.20:3000/hotels');  
+        const response = await axios.get('https://d1lxguzc6q41zr.cloudfront.net/hotels');  
         setHotels(response.data);
         
       } catch (error) {

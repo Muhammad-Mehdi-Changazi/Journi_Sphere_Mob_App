@@ -54,7 +54,7 @@ export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState("touristSpots");
 
   const WEATHER_API = 'IrcewJS0mpnHD8YvYx0F21aMGnqdlwLx';
-  const API_BASE_URL = "http://34.226.13.20:3000";
+  const API_BASE_URL = "https://d1lxguzc6q41zr.cloudfront.net";
   const GOOGLE_API_KEY = "AIzaSyDx_TwV8vhwbKTTWn0tV2BVRDGIipfwzlc"; // Replace with your actual Google API key
   const hasFetchedWeather = useRef(false);
 

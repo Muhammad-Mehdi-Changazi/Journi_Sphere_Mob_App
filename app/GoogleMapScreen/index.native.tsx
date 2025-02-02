@@ -88,9 +88,10 @@ export default function GoogleMapScreen() {
 
         const points = dirResponse.data.routes[0].overview_polyline.points;
         setRouteCoordinates(decodePolyline(points));
-      } catch (err) {
-        Alert.alert('Error', err.message || 'Something went wrong');
-        setError(err.message);
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Something went wrong';
+        Alert.alert('Error', errorMessage);
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
@@ -231,4 +232,3 @@ const styles = StyleSheet.create({
     padding: 20,
   },
 });
-

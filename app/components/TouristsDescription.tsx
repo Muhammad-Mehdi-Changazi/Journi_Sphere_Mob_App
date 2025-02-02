@@ -12,7 +12,7 @@
 //   useEffect(() => {
 //     const fetchCityDetails = async () => {
 //       try {
-//         const response = await axios.get(`http://34.226.13.20:3000/api/cities/${cityName}`);
+//         const response = await axios.get(`https://d1lxguzc6q41zr.cloudfront.net/api/cities/${cityName}`);
 //         setCity(response.data);
 //       } catch (error) {
 //         console.error(`Error fetching ${cityName} details:`, error);
