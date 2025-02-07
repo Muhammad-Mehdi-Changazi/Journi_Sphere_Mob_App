@@ -21,7 +21,7 @@ router.post('/reviews', reviewController.createReview);
 router.get('/api/cities', cityController.getCities);
 
 // Tourism Routes
-// router.get('/api/tourist-spots/:city', tourismController.getCityByName);
+router.get('/api/tourist-spots/', tourismController.fetchCitySpots);
 
 // Recommendation Routes
 router.get('/recommendations', recommendationController.getRecommendations);
