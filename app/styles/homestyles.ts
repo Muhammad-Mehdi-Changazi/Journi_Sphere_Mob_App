@@ -107,6 +107,22 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 3,
   },
+  placeCard2: {
+    width: 150,
+    height: 200,
+    backgroundColor: '#FFF',
+    borderRadius: 15,
+    marginRight: 4,
+    marginLeft: 4,
+    marginTop: 4,
+    marginBottom: 10,
+
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+  },
   placeImage: {
     width: '100%',
     height: '100%',
@@ -121,10 +137,33 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     alignItems: 'center',
   },
+  placeOverlay2: {
+    position: 'absolute',
+    top: 5,
+    left: 10,
+    right: 12,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    paddingVertical: 5,
+    borderRadius: 12,
+  },
+  placeUnderlay: {
+    backgroundColor: 'rgba(0,0,0,0.25)',
+    borderRadius: 15,
+    marginTop: 0, 
+    marginBottom: 15, // 15 for small phone.
+    marginLeft: 5, 
+    marginRight: 0,
+  },
   placeName: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#FFF',
+  },
+  placeName2: {
+    fontSize: 12,
+    fontWeight: 'normal',
+    color: '#FFF',
+    left: 5,
   },
   navigationButton: {
     backgroundColor: '#007bff',
@@ -208,6 +247,17 @@ const styles = StyleSheet.create({
     height: 45,
     justifyContent: 'center',
   },
+  button2: {
+    backgroundColor: '#007BFF',
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    marginLeft: 40,
+    bottom: 8,
+    width: 90,
+    height: 15,
+    justifyContent: 'center',
+  },
+  
   buttonText: {
     color: '#fff',
     fontSize: 9,
