@@ -1,26 +1,5 @@
-// // Get a specific city's tourist spots
-// app.get("/api/tourist-spots/:city", async (req, res) => {
-//   try {
-//     const city = await Tourism.findOne({ name: req.params.city });
-//     if (!city) return res.status(404).json({ message: "City not found" });
-//     res.json(city);
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// });
-
 const axios = require("axios");
 const TourismModel = require("../models/tourism");
-
-// Fetch a specific city's tourist spots
-// exports.fetchCitySpots = async (city) => {
-//   try {
-//     const response = await axios.get(`${API_URL}/${city}`);
-//     return response.data;
-//   } catch (error) {
-//     console.error(`Error fetching spots for ${city}:`, error);
-//   }
-// };
 
 exports.fetchCitySpots = async (req, res) => {
   const { cityName } = req.query;
@@ -35,3 +14,28 @@ exports.fetchCitySpots = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.getTouristSpot = async (req, res) => {
+  try {
+    const { city, spotName } = req.query;
+    // Find city and match specific tourist spot
+    const cityData = await TourismModel.findOne({ name: city });
+
+    if (!cityData) {
+      return res.status(404).json({ message: "City not found" });
+    }
+
+    const touristSpot = cityData.touristSpots.find(
+      (spot) => spot.name.toLowerCase() === spotName.toLowerCase()
+    );
+
+    if (!touristSpot) {
+      return res.status(404).json({ message: "Tourist spot not found" });
+    }
+
+    res.json(touristSpot);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+

@@ -9,7 +9,7 @@ import {
   TextInput,
   Dimensions,
 } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter, useLocalSearchParams, usePathname } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import ProtectedRoute from "./components/protectedroute";
 import axios from "axios";
@@ -26,19 +26,22 @@ const cities = [
 export default function HomeScreen() {
   // Retrieve city info from URL parameters.
   const { city } = useLocalSearchParams();
-  const cityData = city
-    ? JSON.parse(city as string)
-    : { name: "", places: [], foods: [] };
+  const cityData = city ? JSON.parse(city as string) : { name: "", places: [], foods: [] };
 
   const router = useRouter();
-
+  // Tourist routing handler
+  const handleViewSpot = (city: string, spotName: string) => {
+    router.push({
+      pathname: "/TouristSpotScreen",
+      params: { city, spotName },
+    });
+  };
   // Screen dimensions to conditionally adjust layout on small screens.
   const screenWidth = Dimensions.get("window").width;
-  const { height } = Dimensions.get('window'); 
-  
+  const { height } = Dimensions.get("window");
+
   const isSmallScreen = screenWidth < 375;
   const isTallScreen = height > 800;
-
 
   // State for content, search, and tabs.
   const [touristSpots, setTouristSpots] = useState<any[]>([]);
@@ -63,19 +66,19 @@ export default function HomeScreen() {
   const WEATHER_API = "IrcewJS0mpnHD8YvYx0F21aMGnqdlwLx";
   // const API_BASE_URL = "https://d1lxguzc6q41zr.cloudfront.net";
   const API_BASE_URL = "http://10.130.82.190:3000"; // changed localhost to IP address to fix error. replace with your IP for local testing. switch to upper url for deployment
-  const GOOGLE_API_KEY = "AIzaSyDx_TwV8vhwbKTTWn0tV2BVRDGIipfwzlc"; 
+  const GOOGLE_API_KEY = "AIzaSyDx_TwV8vhwbKTTWn0tV2BVRDGIipfwzlc";
   const hasFetchedWeather = useRef(false);
 
   // Fetch tourist spots if the active tab is "touristSpots"
   useEffect(() => {
     if (activeTab !== "touristSpots") return;
     setLoading(true);
-    console.log("The city",cityData);
+    console.log("The city", cityData);
     axios
-      .get(`${API_BASE_URL}/api/tourist-spots`,{
-        params:{
-          cityName:selectedCity
-        }
+      .get(`${API_BASE_URL}/api/tourist-spots`, {
+        params: {
+          cityName: cityData.name,
+        },
       })
       .then((response) => {
         console.log(response.data);
@@ -206,46 +209,39 @@ export default function HomeScreen() {
       return <ActivityIndicator size="large" color="#A8CCF0" />;
     }
     if (activeTab === "touristSpots") {
-      console.log("Hello", touristSpots.touristSpots)
+      console.log("Hello", touristSpots.touristSpots);
       return (
         <FlatList
           data={touristSpots.touristSpots}
           horizontal
-          keyExtractor={(item) =>
-            item._id ? item._id.toString() : item.name
-          }
+          keyExtractor={(item) => (item._id ? item._id.toString() : item.name)}
           renderItem={({ item }) => (
-            <View 
-              style ={[
-                styles.placeUnderlay, 
-                isTallScreen && {marginBottom: 15 + height*0.25},
-              ]}>
+            <View
+              style={[
+                styles.placeUnderlay,
+                isTallScreen && { marginBottom: 15 + height * 0.25 },
+              ]}
+            >
               <TouchableOpacity
                 style={styles.placeCard2}
-                onPress={() =>
-                  router.push({
-                    pathname: "/details", // change to desired path
-                    params: { spot: JSON.stringify(item) },
-                  })
-                }
+                onPress={() => handleViewSpot(cityData.name, item.name)}
               >
                 <Image source={{ uri: item.image }} style={styles.placeImage} />
                 <View style={styles.placeOverlay2}>
                   <Text style={styles.placeName2}>{item.name}</Text>
                 </View>
               </TouchableOpacity>
-            
-              <TouchableOpacity 
+
+              <TouchableOpacity
                 style={[
-                  styles.button2, 
-                  isTallScreen && {marginTop: height*0.01, height: 25},
+                  styles.button2,
+                  isTallScreen && { marginTop: height * 0.01, height: 25 },
                 ]}
                 onPress={() => handleNavigate(item.name)}
               >
                 <Text style={styles.buttonText}>Navigate</Text>
               </TouchableOpacity>
             </View>
-            
           )}
           showsHorizontalScrollIndicator={false}
         />
