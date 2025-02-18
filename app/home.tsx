@@ -64,8 +64,8 @@ export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState("touristSpots");
 
   const WEATHER_API = "IrcewJS0mpnHD8YvYx0F21aMGnqdlwLx";
-  // const API_BASE_URL = "https://d1lxguzc6q41zr.cloudfront.net";
-  const API_BASE_URL = "http://10.130.82.190:3000"; // changed localhost to IP address to fix error. replace with your IP for local testing. switch to upper url for deployment
+  const API_BASE_URL = "https://d1lxguzc6q41zr.cloudfront.net";
+  //const API_BASE_URL = "http://10.130.82.190:3000"; // changed localhost to IP address to fix error. replace with your IP for local testing. switch to upper url for deployment
   const GOOGLE_API_KEY = "AIzaSyDx_TwV8vhwbKTTWn0tV2BVRDGIipfwzlc";
   const hasFetchedWeather = useRef(false);
 
@@ -171,7 +171,7 @@ export default function HomeScreen() {
             params: {
               query: query,
               location: `${coords?.lat},${coords?.lng}`,
-              radius: 10000, // radius in meters (adjust as needed)
+              radius: 10000, // radius in meters 
               key: GOOGLE_API_KEY,
             },
           }

@@ -30,8 +30,8 @@ const TouristSpotScreen = () => {
   
   // fetch spot
   useEffect(() => {
-    const API_BASE_URL = "http://10.130.82.190:3000"; 
-      // const API_BASE_URL = "https://d1lxguzc6q41zr.cloudfront.net";
+    // const API_BASE_URL = "http://10.130.82.190:3000"; 
+      const API_BASE_URL = "https://d1lxguzc6q41zr.cloudfront.net";
 
     setLoading(true);
     axios
