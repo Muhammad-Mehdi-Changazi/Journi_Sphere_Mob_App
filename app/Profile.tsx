@@ -281,24 +281,26 @@ export default function Profile() {
           </View>
           {renderContent()}
       </View>
-      <View style={styles.footMneu}>
-        <View
-          style={[
-            styles.buttonsContainer
-             && {
-              flexDirection: "column",
-              alignItems: "stretch",
-            },
-          ]}
-        >
-          <TouchableOpacity 
-            style={styles.button} 
-            onPress={() => handleBack(city)}
-            >
-              <Text style={styles.buttonText}>Home</Text>
-          </TouchableOpacity> 
+      {/* <View style ={styles.shadowBox}> */}
+        <View style={styles.footMneu}>
+          <View
+            style={[
+              styles.buttonsContainer
+              && {
+                flexDirection: "column",
+                alignItems: "stretch",
+              },
+            ]}
+          >
+            <TouchableOpacity 
+              style={styles.button} 
+              onPress={() => handleBack(city)}
+              >
+                <Text style={styles.buttonText}>Home</Text>
+            </TouchableOpacity> 
+          </View>
         </View>
-      </View>
+      {/* </View> */}
     </ProtectedRoute>
   );
 }

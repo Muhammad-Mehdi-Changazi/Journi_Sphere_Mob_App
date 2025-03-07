@@ -270,18 +270,18 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#ffffff',
-    padding: 20,
-    width: "100%", 
+    padding: 7,
+    width: "100%",
+    height: 72, 
     alignItems: "center",
-    borderRadius: 15,
-
-    shadowColor: '#0077BE',
-    shadowOffset: { width: 10, height: 10 },
-    shadowOpacity: 0.5,
-    shadowRadius: 10,
-    elevation: 10
+    borderTopRightRadius:32,
+    borderTopLeftRadius:32,
+    backgroundColor: '#ffffff', // Uncomment or set a background color as needed
+    elevation: 5, // Android: this creates the shadow
+    
+    boxShadow: "0px 0px 30px -10px #176FF2"
   },
+  
   input: { 
     borderWidth: 1,
     borderColor: '#ddd',
