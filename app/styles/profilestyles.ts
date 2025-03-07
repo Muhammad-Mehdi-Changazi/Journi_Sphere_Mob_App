@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   tabsContainer: {
-    marginLeft: -15,
+    marginLeft: 15,
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 33,
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   activeTab: {
-    paddingVertical: 8,
+    paddingVertical: 12,
     paddingHorizontal: 15,
     borderRadius: 30,
     backgroundColor: '#A8CCF0',
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Abhaya Libre Medium',
   },
   inactiveTab: {
-    paddingVertical: 8,
+    paddingVertical: 12,
     paddingHorizontal: 15,
     borderRadius: 20,
     backgroundColor: '#FFF',
@@ -84,16 +84,36 @@ const styles = StyleSheet.create({
     color: '#B8B8B8',
     fontFamily: 'Abhaya Libre Medium',
   },
+tabsScrollView: {
+    maxHeight: 70,
+    backgroundColor: '#FFF', // Ensure it's not black
+    paddingVertical: 10, // Adjust padding if necessary
+},
+
   sectionTitle: {
-    fontSize: 21,
+    fontSize: 25,
     fontWeight: '600',
     marginTop: 40,
     marginBottom: 15,
     paddingHorizontal: 10,
   },
+  sectionTitle2: {
+    fontSize: 30,
+    fontWeight: '600',
+    marginTop: 40,
+    marginBottom: 15,
+    paddingHorizontal: 10,
+    color: '#033577',
+  },
+  
+  sectionTitle_review: {
+    fontSize: 21,
+    fontWeight: '600',
+  },
+
   placesScrollView: {
     flexDirection: 'row',
-    paddingVertical: 10,
+    paddingVertical: 130,
   },
   placeCard: {
     width: 150,
@@ -257,7 +277,51 @@ const styles = StyleSheet.create({
     height: 15,
     justifyContent: 'center',
   },
-  
+  button3: {
+    backgroundColor: '#007BFF',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 30,
+    marginVertical: 5,
+    width: 110,
+    height: 45,
+    justifyContent: 'center',
+  },
+  button_home_back: {
+    backgroundColor: '#007BFF',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 30,
+    marginVertical: 5,
+    width: 110,
+    height: 45,
+    justifyContent: 'center',
+    bottom: 27,
+  },
+  footMneu_home: {
+    position: 'absolute',
+    bottom: -45,
+    left: 0,
+    right: 0,
+    backgroundColor: '#ADD8E6',
+    padding: 20,
+    width: "100%", 
+    alignItems: "center",
+    borderRadius: 15,
+
+    shadowColor: '#0077BE',
+    shadowOffset: { width: 10, height: 10 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 10
+  },
+  buttonText_home: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontFamily: 'Abhaya Libre Medium',
+  },
   buttonText: {
     color: '#fff',
     fontSize: 9,
@@ -287,7 +351,7 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     padding: 10,
     marginBottom: 10,
-    borderRadius: 5 
+    borderRadius: 15 
   },
   reviewCard: {
     backgroundColor: '#fff',
