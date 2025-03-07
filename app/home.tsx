@@ -544,10 +544,16 @@ export default function HomeScreen() {
         >
           <TouchableOpacity 
             style={styles.button} 
+            //onPress={() => handleProfile(email, cityData.name)}
+            >
+              <Text style={styles.buttonText}>Home</Text>
+          </TouchableOpacity>  
+          <TouchableOpacity 
+            style={styles.button} 
             onPress={() => handleProfile(email, cityData.name)}
             >
               <Text style={styles.buttonText}>Profile</Text>
-          </TouchableOpacity> 
+          </TouchableOpacity>
         </View>
       </View>
     </ProtectedRoute>

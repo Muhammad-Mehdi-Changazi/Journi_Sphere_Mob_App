@@ -236,6 +236,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 12,
+    width: '50%', 
   },
   button: {
     backgroundColor: '#007BFF',
@@ -270,15 +271,14 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    padding: 7,
+    padding: 0, //12
     width: "100%",
     height: 72, 
     alignItems: "center",
     borderTopRightRadius:32,
     borderTopLeftRadius:32,
-    backgroundColor: '#ffffff', // Uncomment or set a background color as needed
-    elevation: 5, // Android: this creates the shadow
-    
+    backgroundColor: '#ffffff', 
+    elevation: 5, 
     boxShadow: "0px 0px 30px -10px #176FF2"
   },
   
