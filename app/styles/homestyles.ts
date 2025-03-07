@@ -237,7 +237,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 12,
     width: '50%', 
-
+  },
+  buttonsContainer2: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 12,
+    width: '50%', 
   },
   button: {
     backgroundColor: '#007BFF',
@@ -267,7 +272,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Abhaya Libre Medium',
   },
-  footMneu: {
+  footMenu: {
     position: 'absolute',
     bottom: 0,
     left: 0,

@@ -232,11 +232,17 @@ const styles = StyleSheet.create({
     color: '#666',
     marginBottom: 4,
   },
-  buttonsContainer: {
+  buttonsContainer2: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 12,
     width: '50%', 
+  },
+  buttonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 12,
+    //width: '50%', 
   },
   button: {
     backgroundColor: '#007BFF',

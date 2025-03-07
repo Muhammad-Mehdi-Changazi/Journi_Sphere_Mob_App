@@ -16,7 +16,7 @@ import axios from "axios";
 import RNPickerSelect from "react-native-picker-select";
 import { styles, pickerSelectStyles } from "./styles/homestyles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import Footer from "./components/Footer";
 
 const cities = [
   { label: "Islamabad", value: "Islamabad" },
@@ -28,7 +28,9 @@ const cities = [
 export default function HomeScreen() {
   // Retrieve city info from URL parameters.
   const { city } = useLocalSearchParams();
-  const cityData = city ? JSON.parse(city as string) : { name: "", places: [], foods: [] };
+  const cityData = city
+    ? JSON.parse(city as string)
+    : { name: "", places: [], foods: [] };
 
   const router = useRouter();
   // Tourist routing handler
@@ -55,7 +57,6 @@ export default function HomeScreen() {
   const [searchLoading, setSearchLoading] = useState(false);
   const [email, setEmail] = useState("");
 
-
   // DROP DOWN MENU MAN
   const [selectedCity, setSelectedCity] = useState(cityData.name);
 
@@ -76,14 +77,13 @@ export default function HomeScreen() {
   // setting email to access profile if active tab is "touristSpots"
   const loadEmail = async () => {
     try {
-      const storedEmail = await AsyncStorage.getItem('email');
+      const storedEmail = await AsyncStorage.getItem("email");
       if (storedEmail) setEmail(storedEmail);
     } catch (error) {
-      console.error('Error loading email:', error);
+      console.error("Error loading email:", error);
     }
   };
-  
-  
+
   // Fetch tourist spots if the active tab is "touristSpots"
   useEffect(() => {
     if (activeTab !== "touristSpots") return;
@@ -157,9 +157,9 @@ export default function HomeScreen() {
   const handleProfile = (email: string, city: string) => {
     router.push({
       pathname: "/Profile",
-      params: { email , city},
+      params: { email, city },
     });
-  }
+  };
   // Re-implemented handleSearch using Google Places Text Search API.
   const handleSearch = async (query: string) => {
     setSearchQuery(query);
@@ -193,7 +193,7 @@ export default function HomeScreen() {
             params: {
               query: query,
               location: `${coords?.lat},${coords?.lng}`,
-              radius: 10000, // radius in meters 
+              radius: 10000, // radius in meters
               key: GOOGLE_API_KEY,
             },
           }
@@ -237,7 +237,9 @@ export default function HomeScreen() {
           <FlatList
             data={touristSpots.touristSpots}
             horizontal
-            keyExtractor={(item) => (item._id ? item._id.toString() : item.name)}
+            keyExtractor={(item) =>
+              item._id ? item._id.toString() : item.name
+            }
             renderItem={({ item }) => (
               <View
                 style={[
@@ -249,7 +251,10 @@ export default function HomeScreen() {
                   style={styles.placeCard2}
                   onPress={() => handleViewSpot(cityData.name, item.name)}
                 >
-                  <Image source={{ uri: item.image }} style={styles.placeImage} />
+                  <Image
+                    source={{ uri: item.image }}
+                    style={styles.placeImage}
+                  />
                   <View style={styles.placeOverlay2}>
                     <Text style={styles.placeName2}>{item.name}</Text>
                   </View>
@@ -532,30 +537,17 @@ export default function HomeScreen() {
           </>
         )}
       </View>
-      <View style={styles.footMneu}>
-        <View
-          style={[
-            styles.buttonsContainer,
-            isSmallScreen && {
-              flexDirection: "column",
-              alignItems: "stretch",
-            },
-          ]}
-        >
-          <TouchableOpacity 
-            style={styles.button} 
-            //onPress={() => handleProfile(email, cityData.name)}
-            >
-              <Text style={styles.buttonText}>Home</Text>
-          </TouchableOpacity>  
-          <TouchableOpacity 
-            style={styles.button} 
-            onPress={() => handleProfile(email, cityData.name)}
-            >
-              <Text style={styles.buttonText}>Profile</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      <Footer
+        Links={[
+          // {
+          //   Icon: (
+          //   ),
+          // },
+        ]}
+        handleProfile={handleProfile}
+        cityName={cityData.name}
+        email={email}
+      />
     </ProtectedRoute>
   );
 }

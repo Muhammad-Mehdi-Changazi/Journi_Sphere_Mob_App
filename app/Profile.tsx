@@ -283,7 +283,13 @@ export default function Profile() {
       </View>
       <View style={styles.footMneu}>
         <View
-          style={[styles.buttonsContainer]}
+          style={[
+            styles.buttonsContainer
+            // && {
+            //   //flexDirection: "column",
+            //   //alignItems: "stretch",
+            // },
+          ]}
         >
           <TouchableOpacity 
             style={styles.button} 
