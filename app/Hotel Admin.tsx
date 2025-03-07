@@ -83,7 +83,7 @@ function HotelAdmin() {
 
     useEffect(() => {
         // Connect to Socket.IO server
-        socket = io('https://d1lxguzc6q41zr.cloudfront.net');
+        socket = io('http://10.130.82.190:3000'/*'https://d1lxguzc6q41zr.cloudfront.net'*/);
 
         socket.on('connect', () => console.log('Connection to Socket.IO server'));
         socket.on('reservation-created', (data: { placeID: string, reservationDetails: any }) => {
@@ -132,10 +132,10 @@ function HotelAdmin() {
     useEffect(() => {
         const fetchHotelData = async () => {
             try {
-                const hotelResponse: { data: { hotel: HotelDetails } } = await axios.get(`https://d1lxguzc6q41zr.cloudfront.net/hotels/${hotel_id}`);
+                const hotelResponse: { data: { hotel: HotelDetails } } = await axios.get(/*`https://d1lxguzc6q41zr.cloudfront.net/hotels/${hotel_id}`*/ `http://10.130.82.190:3000/hotels/${hotel_id}`);
                 setHotelDetails(hotelResponse.data.hotel);
 
-                const roomsResponse = await axios.get(`https://d1lxguzc6q41zr.cloudfront.net/${hotel_id}/rooms`);
+                const roomsResponse = await axios.get(/*`https://d1lxguzc6q41zr.cloudfront.net/${hotel_id}/rooms`*/ `http://10.130.82.190:3000/${hotel_id}/rooms`);
 
                 // Ensure uniqueness before updating the state
                 setRooms(roomsResponse.data.rooms);
@@ -149,7 +149,7 @@ function HotelAdmin() {
         const fetchReservations = async () => {
             try {
                 // Fetch all reservations with hotel_id and status filtering
-                const response = await axios.get(`https://d1lxguzc6q41zr.cloudfront.net/GetAllReservationsByHotelID?hotel_id=${hotel_id}`);
+                const response = await axios.get(/*`https://d1lxguzc6q41zr.cloudfront.net/GetAllReservationsByHotelID?hotel_id=${hotel_id}`*/ `http://10.130.82.190:3000/GetAllReservationsByHotelID?hotel_id=${hotel_id}`);
 
                 // Store the fetched data
                 const allReservations = response.data;

@@ -23,14 +23,14 @@ const EditRoomInfo = ({ hotel_id }: { hotel_id: string }) => {
     // Fetch all rooms from backend
     useEffect(() => {
 
-        socket = io('https://d1lxguzc6q41zr.cloudfront.net');
+        socket = io('http://10.130.82.190:3000'/*'https://d1lxguzc6q41zr.cloudfront.net'*/);
 
         socket.on('connect', () => console.log('Connected to Socket.IO server'));
 
         console.log("Hotel ID:", hotel_id);
         const fetchRooms = async () => {
             try {
-                const response = await axios.get(`https://d1lxguzc6q41zr.cloudfront.net/${hotel_id}/rooms`);
+                const response = await axios.get(`http://10.130.82.190:3000/${hotel_id}/rooms`/*`https://d1lxguzc6q41zr.cloudfront.net/${hotel_id}/rooms`*/);
                 setRooms(response.data.rooms);
             } catch (error) {
                 console.error("Error fetching rooms:", error);
@@ -60,7 +60,7 @@ const EditRoomInfo = ({ hotel_id }: { hotel_id: string }) => {
     const handleUpdateRoom = async () => {
         if (!selectedRoom) return;
         try {
-            const response = await axios.put(`https://d1lxguzc6q41zr.cloudfront.net/editroominfo/${selectedRoom._id}`, updatedRoom);
+            const response = await axios.put(/*`https://d1lxguzc6q41zr.cloudfront.net/editroominfo/${selectedRoom._id}`*/ `http://10.130.82.190:3000/editroominfo/${selectedRoom._id}`, updatedRoom);
             console.log("Room updated successfully:", response.data);
 
             // Update the room list

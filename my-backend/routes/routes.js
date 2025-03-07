@@ -6,6 +6,7 @@ const recommendationController = require('../controllers/recommendationControlle
 const hotelController = require('../controllers/hotelController');
 const roomController = require('../controllers/roomController');
 const tourismController = require('../controllers/tourismController');
+const userController = require('../controllers/userController');
 
 const router = express.Router();
 
@@ -16,6 +17,7 @@ router.post('/login', authController.login);
 // Reviews Routes
 router.get('/reviews', reviewController.getReviews);
 router.post('/reviews', reviewController.createReview);
+router.get('/api/reviews/', reviewController.getReviewsByUsername); // for Profile
 
 // City Routes
 router.get('/api/cities', cityController.getCities);
@@ -47,5 +49,9 @@ router.put('/editroominfo/:id', roomController.updateRoom);
 
 // Search Routes
 router.get('/api/search', recommendationController.searchPlaces);
+
+// User routes
+router.get("/api/user/", userController.getUser);
+router.put('/user/', userController.updateProfile);
 
 module.exports = router;

@@ -15,6 +15,8 @@ import ProtectedRoute from "./components/protectedroute";
 import axios from "axios";
 import RNPickerSelect from "react-native-picker-select";
 import { styles, pickerSelectStyles } from "./styles/homestyles";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 const cities = [
   { label: "Islamabad", value: "Islamabad" },
@@ -51,6 +53,8 @@ export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
+  const [email, setEmail] = useState("");
+
 
   // DROP DOWN MENU MAN
   const [selectedCity, setSelectedCity] = useState(cityData.name);
@@ -64,15 +68,27 @@ export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState("touristSpots");
 
   const WEATHER_API = "IrcewJS0mpnHD8YvYx0F21aMGnqdlwLx";
-  const API_BASE_URL = "https://d1lxguzc6q41zr.cloudfront.net";
-  //const API_BASE_URL = "http://10.130.82.190:3000"; // changed localhost to IP address to fix error. replace with your IP for local testing. switch to upper url for deployment
+  // const API_BASE_URL = "https://d1lxguzc6q41zr.cloudfront.net";
+  const API_BASE_URL = "http://10.130.82.190:3000"; // changed localhost to IP address to fix error. replace with your IP for local testing. switch to upper url for deployment
   const GOOGLE_API_KEY = "AIzaSyDx_TwV8vhwbKTTWn0tV2BVRDGIipfwzlc";
   const hasFetchedWeather = useRef(false);
 
+  // setting email to access profile if active tab is "touristSpots"
+  const loadEmail = async () => {
+    try {
+      const storedEmail = await AsyncStorage.getItem('email');
+      if (storedEmail) setEmail(storedEmail);
+    } catch (error) {
+      console.error('Error loading email:', error);
+    }
+  };
+  
+  
   // Fetch tourist spots if the active tab is "touristSpots"
   useEffect(() => {
     if (activeTab !== "touristSpots") return;
     setLoading(true);
+    loadEmail();
     console.log("The city", cityData);
     axios
       .get(`${API_BASE_URL}/api/tourist-spots`, {
@@ -138,6 +154,12 @@ export default function HomeScreen() {
       });
   }, []);
 
+  const handleProfile = (email: string, city: string) => {
+    router.push({
+      pathname: "/Profile",
+      params: { email , city},
+    });
+  }
   // Re-implemented handleSearch using Google Places Text Search API.
   const handleSearch = async (query: string) => {
     setSearchQuery(query);
@@ -211,40 +233,42 @@ export default function HomeScreen() {
     if (activeTab === "touristSpots") {
       console.log("Hello", touristSpots.touristSpots);
       return (
-        <FlatList
-          data={touristSpots.touristSpots}
-          horizontal
-          keyExtractor={(item) => (item._id ? item._id.toString() : item.name)}
-          renderItem={({ item }) => (
-            <View
-              style={[
-                styles.placeUnderlay,
-                isTallScreen && { marginBottom: 15 + height * 0.25 },
-              ]}
-            >
-              <TouchableOpacity
-                style={styles.placeCard2}
-                onPress={() => handleViewSpot(cityData.name, item.name)}
-              >
-                <Image source={{ uri: item.image }} style={styles.placeImage} />
-                <View style={styles.placeOverlay2}>
-                  <Text style={styles.placeName2}>{item.name}</Text>
-                </View>
-              </TouchableOpacity>
-
-              <TouchableOpacity
+        <View>
+          <FlatList
+            data={touristSpots.touristSpots}
+            horizontal
+            keyExtractor={(item) => (item._id ? item._id.toString() : item.name)}
+            renderItem={({ item }) => (
+              <View
                 style={[
-                  styles.button2,
-                  isTallScreen && { marginTop: height * 0.01, height: 25 },
+                  styles.placeUnderlay,
+                  isTallScreen && { marginBottom: 15 + height * 0.25 },
                 ]}
-                onPress={() => handleNavigate(item.name)}
               >
-                <Text style={styles.buttonText}>Navigate</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-          showsHorizontalScrollIndicator={false}
-        />
+                <TouchableOpacity
+                  style={styles.placeCard2}
+                  onPress={() => handleViewSpot(cityData.name, item.name)}
+                >
+                  <Image source={{ uri: item.image }} style={styles.placeImage} />
+                  <View style={styles.placeOverlay2}>
+                    <Text style={styles.placeName2}>{item.name}</Text>
+                  </View>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    styles.button2,
+                    isTallScreen && { marginTop: height * 0.01, height: 25 },
+                  ]}
+                  onPress={() => handleNavigate(item.name)}
+                >
+                  <Text style={styles.buttonText}>Navigate</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+            showsHorizontalScrollIndicator={false}
+          />
+        </View>
       );
     } else if (activeTab === "hotels") {
       return (
@@ -507,6 +531,24 @@ export default function HomeScreen() {
             {renderContent()}
           </>
         )}
+      </View>
+      <View style={styles.footMneu}>
+        <View
+          style={[
+            styles.buttonsContainer,
+            isSmallScreen && {
+              flexDirection: "column",
+              alignItems: "stretch",
+            },
+          ]}
+        >
+          <TouchableOpacity 
+            style={styles.button} 
+            onPress={() => handleProfile(email, cityData.name)}
+            >
+              <Text style={styles.buttonText}>Profile</Text>
+          </TouchableOpacity> 
+        </View>
       </View>
     </ProtectedRoute>
   );

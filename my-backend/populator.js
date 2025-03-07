@@ -58,27 +58,27 @@ const cities = [
   //       image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Port_Grand_Karachi.JPG/2560px-Port_Grand_Karachi.JPG"
   //     }
   //   ]
+  // },
+  // {
+  //   "name": "Quetta",
+  //   "touristSpots": [
+  //     {
+  //       "name": "Hanna Lake",
+  //       "description": "A picturesque lake surrounded by mountains, popular for boating and picnics.",
+  //       "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Hanna_Lake_Quetta.jpg/2560px-Hanna_Lake_Quetta.jpg"
+  //     },
+  //     {
+  //       "name": "Urak Valley",
+  //       "description": "A lush green valley known for its apple orchards, waterfalls, and scenic beauty.",
+  //       "image": "https://upload.wikimedia.org/wikipedia/commons/2/24/Urak_valley.........jpg"
+  //     },
+  //     {
+  //       "name": "Hazarganji National Park",
+  //       "description": "A national park home to the rare Chiltan wild goats and diverse wildlife, perfect for nature lovers.",
+  //       "image": "https://live.staticflickr.com/3129/2561127729_e62d9cc911_b.jpg"
+  //     }
+  //   ]
   // }
-  {
-    "name": "Quetta",
-    "touristSpots": [
-      {
-        "name": "Hanna Lake",
-        "description": "A picturesque lake surrounded by mountains, popular for boating and picnics.",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Hanna_Lake_Quetta.jpg/2560px-Hanna_Lake_Quetta.jpg"
-      },
-      {
-        "name": "Urak Valley",
-        "description": "A lush green valley known for its apple orchards, waterfalls, and scenic beauty.",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/2/24/Urak_valley.........jpg"
-      },
-      {
-        "name": "Hazarganji National Park",
-        "description": "A national park home to the rare Chiltan wild goats and diverse wildlife, perfect for nature lovers.",
-        "image": "https://live.staticflickr.com/3129/2561127729_e62d9cc911_b.jpg"
-      }
-    ]
-  }
   
 ];
 

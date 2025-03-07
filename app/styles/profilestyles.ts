@@ -5,7 +5,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 20,
-    paddingRight: 25,
   },
   headerContainer: {
     marginTop: 20,
@@ -58,7 +57,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 33,
-    backgroundColor: '#FFF',
+    //backgroundColor: '#FFF',
     borderRadius: 15,
   },
   activeTab: {
@@ -88,7 +87,8 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 21,
     fontWeight: '600',
-    marginTop: 45,
+    marginTop: 40,
+    marginBottom: 15,
     paddingHorizontal: 10,
   },
   placesScrollView: {
@@ -270,11 +270,11 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#ADD8E6',
-    padding: 10,
+    backgroundColor: '#ffffff',
+    padding: 20,
     width: "100%", 
     alignItems: "center",
-    borderRadius: 35,
+    borderRadius: 15,
 
     shadowColor: '#0077BE',
     shadowOffset: { width: 10, height: 10 },
@@ -287,7 +287,56 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     padding: 10,
     marginBottom: 10,
-    borderRadius: 5 },
+    borderRadius: 5 
+  },
+  reviewCard: {
+    backgroundColor: '#fff',
+    padding: 12,
+    marginVertical: 8,
+    borderRadius: 20,
+    shadowColor: '#000000',
+    shadowOpacity: 0.9,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    marginBottom: 8,
+  },
+  starFilled: {
+    color: '#FFD700',
+    fontSize: 27,
+    marginRight: 4,
+  },
+  starEmpty: {
+    color: '#D3D3D3',
+    fontSize: 27,
+    marginRight: 4,
+  },
+  comment: {
+    fontSize: 14,
+    color: '#666',
+  },
+  reviewHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  userName: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: '#333',
+  },
+  backButton: { 
+    position: "absolute", 
+    top: 5, 
+    left: 5, 
+    zIndex: 10, 
+    height: 40, 
+    width: 40,
+    borderRadius: 10
+  },
+
 
 });
 

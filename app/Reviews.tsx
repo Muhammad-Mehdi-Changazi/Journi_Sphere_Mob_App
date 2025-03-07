@@ -30,7 +30,7 @@ const renderStars = (rating: number, setRating?: (value: number) => void) => {
 export default function Reviews() {
   const router = useRouter();
   const { placeName } = useLocalSearchParams<{ placeName: string }>();
-
+  
   const [reviews, setReviews] = useState<Review[]>([]);
   const [newReview, setNewReview] = useState('');
   const [rating, setRating] = useState<number>(0);
@@ -43,7 +43,7 @@ export default function Reviews() {
 
   const fetchReviews = async () => {
     try {
-      const response = await axios.get(`https://d1lxguzc6q41zr.cloudfront.net/Reviews?placeName=${placeName}`);
+      const response = await axios.get(`http://10.130.82.190:3000/Reviews?placeName=${placeName}`);//`https://d1lxguzc6q41zr.cloudfront.net/Reviews?placeName=${placeName}`);
       setReviews(response.data);
     } catch (error) {
       console.error('Error fetching reviews:', error);
@@ -63,7 +63,7 @@ export default function Reviews() {
     if (!newReview || rating <= 0 || !username) return;
 
     try {
-      await axios.post(`https://d1lxguzc6q41zr.cloudfront.net/Reviews`, {
+      await axios.post(/*`https://d1lxguzc6q41zr.cloudfront.net/Reviews`,*/ `http://10.130.82.190:3000/Reviews`, {
         placeName,
         user: username,
         rating,

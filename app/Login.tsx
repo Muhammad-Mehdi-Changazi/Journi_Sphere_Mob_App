@@ -46,7 +46,8 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('https://d1lxguzc6q41zr.cloudfront.net/login', { email, password });
+      console.log(password)
+      const response = await axios.post('http://10.130.82.190:3000/login', /*'https://d1lxguzc6q41zr.cloudfront.net/login'*/ { email, password });
       const { token } = response.data;
 
       await AsyncStorage.setItem('authToken', token);
@@ -56,6 +57,9 @@ export default function LoginScreen() {
       const { username, role } = decodedToken;
       await AsyncStorage.setItem('username', username);
       await AsyncStorage.setItem('role', role);
+      await AsyncStorage.setItem('email', email); //added email for profile
+      await AsyncStorage.setItem('password', password); // using for update profile. not secure change to another method asap
+
 
       console.log('Login successful, token and username stored');
 
