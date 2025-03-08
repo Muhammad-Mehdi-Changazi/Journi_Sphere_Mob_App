@@ -16,6 +16,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { styles } from "./styles/profilestyles";
 import Footer from "./components/Footer";
+import { ScrollView } from "react-native";
 
 interface Review {
   id: string;
@@ -89,7 +90,6 @@ export default function Profile() {
 
   // handlers for back button
   const handleBack = (city: string) => {
-    console.log()
     router.push({
       pathname: "/home",
       params: { city: `{\"name\":\"${city}\",\"places\":[],\"foods\":[]}` },
@@ -205,81 +205,87 @@ export default function Profile() {
     <ProtectedRoute>
       <View style={styles.container}>
         <Text style={styles.sectionTitle}>Hi {userData.username}!</Text>
-          <View style={styles.tabsContainer}>
-            <TouchableOpacity
+        <TouchableOpacity 
+          style={styles.logoutButton}
+          onPress={() => router.push('/')}
+        >
+          <Text style={styles.buttonText}>Logout</Text>
+        </TouchableOpacity>
+        <View style={styles.tabsContainer}>
+          <TouchableOpacity
+            style={
+              activeTab === "updateProfile"
+                ? styles.activeTab
+                : styles.inactiveTab
+            }
+            onPress={() => setActiveTab("updateProfile")}
+          >
+            <Text
               style={
                 activeTab === "updateProfile"
-                  ? styles.activeTab
-                  : styles.inactiveTab
+                  ? styles.activeTabText
+                  : styles.inactiveTabText
               }
-              onPress={() => setActiveTab("updateProfile")}
             >
-              <Text
-                style={
-                  activeTab === "updateProfile"
-                    ? styles.activeTabText
-                    : styles.inactiveTabText
-                }
-              >
-                Update Profile
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+              Update Profile
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={
+              activeTab === "reservations"
+                ? styles.activeTab
+                : styles.inactiveTab
+            }
+            onPress={() => setActiveTab("reservations")}
+          >
+            <Text
               style={
                 activeTab === "reservations"
-                  ? styles.activeTab
-                  : styles.inactiveTab
+                  ? styles.activeTabText
+                  : styles.inactiveTabText
               }
-              onPress={() => setActiveTab("reservations")}
             >
-              <Text
-                style={
-                  activeTab === "reservations"
-                    ? styles.activeTabText
-                    : styles.inactiveTabText
-                }
-              >
-                Reservations
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+              Reservations
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={
+              activeTab === "reviews"
+                ? styles.activeTab
+                : styles.inactiveTab
+            }
+            onPress={() => setActiveTab("reviews")}
+          >
+            <Text
               style={
                 activeTab === "reviews"
-                  ? styles.activeTab
-                  : styles.inactiveTab
+                  ? styles.activeTabText
+                  : styles.inactiveTabText
               }
-              onPress={() => setActiveTab("reviews")}
             >
-              <Text
-                style={
-                  activeTab === "reviews"
-                    ? styles.activeTabText
-                    : styles.inactiveTabText
-                }
-              >
-                Reviews
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+              Reviews
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={
+              activeTab === "favourites"
+                ? styles.activeTab
+                : styles.inactiveTab
+            }
+            onPress={() => setActiveTab("favourites")}
+          >
+            <Text
               style={
                 activeTab === "favourites"
-                  ? styles.activeTab
-                  : styles.inactiveTab
+                  ? styles.activeTabText
+                  : styles.inactiveTabText
               }
-              onPress={() => setActiveTab("favourites")}
             >
-              <Text
-                style={
-                  activeTab === "favourites"
-                    ? styles.activeTabText
-                    : styles.inactiveTabText
-                }
-              >
-                Favourites
-              </Text>
-            </TouchableOpacity>
-          </View>
-          {renderContent()}
+              Favourites
+            </Text>
+          </TouchableOpacity>
+        </View>
+        {renderContent()}
       </View>
       <Footer
         handleProfile={()=>{

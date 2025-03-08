@@ -342,8 +342,16 @@ const styles = StyleSheet.create({
     width: 40,
     borderRadius: 10
   },
-
-
+  logoutButton: {
+    position: "absolute",
+    right: 25,
+    top:30,
+    backgroundColor: '#007BFF',
+    borderRadius: 15,
+    width: 80,
+    height: 45,
+    justifyContent: 'center',
+  }
 });
 
 
