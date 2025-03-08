@@ -227,6 +227,7 @@ export default function HomeScreen() {
 
   // Render content based on the active tab.
   const renderContent = () => {
+    const [overlayWidth, setOverlayWidth] = useState(50);
     if (loading) {
       return <ActivityIndicator size="large" color="#A8CCF0" />;
     }
@@ -241,35 +242,42 @@ export default function HomeScreen() {
               item._id ? item._id.toString() : item.name
             }
             renderItem={({ item }) => (
-              <View
-                style={[
-                  styles.placeUnderlay,
-                  isTallScreen && { marginBottom: 15 + height * 0.25 },
-                ]}
-              >
-                <TouchableOpacity
-                  style={styles.placeCard2}
-                  onPress={() => handleViewSpot(cityData.name, item.name)}
-                >
-                  <Image
-                    source={{ uri: item.image }}
-                    style={styles.placeImage}
-                  />
-                  <View style={styles.placeOverlay2}>
-                    <Text style={styles.placeName2}>{item.name}</Text>
-                  </View>
-                </TouchableOpacity>
-
-                <TouchableOpacity
+            <View
                   style={[
-                    styles.button2,
-                    isTallScreen && { marginTop: height * 0.01, height: 25 },
+                    styles.placeUnderlay,
+                    isTallScreen && { marginBottom: 15 + height * 0.25 },
                   ]}
-                  onPress={() => handleNavigate(item.name)}
                 >
-                  <Text style={styles.buttonText}>Navigate</Text>
-                </TouchableOpacity>
-              </View>
+                  <TouchableOpacity
+                    style={styles.placeCard2}
+                    onPress={() => handleViewSpot(cityData.name, item.name)}
+                  >
+                    <Image source={{ uri: item.image }} style={styles.placeImage} />
+                    
+                     {/* Dynamic overlay */}
+                    <View style={[styles.placeOverlay2, { width: overlayWidth + 40 }]}>
+                      <Text
+                        style={styles.placeName2}
+                        onLayout={(event) => {
+                          const textWidth = event.nativeEvent.layout.width;
+                          setOverlayWidth(textWidth);
+                        }}
+                      >
+                        {item.name}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[
+                      styles.button2,
+                      isTallScreen && { marginTop: height * 0.01, height: 25 },
+                    ]}
+                    onPress={() => handleNavigate(item.name)}
+                  >
+                    <Text style={styles.buttonText}>Navigation</Text>
+                  </TouchableOpacity>
+                </View>
             )}
             showsHorizontalScrollIndicator={false}
           />
@@ -425,11 +433,7 @@ export default function HomeScreen() {
                     <TouchableOpacity
                       style={styles.searchResultButton}
                       onPress={() =>
-                        router.push(
-                          `/GoogleMapScreen?placeName=${encodeURIComponent(
-                            item.name
-                          )}`
-                        )
+                        router.push( `/GoogleMapScreen?placeName=${encodeURIComponent( item.name )}` )
                       }
                     >
                       <Text style={styles.searchResultButtonText}>
