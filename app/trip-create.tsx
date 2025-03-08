@@ -12,6 +12,7 @@ import {
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import tripFormStyles from "./styles/tripFormStyles";
+import { Ionicons } from '@expo/vector-icons';
 
 export default function TripCreateScreen() {
   const { control, handleSubmit, setValue, watch } = useForm();
@@ -61,6 +62,10 @@ export default function TripCreateScreen() {
     setShowEndDatePicker(false);
   };
 
+    const handleBackPress = () => {
+    router.push('/mytrips');
+  };
+
   const onSubmit = (data: any) => {
     router.push({
       pathname: "/trip-itinerary",
@@ -76,6 +81,9 @@ export default function TripCreateScreen() {
 
   return (
     <ScrollView style={tripFormStyles.container}>
+      <TouchableOpacity style={tripFormStyles.backButton} onPress={handleBackPress}>
+        <Ionicons name="arrow-back" size={24} color="rgb(56, 123, 167)" />
+      </TouchableOpacity>
       <Text style={tripFormStyles.title}>Create a Trip</Text>
 
       {/* From */}

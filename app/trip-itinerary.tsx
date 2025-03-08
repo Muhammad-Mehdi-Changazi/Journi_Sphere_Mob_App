@@ -1,6 +1,6 @@
 // app/TripItineraryScreen.tsx
 import React, { useEffect, useState } from "react";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   View,
   Text,
@@ -18,14 +18,12 @@ import axios from "axios";
 
 export default function TripItineraryScreen() {
   const params = useLocalSearchParams();
+  const router = useRouter();
   const [itinerary, setItinerary] = useState("");
   const [loading, setLoading] = useState(false);
-
-  // State for modal to save itinerary
   const [modalVisible, setModalVisible] = useState(false);
   const [itineraryName, setItineraryName] = useState("");
 
-  // Function to fetch/generate itinerary from Gemini API
   const fetchItinerary = async () => {
     setLoading(true);
     const prompt = `
@@ -57,11 +55,9 @@ export default function TripItineraryScreen() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            contents: [
-              {
-                parts: [{ text: prompt }],
-              },
-            ],
+            contents: [{
+              parts: [{ text: prompt }],
+            }],
           }),
         }
       );
@@ -90,49 +86,19 @@ export default function TripItineraryScreen() {
     }
   };
 
-  // On component mount, fetch the itinerary
   useEffect(() => {
     fetchItinerary();
   }, [params.from, params.to, params.startDate, params.endDate, params.transport]);
 
-  // Handler for "Regenerate Plan" button
   const handleRegenerate = () => {
     fetchItinerary();
   };
 
-  // Handler for "Save Itinerary" button: open modal to ask for a name
   const handleSaveItinerary = () => {
     setModalVisible(true);
   };
 
-  // Handler when user confirms saving itinerary
-  const handleConfirmSave = async () => {
-    // Retrieve the unique username from AsyncStorage
-    const username = await AsyncStorage.getItem("username");
-    if (!username) {
-      Alert.alert("Error", "User not found. Please log in again.");
-      return;
-    }
-    try {
-      const response = await axios.post("http://34.226.13.20:3000/itinerary/save", {
-        username, // Using username as unique identifier
-        name: itineraryName,
-        content: itinerary,
-      });
-      if (response.status === 201) {
-        Alert.alert("Success", `Itinerary saved as "${response.data.itinerary.name}"!`);
-        setModalVisible(false);
-        setItineraryName("");
-      } else {
-        throw new Error("Failed to save itinerary");
-      }
-    } catch (error) {
-      console.error("Error saving itinerary:", error.message);
-      Alert.alert("Error", error.message);
-    }
-  };
-
-  // Render formatted itinerary by removing asterisks and applying heuristics
+    // Render formatted itinerary by removing asterisks and applying heuristics
   const renderFormattedItinerary = () => {
     const cleanedItinerary = itinerary.replace(/\*/g, "");
     const lines = cleanedItinerary.split("\n");
@@ -166,17 +132,41 @@ export default function TripItineraryScreen() {
     });
   };
 
+
+
+
+  const handleConfirmSave = async () => {
+    const username = await AsyncStorage.getItem("username");
+    if (!username) {
+      Alert.alert("Error", "User not found. Please log in again.");
+      return;
+    }
+    try {
+      const response = await axios.post("http://34.226.13.20:3000/itinerary/save", {
+        username,
+        name: itineraryName,
+        content: itinerary,
+      });
+      if (response.status === 201) {
+        Alert.alert("Success", `Itinerary saved as \"${response.data.itinerary.name}\"!`);
+        setModalVisible(false);
+        setItineraryName("");
+        router.push("/mytrips");
+      } else {
+        throw new Error("Failed to save itinerary");
+      }
+    } catch (error) {
+      console.error("Error saving itinerary:", error.message);
+      Alert.alert("Error", error.message);
+    }
+  };
+
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView
-        style={itineraryStyles.container}
-        contentContainerStyle={{ paddingBottom: 140 }}
-      >
+      <ScrollView style={itineraryStyles.container} contentContainerStyle={{ paddingBottom: 140 }}>
         <Text style={itineraryStyles.title}>Your itinerary</Text>
         {loading ? <ActivityIndicator size="large" /> : renderFormattedItinerary()}
       </ScrollView>
-
-      {/* Fixed footer with buttons */}
       <View style={styles.footer}>
         <TouchableOpacity style={styles.footerButton} onPress={handleRegenerate}>
           <Text style={styles.footerButtonText}>Regenerate Plan</Text>
@@ -185,8 +175,6 @@ export default function TripItineraryScreen() {
           <Text style={styles.footerButtonText}>Save itinerary</Text>
         </TouchableOpacity>
       </View>
-
-      {/* Modal for saving itinerary */}
       <Modal visible={modalVisible} transparent animationType="slide">
         <View style={modalStyles.modalContainer}>
           <View style={modalStyles.modalContent}>
