@@ -1,4 +1,3 @@
-// app/index.tsx
 import React from 'react';
 import { Text, View, TouchableOpacity, ImageBackground } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -7,14 +6,6 @@ import { StyleSheet } from 'react-native';
 export default function Index() {
   const router = useRouter();
 
-  const handleLogin = () => {
-    router.push({ pathname: '/Login' }); // Navigate to LoginScreen
-  };
-
-  const handleSignup = () => {
-    router.push({ pathname: '/SignupScreen' }); // Navigate to SignupScreen
-  };
-
   return (
     <ImageBackground
       source={require('../assets/images/BackGroundImageHomeScreen.jpg')}
@@ -22,14 +13,23 @@ export default function Index() {
       resizeMode="cover"
     >
       <View style={styles.overlay}>
+        {/* Logo/Header */}
         <Text style={styles.headerText}>MANZIL</Text>
-        <Text style={styles.subtitle}>Plan your Trip the Right Way</Text>
+
+        {/* Tagline */}
+        <View style={styles.taglineContainer}>
+          <Text style={styles.subtitle}>Plan your</Text>
+          <Text style={styles.subtitleBold}>Trip <Text style={styles.subtitle}>the <Text style={styles.subtitleBold}>Right </Text></Text></Text>
+            <Text style={styles.subtitleBold}>Way</Text>
+        </View>
+
+        {/* Buttons */}
         <View style={styles.buttonsContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <TouchableOpacity style={[styles.button, styles.leftButton]} onPress={() => router.push('/Login')}>
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={handleSignup}>
-            <Text style={styles.buttonText}>Sign Up as Customer</Text>
+          <TouchableOpacity style={[styles.button, styles.rightButton]} onPress={() => router.push('/SignupScreen')}>
+            <Text style={styles.buttonText}>Sign Up</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -44,45 +44,67 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    opacity:1,
   },
   overlay: {
     flex: 1,
+    width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    width: '100%',
-    padding: 16,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)', // Adjust overlay darkness
+    paddingHorizontal: 20,
   },
   headerText: {
-    fontSize: 32,
+    position: 'absolute',
+    top: '25%',
+    fontSize: 58,
     fontWeight: 'bold',
-    marginBottom: 20,
     color: '#fff',
+    fontFamily: 'serif',
+    textTransform: 'uppercase',
+    textAlign: 'center',
+  },
+  taglineContainer: {
+    position: 'absolute',
+    left: 30,
+    top: '66%',
+    fontFamily: 'montserrat',
   },
   subtitle: {
-    fontSize: 18,
-    textAlign: 'center',
-    marginBottom: 30,
-    color: '#ccc',
+    fontSize: 21,
+    color: '#fff',
+    textAlign: 'left',
+  },
+  subtitleBold: {
+    fontSize: 35,
+    fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'left',
   },
   buttonsContainer: {
-    width: '100%',
-    alignItems: 'center',
+    position: 'absolute',
+    bottom: 40,
+    flexDirection: 'row',
+    width: '90%',
+    justifyContent: 'space-between',
+    
   },
   button: {
     backgroundColor: '#007bff',
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    borderRadius: 25,
-    marginVertical: 10,
-    width: '80%',
+    paddingVertical: 14,
+    borderRadius: 40,
+    width: '45%',
     alignItems: 'center',
   },
   buttonText: {
     fontSize: 18,
     color: '#fff',
     fontWeight: '600',
+    fontFamily: 'Abhaya Libre Medium',
+  },
+  leftButton: {
+    alignSelf: 'flex-start',
+  },
+  rightButton: {
+    alignSelf: 'flex-end',
   },
 });
-

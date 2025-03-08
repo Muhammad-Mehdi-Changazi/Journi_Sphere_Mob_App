@@ -21,14 +21,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   temperature: {
-    fontSize: 24,
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#000000',
-    justifyContent: 'flex-end',
-    flexDirection: 'row',
-    paddingHorizontal: 20,
+    paddingHorizontal: 130,
     paddingEnd: 10,
     fontFamily: 'monospace',
+    marginTop: 6,
   },
   searchContainer: {
     marginTop: 13,
@@ -37,7 +36,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#A8CCF0',
     borderRadius: 30,
     paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingVertical: 10,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 1,
@@ -55,8 +54,9 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   tabsContainer: {
+    marginLeft: -15,
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     marginTop: 33,
     backgroundColor: '#FFF',
     borderRadius: 15,
@@ -107,6 +107,22 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 3,
   },
+  placeCard2: {
+    width: 150,
+    height: 200,
+    backgroundColor: '#FFF',
+    borderRadius: 15,
+    marginRight: 4,
+    marginLeft: 4,
+    marginTop: 4,
+    marginBottom: 10,
+
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+  },
   placeImage: {
     width: '100%',
     height: '100%',
@@ -121,10 +137,33 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     alignItems: 'center',
   },
+  placeOverlay2: {
+    position: 'absolute',
+    top: 5,
+    left: 10,
+    right: 12,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    paddingVertical: 5,
+    borderRadius: 12,
+  },
+  placeUnderlay: {
+    backgroundColor: 'rgba(0,0,0,0.25)',
+    borderRadius: 15,
+    marginTop: 0, 
+    marginBottom: 15, // 15 for small phone.
+    marginLeft: 5, 
+    marginRight: 0,
+  },
   placeName: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#FFF',
+  },
+  placeName2: {
+    fontSize: 12,
+    fontWeight: 'normal',
+    color: '#FFF',
+    left: 5,
   },
   navigationButton: {
     backgroundColor: '#007bff',
@@ -198,16 +237,45 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 12,
   },
+  buttonsContainer2: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 12,
+    width: '40%', 
+  },
   button: {
     backgroundColor: '#007BFF',
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderRadius: 5,
-    marginVertical: 5,
+    borderRadius: 35,
+    marginVertical: 6,
     width: 80,
-    height: 45,
+    height: 35,
     justifyContent: 'center',
   },
+  button_profile: {
+    backgroundColor: '#007BFF',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 35,
+    marginVertical: 6,
+    width: 80,
+    height: 35,
+    justifyContent: 'center',
+    bottom: 10,
+  },
+  button2: {
+    backgroundColor: '#007BFF',
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    marginLeft: 38,
+    bottom: 8,
+    width: 90,
+    height: 15,
+    justifyContent: 'center',
+    marginTop: 12,
+  },
+  
   buttonText: {
     color: '#fff',
     fontSize: 9,
@@ -215,10 +283,70 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Abhaya Libre Medium',
   },
+  footMenu: {
+    position: 'absolute',
+    bottom: -8,
+    left: 0,
+    right: 0,
+    padding: 0,
+    width: "100%",
+    height: 72, 
+    alignItems: "center",
+    borderTopRightRadius:32,
+    borderTopLeftRadius:32,
+    backgroundColor: '#ffffff', 
+    elevation: 5, 
+    boxShadow: "0px 0px 30px -10px #176FF2"
+  },
+  input: { 
+    borderWidth: 1,
+    borderColor: '#ddd',
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 5 },
 
 });
 
-export default styles;
+
+
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+    // borderWidth: 0.1,
+    borderColor: '#A8CCF0',
+    borderRadius: 880,
+    borderCurve: 'circular',
+    color: 'black',
+    paddingRight: 30, // to ensure the text is never behind the icon
+    backgroundColor: '#A8CCF0',
+    marginTop: -60,
+    marginEnd: -10,
+    width: 150,
+    alignSelf: 'flex-end',
+
+  },
+  inputAndroid: {
+    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+    // borderWidth: 0.1,
+    borderColor: '#A8CCF0',
+    borderRadius: 880,
+    borderCurve: 'circular',
+    color: 'black',
+    paddingRight: 30, // to ensure the text is never behind the icon
+    backgroundColor: '#A8CCF0',
+    marginTop: -60,
+    marginEnd: -10,
+    width: 150,
+    alignSelf: 'flex-end',
+  },
+});
+
+export { styles, pickerSelectStyles };
 
 
 

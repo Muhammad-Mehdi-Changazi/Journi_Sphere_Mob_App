@@ -53,10 +53,6 @@ export default function SignupScreen() {
       setLoading(true);
       const response = await axios.post(
         'http://34.226.13.20:3000/signup',
-<<<<<<< Updated upstream
-=======
-        // 'https://d1lxguzc6q41zr.cloudfront.net/signup',
->>>>>>> Stashed changes
         requestData,
         {
           headers: {
@@ -149,10 +145,10 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: '#fff',
-    borderRadius: 8,
-    paddingVertical: 12,
+    borderRadius: 20,
+    paddingVertical: 15,
     paddingHorizontal: 16,
-    marginBottom: 15,
+    marginBottom: 20,
     fontSize: 16,
     width: '100%',
     shadowColor: '#000',
@@ -166,7 +162,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderRadius: 25,
-    marginTop: 10,
+    marginTop: 84,
     alignItems: 'center',
     width: '80%',
   },

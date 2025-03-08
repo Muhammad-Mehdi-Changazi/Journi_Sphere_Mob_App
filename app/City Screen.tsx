@@ -8,7 +8,7 @@ import axios from 'axios';
 const fetchRecommendations = async (cityName: string) => {
   try {
     // Fetch hotels from your database (replace with your actual backend API URL)
-    const hotelsResponse = await axios.get(`http://34.226.13.20:3000/hotels/city/${cityName}`);
+    const hotelsResponse = await axios.get(`http://34.226.13.20:3000/hotels/city/${cityName}`/*`https://d1lxguzc6q41zr.cloudfront.net/hotels/city/${cityName}`*/);
     // console.log("Hi", cityName);
     
     const hotels = hotelsResponse.data.hotels; // Assuming the backend returns an array of hotels
@@ -16,7 +16,7 @@ const fetchRecommendations = async (cityName: string) => {
 
     // Fetch restaurants from the custom recommendation API
 
-    const restaurantsResponse = await axios.get(`http://34.226.13.20:3000/recommendations?city=${cityName}`);
+    const restaurantsResponse = await axios.get( `http://34.226.13.20:3000/recommendations?city=${cityName}`/*`https://d1lxguzc6q41zr.cloudfront.net/recommendations?city=${cityName}`*/);
 
 
     const restaurants = restaurantsResponse.data.restaurants; // Assuming the API returns an array of restaurants
@@ -91,7 +91,7 @@ export default function CityScreen() {
 
   const handleMakeReservation = (placeID: string) => {
     
-    // console.log("Place ID:", placeID);
+    console.log("Place ID:", placeID);
     router.push(`/ReservationScreen?placeID=${encodeURIComponent(placeID)}`); // Navigate to ReservationScreen
   };
 
@@ -145,7 +145,7 @@ export default function CityScreen() {
   return (
     <ProtectedRoute>
       <ScrollView style={styles.container}>
-        <Text style={styles.cityName}>City: {JSON.parse(city).name}</Text>
+        <Text style={styles.cityName}>{JSON.parse(city).name}</Text>
 
         <View style={[styles.columnsContainer, isSmallScreen && styles.columnsContainerVertical]}>
           {/* Tourist Sites Column (Hotels) */}

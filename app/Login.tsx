@@ -46,12 +46,9 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     try {
-<<<<<<< Updated upstream
       const response = await axios.post('http://34.226.13.20:3000/login', { email, password });
-=======
+
       console.log(password)
-      const response = await axios.post('http://34.226.13.20:3000/login', /*'https://d1lxguzc6q41zr.cloudfront.net/login'*/ { email, password });
->>>>>>> Stashed changes
       const { token } = response.data;
 
       await AsyncStorage.setItem('authToken', token);
@@ -61,6 +58,9 @@ export default function LoginScreen() {
       const { username, role } = decodedToken;
       await AsyncStorage.setItem('username', username);
       await AsyncStorage.setItem('role', role);
+      await AsyncStorage.setItem('email', email); //added email for profile
+      await AsyncStorage.setItem('password', password); // using for update profile. not secure change to another method asap
+
 
       console.log('Login successful, token and username stored');
 
@@ -171,7 +171,7 @@ export default function LoginScreen() {
             <RNPickerSelect
               onValueChange={setSelectedCity}
               items={cities}
-              style={{ inputIOS: styles.input, inputAndroid: styles.input }}
+              style={{ inputIOS: styles.input1, inputAndroid: styles.input1 }}
               placeholder={{ label: 'Select a city...', value: '' }}
             />
             <TouchableOpacity style={styles.button} onPress={handleSelectCity}>
@@ -179,7 +179,7 @@ export default function LoginScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.button2} onPress={handleUseLocation}>
-              <Text style={styles.buttonText}>Use My Location</Text>
+              <Text style={styles.buttonText}>Allow Location</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -192,19 +192,21 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16, backgroundColor: '#f4f4f4' },
   
-  headerText: { fontSize: 32, fontWeight: 'bold', marginBottom: 30, color: '#333' },
+  headerText: { fontSize: 32, fontWeight: 'bold', marginBottom: 80, color: '#333' },
   
-  inputContainer: { width: '100%', marginBottom: 20 },
+  inputContainer: { width: '100%', marginBottom: 30 },
   
-  input: { backgroundColor: '#fff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 16, marginBottom: 15, fontSize: 16, width: '100%' },
-  
+  input: { backgroundColor: '#fff', borderRadius: 20, paddingVertical: 12, paddingHorizontal: 16, marginBottom: 15, fontSize: 16, width: '100%' },
+
+  input1: { backgroundColor: '#f8f3f3', borderRadius: 70, paddingVertical: 12, paddingHorizontal: 16, marginBottom: 20, fontSize: 16, width: '100%' },
+
   button: { backgroundColor: '#007AFF', paddingVertical: 12, gap: 8, paddingHorizontal: 40, borderRadius: 25, marginTop: 10, alignItems: 'center', width: '80%' },
 
-  button1: { backgroundColor: '#007AFF', paddingVertical: 12, gap: 8, paddingHorizontal: 40, borderRadius: 25, marginTop: 5, alignItems: 'center', width: '80%' },
+  button1: { backgroundColor: '#007AFF', paddingVertical: 12, gap: 8, paddingHorizontal: 40, borderRadius: 25, marginTop: 10, alignItems: 'center', width: '80%' },
 
   button2: { backgroundColor: '#007AFF', paddingVertical: 15, gap: 8, paddingHorizontal: 40, borderRadius: 25, marginTop: 20, alignItems: 'center', width: '80%' },
 
-  buttonText: { color: '#fff', fontSize: 18, fontWeight: '600' },
+  buttonText: { color: '#fff', fontSize: 18, fontWeight: '600', fontFamily: 'montserrat' },
   
   modalContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' },
   

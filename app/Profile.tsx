@@ -15,7 +15,8 @@ import ProtectedRoute from "./components/protectedroute";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { styles } from "./styles/profilestyles";
-
+import Footer from "./components/Footer";
+import { ScrollView } from "react-native";
 
 interface Review {
   id: string;
@@ -160,7 +161,8 @@ export default function Profile() {
             secureTextEntry
           />
           <TouchableOpacity
-            style={styles.button}
+            style={styles.button3}
+
             onPress={handleUpdateProfile}
           >
             <Text style={styles.buttonText}>Update Profile</Text>
@@ -175,9 +177,12 @@ export default function Profile() {
       );
     } else if (activeTab === "reviews") {
       return (
+        <View style={styles.reviews_container}>
         <ProtectedRoute>
-          <Text style= {styles.sectionTitle}>Your experiences:</Text>
-            <FlatList
+          <View style={{ marginTop: 15, padding: 5, marginBottom: 10 }}>
+            <Text style= {styles.sectionTitle_review}>Your experiences:</Text>
+          </View>
+            <FlatList showsVerticalScrollIndicator={false}
               data={reviews}
               keyExtractor={(review) => review.id}
               renderItem={({ item }) => (
@@ -191,6 +196,7 @@ export default function Profile() {
               )}
             />
         </ProtectedRoute>
+        </View>
       );
     } else if (activeTab === "favourites") {
       return (
@@ -201,10 +207,16 @@ export default function Profile() {
     }
   };
 
-  return (
-    <ProtectedRoute>
-      <View style={styles.container}>
-        <Text style={styles.sectionTitle}>Hi {userData.username}!</Text>
+return (
+  <ProtectedRoute>
+    <View style={styles.container}>
+      <Text style={styles.sectionTitle}>Hi <Text style={styles.sectionTitle2}>{userData.username}!</Text></Text>
+      <TouchableOpacity 
+        style={styles.logoutButton}
+        onPress={() => router.push('/')}
+      >
+        <Text style={styles.buttonText}>Logout</Text>
+      </TouchableOpacity>
         {/* Tiny "My Trips" button */}
         <TouchableOpacity
           style={styles.myTripsButton}
@@ -212,100 +224,58 @@ export default function Profile() {
         >
           <Text style={styles.myTripsButtonText}>My Trips</Text>
         </TouchableOpacity>
-          <View style={styles.tabsContainer}>
-            <TouchableOpacity
-              style={
-                activeTab === "updateProfile"
-                  ? styles.activeTab
-                  : styles.inactiveTab
-              }
-              onPress={() => setActiveTab("updateProfile")}
-            >
-              <Text
-                style={
-                  activeTab === "updateProfile"
-                    ? styles.activeTabText
-                    : styles.inactiveTabText
-                }
-              >
-                Update Profile
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={
-                activeTab === "reservations"
-                  ? styles.activeTab
-                  : styles.inactiveTab
-              }
-              onPress={() => setActiveTab("reservations")}
-            >
-              <Text
-                style={
-                  activeTab === "reservations"
-                    ? styles.activeTabText
-                    : styles.inactiveTabText
-                }
-              >
-                Reservations
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={
-                activeTab === "reviews"
-                  ? styles.activeTab
-                  : styles.inactiveTab
-              }
-              onPress={() => setActiveTab("reviews")}
-            >
-              <Text
-                style={
-                  activeTab === "reviews"
-                    ? styles.activeTabText
-                    : styles.inactiveTabText
-                }
-              >
-                Reviews
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={
-                activeTab === "favourites"
-                  ? styles.activeTab
-                  : styles.inactiveTab
-              }
-              onPress={() => setActiveTab("favourites")}
-            >
-              <Text
-                style={
-                  activeTab === "favourites"
-                    ? styles.activeTabText
-                    : styles.inactiveTabText
-                }
-              >
-                Favourites
-              </Text>
-            </TouchableOpacity>
-          </View>
-          {renderContent()}
-      </View>
-      <View style={styles.footMneu}>
-        <View
-          style={[
-            styles.buttonsContainer
-             && {
-              flexDirection: "column",
-              alignItems: "stretch",
-            },
-          ]}
+      
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabsScrollView}>
+        <TouchableOpacity
+          style={activeTab === "updateProfile" ? styles.activeTab : styles.inactiveTab}
+          onPress={() => setActiveTab("updateProfile")}
         >
-          <TouchableOpacity 
-            style={styles.button} 
-            onPress={() => handleBack(city)}
-            >
-              <Text style={styles.buttonText}>Home</Text>
-          </TouchableOpacity> 
-        </View>
-      </View>
-    </ProtectedRoute>
-  );
-}
+          <Text style={activeTab === "updateProfile" ? styles.activeTabText : styles.inactiveTabText}>
+            Update Profile
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={activeTab === "reservations" ? styles.activeTab : styles.inactiveTab}
+          onPress={() => setActiveTab("reservations")}
+        >
+          <Text style={activeTab === "reservations" ? styles.activeTabText : styles.inactiveTabText}>
+            Reservations
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={activeTab === "reviews" ? styles.activeTab : styles.inactiveTab}
+          onPress={() => setActiveTab("reviews")}
+        >
+          <Text style={activeTab === "reviews" ? styles.activeTabText : styles.inactiveTabText}>
+            Reviews
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={activeTab === "favourites" ? styles.activeTab : styles.inactiveTab}
+          onPress={() => setActiveTab("favourites")}
+        >
+          <Text style={activeTab === "favourites" ? styles.activeTabText : styles.inactiveTabText}>
+            Favourites
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
+
+      {renderContent()}
+      
+    </View>
+    
+    <Footer
+      handleProfile={()=>{
+        console.log("Already on Profile")
+      }}
+      handleBack={handleBack}
+      cityName={city as string}
+      email={email as string}
+      currentTab={2}
+    />
+  </ProtectedRoute>
+
+);}

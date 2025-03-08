@@ -15,7 +15,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
   },
-  
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
@@ -68,7 +67,8 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   tabsContainer: {
-    marginLeft: -15,
+    marginLeft: 15,
+
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 33,
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   activeTab: {
-    paddingVertical: 8,
+    paddingVertical: 12,
     paddingHorizontal: 15,
     borderRadius: 30,
     backgroundColor: '#A8CCF0',
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Abhaya Libre Medium',
   },
   inactiveTab: {
-    paddingVertical: 8,
+    paddingVertical: 12,
     paddingHorizontal: 15,
     borderRadius: 20,
     backgroundColor: '#FFF',
@@ -99,16 +99,41 @@ const styles = StyleSheet.create({
     color: '#B8B8B8',
     fontFamily: 'Abhaya Libre Medium',
   },
+tabsScrollView: {
+    maxHeight: 70,
+    backgroundColor: '#FFF', // Ensure it's not black
+    paddingVertical: 10, // Adjust padding if necessary
+},
+reviews_container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 10,
+
+  },
   sectionTitle: {
-    fontSize: 21,
+    fontSize: 25,
+    fontWeight: '600',
+    marginTop: 33,
+    marginBottom: 30,
+    paddingHorizontal: 10,
+  },
+  sectionTitle2: {
+    fontSize: 30,
     fontWeight: '600',
     marginTop: 40,
     marginBottom: 15,
     paddingHorizontal: 10,
+    color: '#033577',
   },
+  
+  sectionTitle_review: {
+    fontSize: 21,
+    fontWeight: '600',
+  },
+
   placesScrollView: {
     flexDirection: 'row',
-    paddingVertical: 10,
+    paddingVertical: 130,
   },
   placeCard: {
     width: 150,
@@ -247,6 +272,13 @@ const styles = StyleSheet.create({
     color: '#666',
     marginBottom: 4,
   },
+  buttonsContainer2: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 12,
+    width: '50%', 
+  },
+
   buttonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -272,7 +304,51 @@ const styles = StyleSheet.create({
     height: 15,
     justifyContent: 'center',
   },
-  
+  button3: {
+    backgroundColor: '#007BFF',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 30,
+    marginVertical: 5,
+    width: 110,
+    height: 45,
+    justifyContent: 'center',
+  },
+  button_home_back: {
+    backgroundColor: '#007BFF',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 30,
+    marginVertical: 5,
+    width: 110,
+    height: 45,
+    justifyContent: 'center',
+    bottom: 27,
+  },
+  footMneu_home: {
+    position: 'absolute',
+    bottom: -45,
+    left: 0,
+    right: 0,
+    backgroundColor: '#ADD8E6',
+    padding: 20,
+    width: "100%", 
+    alignItems: "center",
+    borderRadius: 15,
+
+    shadowColor: '#0077BE',
+    shadowOffset: { width: 10, height: 10 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 10
+  },
+  buttonText_home: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontFamily: 'Abhaya Libre Medium',
+  },
   buttonText: {
     color: '#fff',
     fontSize: 9,
@@ -285,34 +361,34 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#ffffff',
-    padding: 20,
-    width: "100%", 
+    padding: 0, //12
+    width: "100%",
+    height: 72, 
     alignItems: "center",
-    borderRadius: 15,
-
-    shadowColor: '#0077BE',
-    shadowOffset: { width: 10, height: 10 },
-    shadowOpacity: 0.5,
-    shadowRadius: 10,
-    elevation: 10
+    borderTopRightRadius:32,
+    borderTopLeftRadius:32,
+    backgroundColor: '#ffffff', 
+    elevation: 5, 
+    boxShadow: "0px 0px 30px -10px #176FF2"
   },
   input: { 
     borderWidth: 1,
     borderColor: '#ddd',
     padding: 10,
     marginBottom: 10,
-    borderRadius: 5 
+    borderRadius: 15 
   },
   reviewCard: {
-    backgroundColor: '#fff',
-    padding: 12,
+    backgroundColor: '#fffeee',
+    padding: 20,
     marginVertical: 8,
-    borderRadius: 20,
+    borderRadius: 30,
     shadowColor: '#000000',
     shadowOpacity: 0.9,
     shadowRadius: 10,
     elevation: 3,
+    width: '99.2%',
+    marginLeft: 1,
   },
   ratingContainer: {
     flexDirection: 'row',
@@ -351,8 +427,16 @@ const styles = StyleSheet.create({
     width: 40,
     borderRadius: 10
   },
-
-
+  logoutButton: {
+    position: "absolute",
+    right: 25,
+    top:30,
+    backgroundColor: '#007BFF',
+    borderRadius: 15,
+    width: 80,
+    height: 45,
+    justifyContent: 'center',
+  }
 });
 
 
