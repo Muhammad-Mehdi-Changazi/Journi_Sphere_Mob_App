@@ -53,7 +53,7 @@ export default function Profile() {
   const { email, city } = useLocalSearchParams(); // Get params from URL
 
   // API URL – replace with your IP for local testing, or use production URL
-  const API_BASE_URL = "http://10.130.82.190:3000";
+  const API_BASE_URL = "http://34.226.13.20:3000";
 
   // Load user data
   useEffect(() => {
@@ -175,11 +175,12 @@ export default function Profile() {
       );
     } else if (activeTab === "reviews") {
       return (
+        <View style={styles.reviews_container}>
         <ProtectedRoute>
-          <View style={{ marginTop: 40, padding: 10 }}>
+          <View style={{ marginTop: 15, padding: 5, marginBottom: 10 }}>
             <Text style= {styles.sectionTitle_review}>Your experiences:</Text>
           </View>
-            <FlatList
+            <FlatList showsVerticalScrollIndicator={false}
               data={reviews}
               keyExtractor={(review) => review.id}
               renderItem={({ item }) => (
@@ -193,6 +194,7 @@ export default function Profile() {
               )}
             />
         </ProtectedRoute>
+        </View>
       );
     } else if (activeTab === "favourites") {
       return (

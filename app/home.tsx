@@ -70,7 +70,7 @@ export default function HomeScreen() {
 
   const WEATHER_API = "IrcewJS0mpnHD8YvYx0F21aMGnqdlwLx";
 
-  const API_BASE_URL = "http://10.130.82.190:3000"; // changed localhost to IP address to fix error. replace with your IP for local testing. switch to upper url for deployment
+  const API_BASE_URL = "http://34.226.13.20:3000"; // changed localhost to IP address to fix error. replace with your IP for local testing. switch to upper url for deployment
   const GOOGLE_API_KEY = "AIzaSyDx_TwV8vhwbKTTWn0tV2BVRDGIipfwzlc";
   const hasFetchedWeather = useRef(false);
 

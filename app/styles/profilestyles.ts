@@ -89,12 +89,17 @@ tabsScrollView: {
     backgroundColor: '#FFF', // Ensure it's not black
     paddingVertical: 10, // Adjust padding if necessary
 },
+reviews_container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 10,
 
+  },
   sectionTitle: {
     fontSize: 25,
     fontWeight: '600',
-    marginTop: 40,
-    marginBottom: 15,
+    marginTop: 33,
+    marginBottom: 30,
     paddingHorizontal: 10,
   },
   sectionTitle2: {
@@ -360,14 +365,16 @@ tabsScrollView: {
     borderRadius: 15 
   },
   reviewCard: {
-    backgroundColor: '#fff',
-    padding: 12,
+    backgroundColor: '#fffeee',
+    padding: 20,
     marginVertical: 8,
-    borderRadius: 20,
+    borderRadius: 30,
     shadowColor: '#000000',
     shadowOpacity: 0.9,
     shadowRadius: 10,
     elevation: 3,
+    width: '99.2%',
+    marginLeft: 1,
   },
   ratingContainer: {
     flexDirection: 'row',
