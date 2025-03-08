@@ -1,12 +1,65 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useRouter } from "expo-router";
-import { View, Text, TextInput, Button, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  Platform,
+} from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { Picker } from "@react-native-picker/picker";
 import tripFormStyles from "./styles/tripFormStyles";
 
 export default function TripCreateScreen() {
-  const { control, handleSubmit } = useForm();
+  const { control, handleSubmit, setValue, watch } = useForm();
   const router = useRouter();
+  const [showStartDatePicker, setShowStartDatePicker] = useState(false);
+  const [showEndDatePicker, setShowEndDatePicker] = useState(false);
+
+  const startDate = watch("startDate");
+  const endDate = watch("endDate");
+
+  // Function to handle Start Date selection
+  const handleStartDateChange = (selectedDate: Date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Normalize time
+
+    if (selectedDate < today) {
+      alert("Start Date cannot be before today.");
+      return;
+    }
+
+    const formattedDate = selectedDate.toISOString().split("T")[0];
+    setValue("startDate", formattedDate);
+
+    // Reset End Date when a new Start Date is chosen
+    setValue("endDate", "");
+    setShowStartDatePicker(false);
+  };
+
+  // Function to handle End Date selection
+  const handleEndDateChange = (selectedDate: Date) => {
+    if (!startDate) {
+      alert("Please select a Start Date first.");
+      return;
+    }
+
+    const start = new Date(startDate);
+    const maxEndDate = new Date(start);
+    maxEndDate.setDate(start.getDate() + 7); // Limit to 7 days after Start Date
+
+    if (selectedDate < start || selectedDate > maxEndDate) {
+      alert("End Date must be within 7 days after the Start Date.");
+      return;
+    }
+
+    const formattedDate = selectedDate.toISOString().split("T")[0];
+    setValue("endDate", formattedDate);
+    setShowEndDatePicker(false);
+  };
 
   const onSubmit = (data: any) => {
     router.push({
@@ -26,65 +79,105 @@ export default function TripCreateScreen() {
       <Text style={tripFormStyles.title}>Create a Trip</Text>
 
       {/* From */}
-      <Text style={{ fontWeight: "semibold", fontFamily: "serif", fontSize: 15, marginBottom:4 }}>From:</Text>
+      <Text style={tripFormStyles.label}>From:</Text>
       <Controller
         control={control}
         name="from"
         rules={{ required: true }}
         render={({ field: { onChange, value } }) => (
-          <TextInput style={tripFormStyles.input} placeholder="Enter starting location" onChangeText={onChange} value={value} />
+          <TextInput
+            style={tripFormStyles.input}
+            placeholder="Enter starting location"
+            onChangeText={onChange}
+            value={value}
+          />
         )}
       />
 
       {/* To */}
-      <Text style={{ fontWeight: "semibold", fontFamily: "serif", fontSize: 15, marginBottom:4 }}>To:</Text>
+      <Text style={tripFormStyles.label}>To:</Text>
       <Controller
         control={control}
         name="to"
         rules={{ required: true }}
         render={({ field: { onChange, value } }) => (
-          <TextInput style={tripFormStyles.input} placeholder="Enter destination" onChangeText={onChange} value={value} />
+          <TextInput
+            style={tripFormStyles.input}
+            placeholder="Enter destination"
+            onChangeText={onChange}
+            value={value}
+          />
         )}
       />
 
       {/* Start Date */}
-      <Text style={{ fontWeight: "semibold", fontFamily: "serif", fontSize: 15, marginBottom:4 }}>Start Date:</Text>
-      <Controller
-        control={control}
-        name="startDate"
-        rules={{ required: true }}
-        render={({ field: { onChange, value } }) => (
-          <TextInput style={tripFormStyles.input} placeholder="YYYY-MM-DD" onChangeText={onChange} value={value} />
-        )}
-      />
+      <Text style={tripFormStyles.label}>Start Date:</Text>
+      <TouchableOpacity onPress={() => setShowStartDatePicker(true)}>
+        <TextInput
+          style={tripFormStyles.input}
+          placeholder="YYYY-MM-DD"
+          value={startDate}
+          editable={false}
+        />
+      </TouchableOpacity>
+      {showStartDatePicker && (
+        <DateTimePicker
+          value={startDate ? new Date(startDate) : new Date()}
+          mode="date"
+          display={Platform.OS === "ios" ? "spinner" : "default"}
+           // allowing any future date
+          minimumDate={new Date()}
+          onChange={(event, date) => date && handleStartDateChange(date)}
+        />
+      )}
 
       {/* End Date */}
-      <Text style={{ fontWeight: "semibold", fontFamily: "serif", fontSize: 15, marginBottom:4 }}>End Date:</Text>
-      <Controller
-        control={control}
-        name="endDate"
-        rules={{ required: true }}
-        render={({ field: { onChange, value } }) => (
-          <TextInput style={tripFormStyles.input} placeholder="YYYY-MM-DD" onChangeText={onChange} value={value} />
-        )}
-      />
+      <Text style={tripFormStyles.label}>End Date:</Text>
+      <TouchableOpacity onPress={() => setShowEndDatePicker(true)}>
+        <TextInput
+          style={tripFormStyles.input}
+          placeholder="YYYY-MM-DD"
+          value={endDate}
+          editable={false}
+        />
+      </TouchableOpacity>
+      {showEndDatePicker && (
+        <DateTimePicker
+          value={endDate ? new Date(endDate) : startDate ? new Date(startDate) : new Date()}
+          mode="date"
+          display={Platform.OS === "ios" ? "spinner" : "default"}
+          minimumDate={startDate ? new Date(startDate) : new Date()} // End date starts from start date
+          maximumDate={startDate ? new Date(new Date(startDate).setDate(new Date(startDate).getDate() + 6)) : new Date()} 
+          onChange={(event, date) => date && handleEndDateChange(date)}
+        />
+      )}
 
       {/* Transport Mode */}
-      <Text style={{ fontWeight: "semibold", fontFamily: "serif", fontSize: 15, marginBottom:4 }}>Mode of Transport:</Text>
+      <Text style={tripFormStyles.label}>Mode of Transport:</Text>
       <Controller
         control={control}
         name="transport"
         rules={{ required: true }}
         render={({ field: { onChange, value } }) => (
-          <TextInput style={tripFormStyles.input} placeholder="Car, Bus, Train etc." onChangeText={onChange} value={value} />
+          <Picker
+            selectedValue={value}
+            style={tripFormStyles.picker}
+            onValueChange={(itemValue) => onChange(itemValue)}
+          >
+            <Picker.Item label="Select a mode of transport" value="" />
+            <Picker.Item label="Public Transport Bus" value="Public Transport Bus" />
+            <Picker.Item label="Car" value="Car" />
+          </Picker>
         )}
       />
 
       {/* Submit Button */}
-      <View style={tripFormStyles.button_generate}>
-        <Button onPress={handleSubmit(onSubmit)}>Generate Itinerary</Button>
-      </View>
-      
+      <TouchableOpacity
+        style={tripFormStyles.button_generate}
+        onPress={handleSubmit(onSubmit)}
+      >
+        <Text style={tripFormStyles.buttonText}>Generate Itinerary</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }

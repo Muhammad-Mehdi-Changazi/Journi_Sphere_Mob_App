@@ -172,7 +172,7 @@ export default function TripItineraryScreen() {
         style={itineraryStyles.container}
         contentContainerStyle={{ paddingBottom: 140 }}
       >
-        <Text style={itineraryStyles.title}>Your Itinerary</Text>
+        <Text style={itineraryStyles.title}>Your itinerary</Text>
         {loading ? <ActivityIndicator size="large" /> : renderFormattedItinerary()}
       </ScrollView>
 
@@ -182,7 +182,7 @@ export default function TripItineraryScreen() {
           <Text style={styles.footerButtonText}>Regenerate Plan</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.footerButton} onPress={handleSaveItinerary}>
-          <Text style={styles.footerButtonText}>Save Itinerary</Text>
+          <Text style={styles.footerButtonText}>Save itinerary</Text>
         </TouchableOpacity>
       </View>
 
@@ -190,7 +190,7 @@ export default function TripItineraryScreen() {
       <Modal visible={modalVisible} transparent animationType="slide">
         <View style={modalStyles.modalContainer}>
           <View style={modalStyles.modalContent}>
-            <Text style={modalStyles.modalHeader}>Save Itinerary</Text>
+            <Text style={modalStyles.modalHeader}>Save itinerary</Text>
             <TextInput
               style={modalStyles.input}
               placeholder="Enter itinerary name"
@@ -231,13 +231,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     padding: 10,
     backgroundColor: "#007AFF",
-    borderRadius: 5,
+    borderRadius: 25,
     alignItems: "center",
   },
   footerButtonText: {
     color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
+    fontSize: 17,
+    fontWeight: "semibold",
   },
 });
 
@@ -256,16 +256,17 @@ const modalStyles = StyleSheet.create({
     alignItems: "center",
   },
   modalHeader: {
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: "bold",
     marginBottom: 20,
+    fontFamily: 'monospace'
   },
   input: {
     width: "100%",
     padding: 10,
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 5,
+    borderRadius: 35,
     marginBottom: 20,
   },
   buttonsContainer: {
@@ -276,7 +277,7 @@ const modalStyles = StyleSheet.create({
   modalButton: {
     backgroundColor: "#007AFF",
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 35,
     flex: 1,
     marginHorizontal: 5,
     alignItems: "center",

@@ -9,11 +9,12 @@ const itineraryStyles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 20,
+    color: "rgb(16, 89, 138)",
   },
   dayTitle: {
     fontSize: 22,
     fontWeight: "bold",
-    marginTop: 15,
+    marginTop: 25,
     marginBottom: 5,
     textDecorationLine: "underline",
   },
