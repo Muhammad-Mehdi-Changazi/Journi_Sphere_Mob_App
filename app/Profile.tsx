@@ -55,9 +55,6 @@ export default function Profile() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const { email, city } = useLocalSearchParams(); // Get params from URL
 
-  // API URL – replace with your IP for local testing, or use production URL
-  //const API_BASE_URL = "http://34.226.13.20:3000";
-
   // Load user data
   useEffect(() => {
     const fetchUserData = async () => {
