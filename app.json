@@ -36,6 +36,7 @@
       "typedRoutes": true
     },
     "extra": {
+      "API_BASE_URL": "http://10.130.82.190:3000",
       "router": {
         "origin": false
       },

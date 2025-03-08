@@ -17,6 +17,9 @@ import RNPickerSelect from "react-native-picker-select";
 import { styles, pickerSelectStyles } from "./styles/homestyles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Footer from "./components/Footer";
+import Constants from "expo-constants";
+
+const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
 
 const cities = [
   { label: "Islamabad", value: "Islamabad" },
@@ -70,7 +73,6 @@ export default function HomeScreen() {
 
   const WEATHER_API = "IrcewJS0mpnHD8YvYx0F21aMGnqdlwLx";
 
-  const API_BASE_URL = "http://34.226.13.20:3000"; // changed localhost to IP address to fix error. replace with your IP for local testing. switch to upper url for deployment
   const GOOGLE_API_KEY = "AIzaSyDx_TwV8vhwbKTTWn0tV2BVRDGIipfwzlc";
   const hasFetchedWeather = useRef(false);
 

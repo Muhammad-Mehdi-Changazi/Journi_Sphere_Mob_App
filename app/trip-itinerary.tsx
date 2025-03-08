@@ -15,6 +15,9 @@ import {
 import itineraryStyles from "./styles/itineraryStyles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import Constants from "expo-constants";
+
+const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
 
 export default function TripItineraryScreen() {
   const params = useLocalSearchParams();
@@ -114,7 +117,7 @@ export default function TripItineraryScreen() {
       return;
     }
     try {
-      const response = await axios.post("http://34.226.13.20:3000/itinerary/save", {
+      const response = await axios.post(`${API_BASE_URL}/itinerary/save`, {
         username, // Using username as unique identifier
         name: itineraryName,
         content: itinerary,

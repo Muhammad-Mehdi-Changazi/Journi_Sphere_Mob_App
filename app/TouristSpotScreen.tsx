@@ -10,6 +10,9 @@ import {
 } from "react-native";
 import { useRouter, useLocalSearchParams, usePathname } from "expo-router";
 import axios from "axios";
+import Constants from "expo-constants";
+
+const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
 
 const TouristSpotScreen = () => {
   const router = useRouter();
@@ -30,9 +33,6 @@ const TouristSpotScreen = () => {
   
   // fetch spot
   useEffect(() => {
-    const API_BASE_URL = "http://34.226.13.20:3000"; 
-    // const API_BASE_URL = "https://d1lxguzc6q41zr.cloudfront.net";
-
     setLoading(true);
     axios
       .get(`${API_BASE_URL}/api/tourism`, {

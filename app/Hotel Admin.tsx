@@ -7,6 +7,9 @@ import Icon from 'react-native-vector-icons/Ionicons'; // For icons
 import { BarChart } from 'react-native-chart-kit';
 import EditRoomInfo from './editroominfo';
 import ReservationRequests from './components/ReservationsRequest';
+import Constants from "expo-constants";
+
+const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
 
 let socket;
 
@@ -83,7 +86,7 @@ function HotelAdmin() {
 
     useEffect(() => {
         // Connect to Socket.IO server
-        socket = io('http://34.226.13.20:3000'/*'https://d1lxguzc6q41zr.cloudfront.net'*/);
+        socket = io(`${API_BASE_URL}`/*'https://d1lxguzc6q41zr.cloudfront.net'*/);
 
         socket.on('connect', () => console.log('Connection to Socket.IO server'));
         socket.on('reservation-created', (data: { placeID: string, reservationDetails: any }) => {
@@ -132,10 +135,11 @@ function HotelAdmin() {
     useEffect(() => {
         const fetchHotelData = async () => {
             try {
-                const hotelResponse: { data: { hotel: HotelDetails } } = await axios.get(/*`https://d1lxguzc6q41zr.cloudfront.net/hotels/${hotel_id}`*/ `http://34.226.13.20:3000/hotels/${hotel_id}`);
+                const hotelResponse: { data: { hotel: HotelDetails } } = await axios.get(/*`https://d1lxguzc6q41zr.cloudfront.net/hotels/${hotel_id}`*/ `${API_BASE_URL}/hotels/${hotel_id}`);
                 setHotelDetails(hotelResponse.data.hotel);
 
-                const roomsResponse = await axios.get(/*`https://d1lxguzc6q41zr.cloudfront.net/${hotel_id}/rooms`*/ `http://34.226.13.20:3000/${hotel_id}/rooms`);
+                const roomsResponse = await axios.get(/*`https://d1lxguzc6q41zr.cloudfront.net/${hotel_id}/rooms`*/ 
+                    `${API_BASE_URL}/${hotel_id}/rooms`);
 
                 // Ensure uniqueness before updating the state
                 setRooms(roomsResponse.data.rooms);
@@ -149,7 +153,7 @@ function HotelAdmin() {
         const fetchReservations = async () => {
             try {
                 // Fetch all reservations with hotel_id and status filtering
-                const response = await axios.get(/*`https://d1lxguzc6q41zr.cloudfront.net/GetAllReservationsByHotelID?hotel_id=${hotel_id}`*/ `http://34.226.13.20:3000/GetAllReservationsByHotelID?hotel_id=${hotel_id}`);
+                const response = await axios.get(/*`https://d1lxguzc6q41zr.cloudfront.net/GetAllReservationsByHotelID?hotel_id=${hotel_id}`*/ `${API_BASE_URL}/GetAllReservationsByHotelID?hotel_id=${hotel_id}`);
 
                 // Store the fetched data
                 const allReservations = response.data;

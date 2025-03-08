@@ -1,0 +1,5 @@
+// go to app.json and replace the ip in expo{extra{API_BASE_URL}}
+
+"API_BASE_URL": "http://10.130.82.190:3000" // Umer 
+"API_BASE_URL": "http://34.226.13.20:3000" // Osman 
+"API_BASE_URL": "https://d1lxguzc6q41zr.cloudfront.net" // deployment

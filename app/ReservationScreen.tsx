@@ -6,6 +6,9 @@ import io from 'socket.io-client';
 import moment from 'moment';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import Constants from "expo-constants";
+
+const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
 
 interface Room {
     _id: string;
@@ -52,7 +55,7 @@ export default function ReservationScreen() {
     const [showToPicker, setShowToPicker] = useState(false);
 
     useEffect(() => {
-        socket = io('http://34.226.13.20:3000' /*'https://d1lxguzc6q41zr.cloudfront.net'*/);
+        socket = io(`${API_BASE_URL}` /*'https://d1lxguzc6q41zr.cloudfront.net'*/);
         socket.on('connect', () => console.log('Connected to server'));
 
         socket.on("room_reserved", (data: { room: RoomDetails }) => {
@@ -87,7 +90,7 @@ export default function ReservationScreen() {
         const fetchRooms = async () => {
             console.log("Fetching rooms for placeID:", placeID);
             try { 
-                const response = await axios.get(`http://34.226.13.20:3000/getRooms/${placeID}`/*`https://d1lxguzc6q41zr.cloudfront.net/getRooms/${placeID}`*/);
+                const response = await axios.get(`${API_BASE_URL}/getRooms/${placeID}`/*`https://d1lxguzc6q41zr.cloudfront.net/getRooms/${placeID}`*/);
                 setRooms(response.data);
             } catch (err) {
                 setError('Failed to fetch rooms. Please try again.');
@@ -125,7 +128,7 @@ export default function ReservationScreen() {
         const reservationStatus = reservationDetails.paymentMethod === 'ONLINE' ? 'CONFIRMED' : 'PENDING';
 
         try {
-            const response = await axios.post('http://34.226.13.20:3000/api/reservations'/*'https://d1lxguzc6q41zr.cloudfront.net/api/reservations'*/, {
+            const response = await axios.post(`${API_BASE_URL}/api/reservations`/*'https://d1lxguzc6q41zr.cloudfront.net/api/reservations'*/, {
                 ...reservationDetails,
                 roomID: reservationDetails.roomID,
                 placeID: reservationDetails.placeID,

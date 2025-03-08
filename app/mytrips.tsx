@@ -11,6 +11,9 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
+import Constants from "expo-constants";
+
+const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
 
 export default function MyTripsScreen() {
   const [itineraries, setItineraries] = useState([]);
@@ -31,7 +34,7 @@ export default function MyTripsScreen() {
 
       // Call backend endpoint to get itineraries by username
       const response = await axios.get(
-        `http://34.226.13.20:3000/itinerary/my?username=${username}`
+        `${API_BASE_URL}/itinerary/my?username=${username}`
       );
       setItineraries(response.data);
     } catch (error) {

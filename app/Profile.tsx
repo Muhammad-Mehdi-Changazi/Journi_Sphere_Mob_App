@@ -17,6 +17,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { styles } from "./styles/profilestyles";
 import Footer from "./components/Footer";
 import { ScrollView } from "react-native";
+import Constants from "expo-constants";
+
+const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
 
 interface Review {
   id: string;
@@ -53,7 +56,7 @@ export default function Profile() {
   const { email, city } = useLocalSearchParams(); // Get params from URL
 
   // API URL – replace with your IP for local testing, or use production URL
-  const API_BASE_URL = "http://34.226.13.20:3000";
+  //const API_BASE_URL = "http://34.226.13.20:3000";
 
   // Load user data
   useEffect(() => {
@@ -100,7 +103,7 @@ export default function Profile() {
   const handleUpdateProfile = async () => {
     try {
       const response = await axios.put(
-        `${API_BASE_URL}/user/?email=${userData.email}`,
+        `${API_BASE_URL}user/?email=${userData.email}`,
         userData
       );
       console.log(response.data);

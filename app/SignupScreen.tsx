@@ -9,6 +9,9 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
+import Constants from "expo-constants";
+
+const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
 
 export default function SignupScreen() {
   const [username, setUsername] = useState('');
@@ -52,7 +55,7 @@ export default function SignupScreen() {
     try {
       setLoading(true);
       const response = await axios.post(
-        'http://34.226.13.20:3000/signup',
+        `${API_BASE_URL}/signup`,
         requestData,
         {
           headers: {
