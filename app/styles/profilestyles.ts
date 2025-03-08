@@ -252,10 +252,17 @@ tabsScrollView: {
     color: '#666',
     marginBottom: 4,
   },
+  buttonsContainer2: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 12,
+    width: '50%', 
+  },
   buttonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 12,
+    //width: '50%', 
   },
   button: {
     backgroundColor: '#007BFF',
@@ -334,18 +341,17 @@ tabsScrollView: {
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#ffffff',
-    padding: 20,
-    width: "100%", 
+    padding: 0, //12
+    width: "100%",
+    height: 72, 
     alignItems: "center",
-    borderRadius: 15,
-
-    shadowColor: '#0077BE',
-    shadowOffset: { width: 10, height: 10 },
-    shadowOpacity: 0.5,
-    shadowRadius: 10,
-    elevation: 10
+    borderTopRightRadius:32,
+    borderTopLeftRadius:32,
+    backgroundColor: '#ffffff', 
+    elevation: 5, 
+    boxShadow: "0px 0px 30px -10px #176FF2"
   },
+  
   input: { 
     borderWidth: 1,
     borderColor: '#ddd',
@@ -400,8 +406,16 @@ tabsScrollView: {
     width: 40,
     borderRadius: 10
   },
-
-
+  logoutButton: {
+    position: "absolute",
+    right: 25,
+    top:30,
+    backgroundColor: '#007BFF',
+    borderRadius: 15,
+    width: 80,
+    height: 45,
+    justifyContent: 'center',
+  }
 });
 
 

@@ -15,6 +15,7 @@ import ProtectedRoute from "./components/protectedroute";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { styles } from "./styles/profilestyles";
+import Footer from "./components/Footer";
 import { ScrollView } from "react-native";
 
 interface Review {
@@ -89,7 +90,6 @@ export default function Profile() {
 
   // handlers for back button
   const handleBack = (city: string) => {
-    console.log()
     router.push({
       pathname: "/home",
       params: { city: `{\"name\":\"${city}\",\"places\":[],\"foods\":[]}` },
@@ -207,7 +207,12 @@ return (
   <ProtectedRoute>
     <View style={styles.container}>
       <Text style={styles.sectionTitle}>Hi <Text style={styles.sectionTitle2}>{userData.username}!</Text></Text>
-      
+      <TouchableOpacity 
+        style={styles.logoutButton}
+        onPress={() => router.push('/')}
+      >
+        <Text style={styles.buttonText}>Logout</Text>
+      </TouchableOpacity>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabsScrollView}>
         <TouchableOpacity
           style={activeTab === "updateProfile" ? styles.activeTab : styles.inactiveTab}
@@ -249,14 +254,16 @@ return (
       {renderContent()}
       
     </View>
-
-    <View style={styles.footMneu_home}>
-      <View style={[styles.buttonsContainer, { flexDirection: "column", alignItems: "stretch" }]}>
-        <TouchableOpacity style={styles.button_home_back} onPress={() => handleBack(city)}>
-          <Text style={styles.buttonText_home}>Home</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    
+    <Footer
+      handleProfile={()=>{
+        console.log("Already on Profile")
+      }}
+      handleBack={handleBack}
+      cityName={city as string}
+      email={email as string}
+      currentTab={2}
+    />
   </ProtectedRoute>
 
 );}

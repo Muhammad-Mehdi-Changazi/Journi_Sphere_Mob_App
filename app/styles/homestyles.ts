@@ -237,6 +237,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 12,
   },
+  buttonsContainer2: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 12,
+    width: '40%', 
+  },
   button: {
     backgroundColor: '#007BFF',
     paddingVertical: 10,
@@ -276,21 +282,20 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Abhaya Libre Medium',
   },
-  footMneu: {
+  footMenu: {
     position: 'absolute',
     bottom: -8,
     left: 0,
     right: 0,
-    backgroundColor: '#ADD8E6',
-    width: "100%", 
+    padding: 0,
+    width: "100%",
+    height: 72, 
     alignItems: "center",
-    borderRadius: 25,
-
-    shadowColor: '#0077BE',
-    shadowOffset: { width: 10, height: 10 },
-    shadowOpacity: 0.5,
-    shadowRadius: 10,
-    elevation: 10
+    borderTopRightRadius:32,
+    borderTopLeftRadius:32,
+    backgroundColor: '#ffffff', 
+    elevation: 5, 
+    boxShadow: "0px 0px 30px -10px #176FF2"
   },
   input: { 
     borderWidth: 1,
