@@ -53,6 +53,10 @@ export default function SignupScreen() {
       setLoading(true);
       const response = await axios.post(
         'http://34.226.13.20:3000/signup',
+<<<<<<< Updated upstream
+=======
+        // 'https://d1lxguzc6q41zr.cloudfront.net/signup',
+>>>>>>> Stashed changes
         requestData,
         {
           headers: {

@@ -6,6 +6,11 @@ const recommendationController = require('../controllers/recommendationControlle
 const hotelController = require('../controllers/hotelController');
 const roomController = require('../controllers/roomController');
 const tourismController = require('../controllers/tourismController');
+<<<<<<< Updated upstream
+=======
+const userController = require('../controllers/userController');
+const itineraryController = require('../controllers/itineraryController')
+>>>>>>> Stashed changes
 
 const router = express.Router();
 
@@ -43,4 +48,15 @@ router.get('/:hotel_id/rooms', roomController.getHotelRooms);
 // Search Routes
 router.get('/api/search', recommendationController.searchPlaces);
 
+<<<<<<< Updated upstream
+=======
+// User routes
+router.get("/api/user/", userController.getUser);
+router.put('/user/', userController.updateProfile);
+
+//itinerary routes
+router.post('/itinerary/save', itineraryController.saveItinerary);
+router.get('/itinerary/my', itineraryController.getUserItineraries);
+
+>>>>>>> Stashed changes
 module.exports = router;
