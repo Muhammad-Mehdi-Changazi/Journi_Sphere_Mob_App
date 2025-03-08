@@ -12,6 +12,17 @@ const tripFormStyles = StyleSheet.create({
     textAlign: "center",
     color: "rgb(16, 89, 138)",
   },
+    backButton: {
+    position: 'absolute',
+    top: 10,
+    left: 0,
+    zIndex: 10,
+    borderWidth: 2,
+    borderColor: 'rgb(56, 123, 167)',
+    borderRadius: 10,
+    padding: 6,
+  },
+
   label: {
     fontSize: 18,
     fontWeight: "semibold",

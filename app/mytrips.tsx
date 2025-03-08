@@ -14,6 +14,7 @@ import { useRouter } from 'expo-router';
 import Constants from "expo-constants";
 
 const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
+import { Ionicons } from '@expo/vector-icons';
 
 export default function MyTripsScreen() {
   const [itineraries, setItineraries] = useState([]);
@@ -52,7 +53,7 @@ export default function MyTripsScreen() {
   // Handler when a user taps an itinerary: navigate to details page.
   const handleItineraryPress = (itinerary) => {
     router.push({
-      pathname: '/TripDetails', // Ensure you have a TripDetailsScreen to handle this route
+      pathname: '/TripDetails',
       params: {
         itinerary: JSON.stringify(itinerary),
       },
@@ -62,6 +63,11 @@ export default function MyTripsScreen() {
   // Handler for "Create New Itinerary" button: navigates to trip create page.
   const handleCreateNew = () => {
     router.push('/trip-create');
+  };
+
+  // Navigate back to Profile screen
+  const handleBackPress = () => {
+    router.push('/Profile');
   };
 
   // Render each itinerary item
@@ -82,6 +88,9 @@ export default function MyTripsScreen() {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
+        <Ionicons name="arrow-back" size={24} color="rgb(56, 123, 167)" />
+      </TouchableOpacity>
       <Text style={styles.header}>My Trips</Text>
       {loading ? (
         <ActivityIndicator size="large" />
@@ -108,11 +117,21 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
   },
+  backButton: {
+    position: 'absolute',
+    top: 20,
+    left: 15,
+    zIndex: 10,
+    borderWidth: 2,
+    borderColor: 'rgb(56, 123, 167)',
+    borderRadius: 10,
+    padding: 6,
+  },
   header: {
     fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 25,
-    marginTop: 6,
+    marginTop: 20,
     textAlign: 'center',
     fontFamily: 'serif',
   },
@@ -144,7 +163,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     textAlign: 'center',
     marginTop: 28,
-    fontFamily: 'monospace', 
+    fontFamily: 'monospace',
   },
   createButton: {
     backgroundColor: 'rgb(56, 123, 167)',
