@@ -90,6 +90,7 @@ export default function Profile() {
 
   // handlers for back button
   const handleBack = (city: string) => {
+    console.log()
     router.push({
       pathname: "/home",
       params: { city: `{\"name\":\"${city}\",\"places\":[],\"foods\":[]}` },
@@ -161,6 +162,7 @@ export default function Profile() {
           />
           <TouchableOpacity
             style={styles.button3}
+
             onPress={handleUpdateProfile}
           >
             <Text style={styles.buttonText}>Update Profile</Text>
@@ -215,6 +217,14 @@ return (
       >
         <Text style={styles.buttonText}>Logout</Text>
       </TouchableOpacity>
+        {/* Tiny "My Trips" button */}
+        <TouchableOpacity
+          style={styles.myTripsButton}
+          onPress={() => router.push("/mytrips")}
+        >
+          <Text style={styles.myTripsButtonText}>My Trips</Text>
+        </TouchableOpacity>
+      
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabsScrollView}>
         <TouchableOpacity
           style={activeTab === "updateProfile" ? styles.activeTab : styles.inactiveTab}

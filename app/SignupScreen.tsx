@@ -52,8 +52,7 @@ export default function SignupScreen() {
     try {
       setLoading(true);
       const response = await axios.post(
-        'http://34.226.13.20:3000"/signup',
-        // 'https://d1lxguzc6q41zr.cloudfront.net/signup',
+        'http://34.226.13.20:3000/signup',
         requestData,
         {
           headers: {

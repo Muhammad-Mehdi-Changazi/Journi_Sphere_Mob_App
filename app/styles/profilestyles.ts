@@ -1,6 +1,20 @@
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
+
+  myTripsButton: {
+    backgroundColor: "#007AFF",
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 15,
+    alignSelf: "flex-start",
+    marginBottom: 10,
+  },
+  myTripsButtonText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "bold",
+  },
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
@@ -54,6 +68,7 @@ const styles = StyleSheet.create({
   },
   tabsContainer: {
     marginLeft: 15,
+
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 33,
@@ -263,11 +278,11 @@ reviews_container: {
     marginTop: 12,
     width: '50%', 
   },
+
   buttonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 12,
-    //width: '50%', 
   },
   button: {
     backgroundColor: '#007BFF',
@@ -356,7 +371,6 @@ reviews_container: {
     elevation: 5, 
     boxShadow: "0px 0px 30px -10px #176FF2"
   },
-  
   input: { 
     borderWidth: 1,
     borderColor: '#ddd',

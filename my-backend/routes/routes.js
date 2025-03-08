@@ -7,6 +7,7 @@ const hotelController = require('../controllers/hotelController');
 const roomController = require('../controllers/roomController');
 const tourismController = require('../controllers/tourismController');
 const userController = require('../controllers/userController');
+const itineraryController = require('../controllers/itineraryController')
 
 const router = express.Router();
 
@@ -53,5 +54,9 @@ router.get('/api/search', recommendationController.searchPlaces);
 // User routes
 router.get("/api/user/", userController.getUser);
 router.put('/user/', userController.updateProfile);
+
+//itinerary routes
+router.post('/itinerary/save', itineraryController.saveItinerary);
+router.get('/itinerary/my', itineraryController.getUserItineraries);
 
 module.exports = router;
