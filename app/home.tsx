@@ -9,7 +9,7 @@ import {
   TextInput,
   Dimensions,
 } from "react-native";
-import { useRouter, useLocalSearchParams, usePathname } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import ProtectedRoute from "./components/protectedroute";
 import axios from "axios";
@@ -33,6 +33,7 @@ export default function HomeScreen() {
     : { name: "", places: [], foods: [] };
 
   const router = useRouter();
+
   // Tourist routing handler
   const handleViewSpot = (city: string, spotName: string) => {
     router.push({
@@ -40,6 +41,7 @@ export default function HomeScreen() {
       params: { city, spotName },
     });
   };
+
   // Screen dimensions to conditionally adjust layout on small screens.
   const screenWidth = Dimensions.get("window").width;
   const { height } = Dimensions.get("window");
@@ -56,8 +58,9 @@ export default function HomeScreen() {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [email, setEmail] = useState("");
+  const [overlayWidth, setOverlayWidth] = useState(50); // Moved to top level
 
-  // DROP DOWN MENU MAN
+  // DROP DOWN MENU
   const [selectedCity, setSelectedCity] = useState(cityData.name);
 
   // New state to hold city coordinates
@@ -65,16 +68,16 @@ export default function HomeScreen() {
     lat: number;
     lng: number;
   } | null>(null);
+
   // Active tab: "touristSpots", "hotels", "food", or "carRentals"
   const [activeTab, setActiveTab] = useState("touristSpots");
 
   const WEATHER_API = "IrcewJS0mpnHD8YvYx0F21aMGnqdlwLx";
-
-  const API_BASE_URL = "http://34.226.13.20:3000"; // changed localhost to IP address to fix error. replace with your IP for local testing. switch to upper url for deployment
+  const API_BASE_URL = "http://34.226.13.20:3000"; // Replace with your IP for local testing
   const GOOGLE_API_KEY = "AIzaSyDx_TwV8vhwbKTTWn0tV2BVRDGIipfwzlc";
   const hasFetchedWeather = useRef(false);
 
-  // setting email to access profile if active tab is "touristSpots"
+  // Load email from AsyncStorage
   const loadEmail = async () => {
     try {
       const storedEmail = await AsyncStorage.getItem("email");
@@ -89,7 +92,6 @@ export default function HomeScreen() {
     if (activeTab !== "touristSpots") return;
     setLoading(true);
     loadEmail();
-    console.log("The city", cityData);
     axios
       .get(`${API_BASE_URL}/api/tourist-spots`, {
         params: {
@@ -97,7 +99,6 @@ export default function HomeScreen() {
         },
       })
       .then((response) => {
-        console.log(response.data);
         setTouristSpots(response.data);
         setLoading(false);
       })
@@ -154,20 +155,22 @@ export default function HomeScreen() {
       });
   }, []);
 
+  // Handle profile navigation
   const handleProfile = (email: string, city: string) => {
     router.push({
       pathname: "/Profile",
       params: { email, city },
     });
   };
-  // Re-implemented handleSearch using Google Places Text Search API.
+
+  // Handle search using Google Places Text Search API
   const handleSearch = async (query: string) => {
     setSearchQuery(query);
     if (query.length >= 3) {
       setSearchLoading(true);
       try {
         let coords = cityCoords;
-        // If city coordinates are not set, retrieve them using the Geocoding API.
+        // If city coordinates are not set, retrieve them using the Geocoding API
         if (!coords) {
           const geocodeResponse = await axios.get(
             "https://maps.googleapis.com/maps/api/geocode/json",
@@ -186,7 +189,7 @@ export default function HomeScreen() {
             setCityCoords(coords);
           }
         }
-        // Now perform the Places Text Search restricted by location and a radius.
+        // Perform the Places Text Search restricted by location and a radius
         const response = await axios.get(
           "https://maps.googleapis.com/maps/api/place/textsearch/json",
           {
@@ -213,7 +216,7 @@ export default function HomeScreen() {
     }
   };
 
-  // Hotel card button handlers.
+  // Hotel card button handlers
   const handleNavigate = (hotelName: string) => {
     router.push(`/GoogleMapScreen?placeName=${encodeURIComponent(hotelName)}`);
   };
@@ -221,18 +224,25 @@ export default function HomeScreen() {
     router.push(`/Reviews?placeName=${encodeURIComponent(hotelName)}`);
   };
   const handleMakeReservation = (placeID: string) => {
-    console.log("Place Name:", placeID);
     router.push(`/ReservationScreen?placeID=${encodeURIComponent(placeID)}`);
   };
 
-  // Render content based on the active tab.
+  // Handle city change in the dropdown
+  const handleCityChange = (value: string) => {
+    setSelectedCity(value);
+    const newCityData = JSON.stringify({ name: value, places: [], foods: [] });
+    router.replace({
+      pathname: "/home",
+      params: { city: newCityData },
+    });
+  };
+
+  // Render content based on the active tab
   const renderContent = () => {
-    const [overlayWidth, setOverlayWidth] = useState(50);
     if (loading) {
       return <ActivityIndicator size="large" color="#A8CCF0" />;
     }
     if (activeTab === "touristSpots") {
-      console.log("Hello", touristSpots.touristSpots);
       return (
         <View>
           <FlatList
@@ -242,42 +252,39 @@ export default function HomeScreen() {
               item._id ? item._id.toString() : item.name
             }
             renderItem={({ item }) => (
-            <View
-                  style={[
-                    styles.placeUnderlay,
-                    isTallScreen && { marginBottom: 15 + height * 0.25 },
-                  ]}
+              <View
+                style={[
+                  styles.placeUnderlay,
+                  isTallScreen && { marginBottom: 15 + height * 0.25 },
+                ]}
+              >
+                <TouchableOpacity
+                  style={styles.placeCard2}
+                  onPress={() => handleViewSpot(cityData.name, item.name)}
                 >
-                  <TouchableOpacity
-                    style={styles.placeCard2}
-                    onPress={() => handleViewSpot(cityData.name, item.name)}
-                  >
-                    <Image source={{ uri: item.image }} style={styles.placeImage} />
-                    
-                     {/* Dynamic overlay */}
-                    <View style={[styles.placeOverlay2, { width: overlayWidth + 40 }]}>
-                      <Text
-                        style={styles.placeName2}
-                        onLayout={(event) => {
-                          const textWidth = event.nativeEvent.layout.width;
-                          setOverlayWidth(textWidth);
-                        }}
-                      >
-                        {item.name}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={[
-                      styles.button2,
-                      isTallScreen && { marginTop: height * 0.01, height: 25 },
-                    ]}
-                    onPress={() => handleNavigate(item.name)}
-                  >
-                    <Text style={styles.buttonText}>Navigation</Text>
-                  </TouchableOpacity>
-                </View>
+                  <Image source={{ uri: item.image }} style={styles.placeImage} />
+                  <View style={[styles.placeOverlay2, { width: overlayWidth + 40 }]}>
+                    <Text
+                      style={styles.placeName2}
+                      onLayout={(event) => {
+                        const textWidth = event.nativeEvent.layout.width;
+                        setOverlayWidth(textWidth);
+                      }}
+                    >
+                      {item.name}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.button2,
+                    isTallScreen && { marginTop: height * 0.01, height: 25 },
+                  ]}
+                  onPress={() => handleNavigate(item.name)}
+                >
+                  <Text style={styles.buttonText}>Navigation</Text>
+                </TouchableOpacity>
+              </View>
             )}
             showsHorizontalScrollIndicator={false}
           />
@@ -349,15 +356,6 @@ export default function HomeScreen() {
     }
   };
 
-  const handleCityChange = (value: string) => {
-    setSelectedCity(value);
-    const newCityData = JSON.stringify({ name: value, places: [], foods: [] });
-    router.replace({
-      pathname: "/home",
-      params: { city: newCityData },
-    });
-  };
-
   return (
     <ProtectedRoute>
       <View style={styles.container}>
@@ -365,7 +363,6 @@ export default function HomeScreen() {
         <View style={styles.headerContainer}>
           <Text style={styles.headerTitle}>Explore</Text>
           <Text style={styles.cityName}>{cityData.name}</Text>
-
           <RNPickerSelect
             onValueChange={handleCityChange}
             items={cities}
@@ -380,6 +377,7 @@ export default function HomeScreen() {
             {temperature ? `~ ${temperature}` : "Loading..."}
           </Text>
         </View>
+
         {/* Search Bar */}
         <View style={styles.searchContainer}>
           <FontAwesome
@@ -404,6 +402,7 @@ export default function HomeScreen() {
             />
           )}
         </View>
+
         {/* Render search results if query length is at least 3; otherwise render the tabs and popular content */}
         {searchQuery.length >= 3 ? (
           <FlatList
@@ -428,17 +427,16 @@ export default function HomeScreen() {
                   <Text style={styles.cityDescription}>
                     {item.formatted_address}
                   </Text>
-                  {/* Navigate buttons */}
                   <View style={styles.searchResultButtonsContainer}>
                     <TouchableOpacity
                       style={styles.searchResultButton}
                       onPress={() =>
-                        router.push( `/GoogleMapScreen?placeName=${encodeURIComponent( item.name )}` )
+                        router.push(
+                          `/GoogleMapScreen?placeName=${encodeURIComponent(item.name)}`
+                        )
                       }
                     >
-                      <Text style={styles.searchResultButtonText}>
-                        Navigate
-                      </Text>
+                      <Text style={styles.searchResultButtonText}>Navigate</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={styles.searchResultButton}
@@ -543,8 +541,8 @@ export default function HomeScreen() {
       </View>
       <Footer
         handleProfile={handleProfile}
-        handleBack={(cityName:string)=>{
-          console.log("Already on home.")
+        handleBack={(cityName: string) => {
+          console.log("Already on home.");
         }}
         cityName={cityData.name}
         email={email}
