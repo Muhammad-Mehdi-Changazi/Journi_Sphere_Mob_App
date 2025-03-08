@@ -3,17 +3,20 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
 
   myTripsButton: {
-    backgroundColor: "#007AFF",
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 15,
-    alignSelf: "flex-start",
-    marginBottom: 10,
+    backgroundColor: 'rgba(52, 152, 219, 0.2)',
+    borderWidth: 2,
+    borderColor: 'rgba(52, 152, 219, 0.6)',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 14,
   },
   myTripsButtonText: {
-    color: "#fff",
-    fontSize: 14,
-    fontWeight: "bold",
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#3498db',
   },
   container: {
     flex: 1,
@@ -342,16 +345,9 @@ reviews_container: {
     shadowRadius: 10,
     elevation: 10
   },
-  buttonText_home: {
-    color: '#fff',
-    fontSize: 13,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    fontFamily: 'Abhaya Libre Medium',
-  },
   buttonText: {
     color: '#fff',
-    fontSize: 9,
+    fontSize: 12,
     fontWeight: 'bold',
     textAlign: 'center',
     fontFamily: 'Abhaya Libre Medium',

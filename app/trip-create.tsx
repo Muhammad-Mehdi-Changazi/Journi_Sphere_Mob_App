@@ -26,7 +26,7 @@ export default function TripCreateScreen() {
       <Text style={tripFormStyles.title}>Create a Trip</Text>
 
       {/* From */}
-      <Text>From:</Text>
+      <Text style={{ fontWeight: "semibold", fontFamily: "serif", fontSize: 15, marginBottom:4 }}>From:</Text>
       <Controller
         control={control}
         name="from"
@@ -37,7 +37,7 @@ export default function TripCreateScreen() {
       />
 
       {/* To */}
-      <Text>To:</Text>
+      <Text style={{ fontWeight: "semibold", fontFamily: "serif", fontSize: 15, marginBottom:4 }}>To:</Text>
       <Controller
         control={control}
         name="to"
@@ -48,7 +48,7 @@ export default function TripCreateScreen() {
       />
 
       {/* Start Date */}
-      <Text>Start Date:</Text>
+      <Text style={{ fontWeight: "semibold", fontFamily: "serif", fontSize: 15, marginBottom:4 }}>Start Date:</Text>
       <Controller
         control={control}
         name="startDate"
@@ -59,7 +59,7 @@ export default function TripCreateScreen() {
       />
 
       {/* End Date */}
-      <Text>End Date:</Text>
+      <Text style={{ fontWeight: "semibold", fontFamily: "serif", fontSize: 15, marginBottom:4 }}>End Date:</Text>
       <Controller
         control={control}
         name="endDate"
@@ -70,7 +70,7 @@ export default function TripCreateScreen() {
       />
 
       {/* Transport Mode */}
-      <Text>Mode of Transport:</Text>
+      <Text style={{ fontWeight: "semibold", fontFamily: "serif", fontSize: 15, marginBottom:4 }}>Mode of Transport:</Text>
       <Controller
         control={control}
         name="transport"
@@ -81,7 +81,10 @@ export default function TripCreateScreen() {
       />
 
       {/* Submit Button */}
-      <Button title="Generate Itinerary" onPress={handleSubmit(onSubmit)} />
+      <View style={tripFormStyles.button_generate}>
+        <Button onPress={handleSubmit(onSubmit)}>Generate Itinerary</Button>
+      </View>
+      
     </ScrollView>
   );
 }

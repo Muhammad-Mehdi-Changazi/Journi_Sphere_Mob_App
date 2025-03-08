@@ -5,15 +5,23 @@ const tripFormStyles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
+    fontSize: 34,
+    fontWeight: "semibold",
+    marginBottom: 50,
+    marginTop: 30,
+    textAlign: "center",
+    color: 'rgb(16, 89, 138)',
   },
   input: {
     borderWidth: 1,
     padding: 10,
-    marginBottom: 10,
-    borderRadius: 5,
+    marginBottom: 20,
+    borderRadius: 15,
+  },
+  button_generate: {
+    backgroundColor: "rgb(16, 89, 138)",
+    padding: 10,
+    borderRadius: 15,
   },
 });
 

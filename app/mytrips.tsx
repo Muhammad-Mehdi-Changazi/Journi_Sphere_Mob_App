@@ -1,4 +1,3 @@
-// app/mytrips.tsx
 import React, { useEffect, useState } from 'react';
 import {
   View,
@@ -84,7 +83,7 @@ export default function MyTripsScreen() {
       {loading ? (
         <ActivityIndicator size="large" />
       ) : itineraries.length === 0 ? (
-        <Text style={styles.noTripsText}>No itineraries found. Create a new one!</Text>
+        <Text style={styles.noTripsText}>No itineraries found.</Text>
       ) : (
         <FlatList
           data={itineraries}
@@ -109,8 +108,10 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 25,
+    marginTop: 6,
     textAlign: 'center',
+    fontFamily: 'serif',
   },
   listContainer: {
     paddingBottom: 20,
@@ -137,16 +138,17 @@ const styles = StyleSheet.create({
     color: '#888',
   },
   noTripsText: {
-    fontSize: 18,
+    fontSize: 15,
     textAlign: 'center',
-    marginTop: 20,
+    marginTop: 28,
+    fontFamily: 'monospace', 
   },
   createButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: 'rgb(56, 123, 167)',
     padding: 15,
-    borderRadius: 25,
+    borderRadius: 35,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 15,
   },
   createButtonText: {
     color: '#fff',

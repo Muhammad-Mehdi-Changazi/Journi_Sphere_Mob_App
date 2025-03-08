@@ -165,7 +165,7 @@ export default function Profile() {
 
             onPress={handleUpdateProfile}
           >
-            <Text style={styles.buttonText}>Update Profile</Text>
+            <Text style={styles.buttonText}>Update</Text>
           </TouchableOpacity>
         </View>
       );
@@ -231,7 +231,7 @@ return (
           onPress={() => setActiveTab("updateProfile")}
         >
           <Text style={activeTab === "updateProfile" ? styles.activeTabText : styles.inactiveTabText}>
-            Update Profile
+            Profile
           </Text>
         </TouchableOpacity>
 

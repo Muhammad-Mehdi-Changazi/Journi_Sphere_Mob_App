@@ -76,7 +76,7 @@ export default function SignupScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.headerText}>Start your Journey</Text>
+      <Text style={styles.headerText}>Start Thy Journey</Text>
 
       <TextInput
         style={styles.input}
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
     marginBottom: 30,
-    color: '#333',
+     color: 'rgb(17, 90, 138)'
   },
   input: {
     backgroundColor: '#fff',
