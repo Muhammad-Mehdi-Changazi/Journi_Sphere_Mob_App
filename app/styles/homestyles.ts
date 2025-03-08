@@ -236,13 +236,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 12,
-    width: '50%', 
   },
   buttonsContainer2: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 12,
-    width: '50%', 
+    width: '40%', 
   },
   button: {
     backgroundColor: '#007BFF',

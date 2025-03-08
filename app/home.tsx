@@ -538,15 +538,13 @@ export default function HomeScreen() {
         )}
       </View>
       <Footer
-        Links={[
-          // {
-          //   Icon: (
-          //   ),
-          // },
-        ]}
         handleProfile={handleProfile}
+        handleBack={(cityName:string)=>{
+          console.log("Already on home.")
+        }}
         cityName={cityData.name}
         email={email}
+        currentTab={1}
       />
     </ProtectedRoute>
   );

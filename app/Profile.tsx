@@ -15,7 +15,7 @@ import ProtectedRoute from "./components/protectedroute";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { styles } from "./styles/profilestyles";
-
+import Footer from "./components/Footer";
 
 interface Review {
   id: string;
@@ -281,30 +281,15 @@ export default function Profile() {
           </View>
           {renderContent()}
       </View>
-      <View style={styles.footMneu}>
-        <View
-          style={[
-            styles.buttonsContainer
-            // && {
-            //   //flexDirection: "column",
-            //   //alignItems: "stretch",
-            // },
-          ]}
-        >
-          <TouchableOpacity 
-            style={styles.button} 
-            onPress={() => handleBack(city)}
-            >
-              <Text style={styles.buttonText}>Home</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={styles.button} 
-            //onPress={() => handleBack(city)}
-            >
-              <Text style={styles.buttonText}>Profile</Text>
-          </TouchableOpacity> 
-        </View>
-      </View>
+      <Footer
+        handleProfile={()=>{
+          console.log("Already on Profile")
+        }}
+        handleBack={handleBack}
+        cityName={city as string}
+        email={email as string}
+        currentTab={2}
+      />
     </ProtectedRoute>
   );
 }
