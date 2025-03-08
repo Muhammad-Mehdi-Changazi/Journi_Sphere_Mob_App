@@ -268,11 +268,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#007BFF',
     paddingHorizontal: 20,
     borderRadius: 25,
-    marginLeft: 40,
+    marginLeft: 38,
     bottom: 8,
     width: 90,
     height: 15,
     justifyContent: 'center',
+    marginTop: 12,
   },
   
   buttonText: {
