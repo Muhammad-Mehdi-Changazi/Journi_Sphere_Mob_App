@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
   placeCard2: {
     width: 170,
     height: 230,
-    backgroundColor: '#FFF',
+    backgroundColor: '#FFFFFF',
     borderRadius: 15,
     marginRight: 4,
     marginLeft: 4,
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   placeUnderlay: {
-    backgroundColor: 'rgba(0,0,0,0.25)',
+    backgroundColor: '#FFFFFF',
     borderRadius: 15,
     marginTop: 20,
     marginBottom: 15,
@@ -199,6 +199,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#333",
     marginBottom: 5,
+    borderRadius: 10,
   },
   cityDescription: {
     fontSize: 14,
@@ -360,35 +361,36 @@ const styles = StyleSheet.create({
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
     fontSize: 16,
-    paddingHorizontal: 10,
+    paddingHorizontal: 1,
     paddingVertical: 2,
     // borderWidth: 0.1,
-    borderColor: '#A8CCF0',
-    borderRadius: 880,
+    borderColor: '#FFFFFF',
+    borderRadius: 10,
     borderCurve: 'circular',
     color: 'black',
-    paddingRight: 30, // to ensure the text is never behind the icon
-    backgroundColor: '#A8CCF0',
+    paddingRight: 5, // to ensure the text is never behind the icon
+    backgroundColor: '#FFFFFF',
     marginTop: -60,
     marginEnd: -10,
     width: 150,
     alignSelf: 'flex-end',
+    
 
   },
   inputAndroid: {
     fontSize: 16,
-    paddingHorizontal: 10,
+    paddingHorizontal: 1,
     paddingVertical: 2,
     // borderWidth: 0.1,
-    borderColor: '#A8CCF0',
+    borderColor: '#FFFFFF',
     borderRadius: 880,
     borderCurve: 'circular',
     color: 'black',
-    paddingRight: 30, // to ensure the text is never behind the icon
-    backgroundColor: '#A8CCF0',
+    paddingRight: 5, // to ensure the text is never behind the icon
+    backgroundColor: '#FFFFFF',
     marginTop: -60,
     marginEnd: -10,
-    width: 150,
+    width: 120,
     alignSelf: 'flex-end',
   },
 });
