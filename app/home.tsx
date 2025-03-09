@@ -18,6 +18,7 @@ import { styles, pickerSelectStyles } from "./styles/homestyles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Footer from "./components/Footer";
 import Constants from "expo-constants";
+import * as Location from "expo-location";
 
 
 const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
@@ -73,6 +74,10 @@ export default function HomeScreen() {
     lat: number;
     lng: number;
   } | null>(null);
+
+   // New state for restaurants
+  const [restaurants, setRestaurants] = useState<any[]>([]);
+  const [restaurantLoading, setRestaurantLoading] = useState(false);
 
   // Active tab: "touristSpots", "hotels", "food", or "carRentals"
   const [activeTab, setActiveTab] = useState("touristSpots");
@@ -187,6 +192,39 @@ useEffect(() => {
         setLoading(false);
       });
   }, [activeTab, cityData.name]);
+
+    // Fetch restaurants when the "food" tab is active
+  useEffect(() => {
+    if (activeTab !== "food") return;
+
+    const fetchRestaurants = async () => {
+      setRestaurantLoading(true);
+      try {
+        // Request location permissions
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          alert("Permission to access location was denied.");
+          return;
+        }
+
+        // Get user's current location
+        let userLocation = await Location.getCurrentPositionAsync({});
+        const { latitude, longitude } = userLocation.coords;
+
+        // Fetch nearby restaurants using Google Places API
+        const response = await axios.get(
+          `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=5000&type=restaurant&key=${GOOGLE_API_KEY}`
+        );
+        setRestaurants(response.data.results);
+      } catch (error) {
+        console.error("Error fetching restaurants:", error);
+      } finally {
+        setRestaurantLoading(false);
+      }
+    };
+
+    fetchRestaurants();
+  }, [activeTab]);
 
   // Fetch weather (only once)
   useEffect(() => {
@@ -361,7 +399,7 @@ useEffect(() => {
             <View style={styles.card}>
               <Text style={styles.hotelPlaceName}>{item.hotel_name}</Text>
               <Text style={styles.hotelDetails}>{item.complete_address}</Text>
-              <Text style={styles.hotelDetails}>{item.hotel_class} Hotel</Text>
+              <Text style={styles.hotelDetails2 }>{item.hotel_class} Hotel</Text>
               <View
                 style={[
                   styles.buttonsContainer,
@@ -387,13 +425,13 @@ useEffect(() => {
                   ]}
                   onPress={() => handleCheckReviews(item.hotel_name)}
                 >
-                  <Text style={styles.buttonText}>Check Reviews</Text>
+                  <Text style={styles.buttonText}>Reviews</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.button, isSmallScreen && { width: "100%" }]}
                   onPress={() => handleMakeReservation(item._id)}
                 >
-                  <Text style={styles.buttonText}>Make Reservation</Text>
+                  <Text style={styles.buttonText}>Reserve</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -401,11 +439,32 @@ useEffect(() => {
           showsVerticalScrollIndicator={false}
         />
       );
-    } else if (activeTab === "food") {
+    } 
+    else if (activeTab === "food") {
       return (
-        <View style={{ alignItems: "center", marginTop: 20 }}>
-          <Text>Food recommendations coming soon!!!</Text>
-        </View>
+        <FlatList
+          data={restaurants}
+          keyExtractor={(item) => item.place_id}
+          renderItem={({ item }) => (
+            <View style={styles.cityCard}>
+              {item.photos && (
+                <Image
+                  source={{
+                    uri: `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${item.photos[0].photo_reference}&key=${GOOGLE_API_KEY}`,
+                  }}
+                  style={styles.cityImage}
+                />
+              )}
+              <Text style={styles.cityName}>{item.name}</Text>
+              <Text style={styles.cityDescription}>{item.vicinity}</Text>
+              <Text>⭐ {item.rating || "No rating available"}</Text>
+              <Text>📞 {item.formatted_phone_number || "No phone available"}</Text>
+            </View>
+          )}
+          ListEmptyComponent={() => (
+            <Text style={styles.cityDescription}>No restaurants found.</Text>
+          )}
+        />
       );
     } 
     else if (activeTab === "carRentals") {

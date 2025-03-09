@@ -114,14 +114,14 @@ reviews_container: {
 
   },
   sectionTitle: {
-    fontSize: 25,
+    fontSize: 20,
     fontWeight: '600',
     marginTop: 33,
     marginBottom: 30,
     paddingHorizontal: 10,
   },
   sectionTitle2: {
-    fontSize: 30,
+    fontSize: 25,
     fontWeight: '600',
     marginTop: 40,
     marginBottom: 15,
@@ -425,8 +425,8 @@ reviews_container: {
   },
   logoutButton: {
     position: "absolute",
-    right: 25,
-    top:30,
+    right: 15,
+    top:28,
     backgroundColor: '#007BFF',
     borderRadius: 15,
     width: 80,

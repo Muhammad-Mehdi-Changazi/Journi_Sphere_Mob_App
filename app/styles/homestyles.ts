@@ -88,7 +88,8 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 21,
     fontWeight: '600',
-    marginTop: 45,
+    marginTop: 35,
+    marginBottom: 10,
     paddingHorizontal: 10,
   },
   placesScrollView: {
@@ -194,7 +195,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   cityName: {
-    fontSize: 18,
+    fontSize: 28,
     fontWeight: "bold",
     color: "#333",
     marginBottom: 5,
@@ -262,11 +263,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 8,
+    color: '#0077BE',
   },
   hotelDetails: {
     fontSize: 14,
     color: '#666',
     marginBottom: 4,
+  },
+  hotelDetails2: {
+    fontSize: 16,
+    color: '#666',
+    marginTop: 9,
+    marginBottom: 1,
+    fontWeight: 'bold',
+    fontFamily: 'sans-serif-medium',
   },
   buttonsContainer: {
     flexDirection: 'row',
@@ -281,13 +291,14 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: '#007BFF',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
     borderRadius: 35,
     marginVertical: 6,
-    width: 80,
+    width: 95,
     height: 35,
     justifyContent: 'center',
+    marginRight: 15,
+    marginLeft: -3, 
   },
   button_profile: {
     backgroundColor: '#007BFF',
