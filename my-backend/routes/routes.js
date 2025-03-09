@@ -25,7 +25,7 @@ router.get('/api/cities', cityController.getCities);
 
 // Tourism Routes
 router.get('/api/tourist-spots/', tourismController.fetchCitySpots);
-router.get("/api/tourism/", tourismController.getTouristSpot); // Fetch tourist spot by city & name
+router.get('/api/tourism/', tourismController.getTouristSpot); // Fetch tourist spot by city & name
 
 
 // Recommendation Routes
@@ -52,7 +52,7 @@ router.put('/editroominfo/:id', roomController.updateRoom);
 router.get('/api/search', recommendationController.searchPlaces);
 
 // User routes
-router.get("/api/user/", userController.getUser);
+router.get('/api/user/', userController.getUser);
 router.put('/user/', userController.updateProfile);
 
 //itinerary routes

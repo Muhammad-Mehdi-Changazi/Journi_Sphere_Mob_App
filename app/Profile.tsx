@@ -45,15 +45,19 @@ const renderStars = (rating: number, setRating?: (value: number) => void) => {
 
 export default function Profile() {
   const router = useRouter();
+  
   const [userData, setUserData] = useState({
     username: "",
     email: "",
     password: "",
   });
+  
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("updateProfile");
   const [reviews, setReviews] = useState<Review[]>([]);
   const { email, city } = useLocalSearchParams(); // Get params from URL
+  const [errorMessage, setErrorMessage] = useState("");
 
   // Load user data
   useEffect(() => {
@@ -67,6 +71,7 @@ export default function Profile() {
           email: storedEmail || "",
           password: storedPassword || "",
         });
+        setConfirmPassword(userData.password);
       } catch (error) {
         console.error("Error fetching user data:", error);
       } finally {
@@ -79,7 +84,7 @@ export default function Profile() {
 
   const fetchReviews = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/Reviews/?user=${encodeURIComponent(userData.username)}`);//`https://d1lxguzc6q41zr.cloudfront.net/Reviews?placeName=${placeName}`);
+      const response = await axios.get(`${API_BASE_URL}/api/reviews/?user=${encodeURIComponent(userData.username)}`);//`https://d1lxguzc6q41zr.cloudfront.net/Reviews?placeName=${placeName}`);
       setReviews(response.data);
     } catch (error) {
       console.error('Error fetching reviews:', error);
@@ -96,19 +101,41 @@ export default function Profile() {
       params: { city: `{\"name\":\"${city}\",\"places\":[],\"foods\":[]}` },
     });
   };
+  
   // Handle updating the profile.
   const handleUpdateProfile = async () => {
+    setErrorMessage('');
+
+    if (userData.password !== confirmPassword) {
+      setErrorMessage("Passwords don't match");
+      return;
+    }
+
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(userData.email)) {
+      setErrorMessage('Invalid email format');
+      return;
+    }
+
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
+    if (!passwordRegex.test(userData.password)) {
+      setErrorMessage(
+        'Password must have at least 8 characters, one capital letter, and one special character'
+      );
+      return;
+    }
     try {
       const response = await axios.put(
-        `${API_BASE_URL}user/?email=${userData.email}`,
+        `${API_BASE_URL}/user/?email=${userData.email}`,
         userData
       );
-      console.log(response.data);
+      //console.log(response.data);
       Alert.alert("Success", "Profile updated successfully!");
       // Assuming the backend returns the updated profile data in response.data.updatedProfile
       const updatedProfile = response.data.updatedProfile;
       // Update the state.
       setUserData(updatedProfile);
+      setConfirmPassword(updatedProfile.password);
       // Update AsyncStorage with new values.
       await AsyncStorage.setItem("username", updatedProfile.username);
       await AsyncStorage.setItem("email", updatedProfile.email);
@@ -160,6 +187,18 @@ export default function Profile() {
             }
             secureTextEntry
           />
+          <TextInput
+            style={styles.input}
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChangeText={(text) =>
+              setConfirmPassword(text)
+            }
+            secureTextEntry
+          />
+          {errorMessage ? (
+            <Text style={styles.errorText}>{errorMessage}</Text>
+          ) : null}
           <TouchableOpacity
             style={styles.button3}
 

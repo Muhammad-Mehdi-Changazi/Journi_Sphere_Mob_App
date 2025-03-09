@@ -432,7 +432,12 @@ reviews_container: {
     width: 80,
     height: 45,
     justifyContent: 'center',
-  }
+  },
+  errorText: {
+    color: 'red',
+    marginTop: 10,
+    fontSize: 14,
+  },
 });
 
 
