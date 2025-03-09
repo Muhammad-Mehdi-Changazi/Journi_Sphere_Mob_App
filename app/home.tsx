@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+<<<<<<< Updated upstream
 import {
   View,
   Text,
@@ -12,27 +13,31 @@ import {
 import { useRouter, useLocalSearchParams, usePathname } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import ProtectedRoute from "./components/protectedroute";
+=======
+import { View, ActivityIndicator, FlatList, Image, Text, TouchableOpacity, Dimensions } from "react-native";
+import { useRouter, useLocalSearchParams } from "expo-router";
+>>>>>>> Stashed changes
 import axios from "axios";
-import RNPickerSelect from "react-native-picker-select";
-import { styles, pickerSelectStyles } from "./styles/homestyles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import ProtectedRoute from "./components/protectedroute";
+import Header from "./components/Home/Header"
+import SearchBar from "./components/Home/SearchBar";
+import ContentTabs from "./components/Home/ContentTabs";
 import Footer from "./components/Footer";
+<<<<<<< Updated upstream
+=======
+import { styles, pickerSelectStyles } from "./styles/homestyles";
+import Constants from "expo-constants";
 
-const cities = [
-  { label: "Islamabad", value: "Islamabad" },
-  { label: "Karachi", value: "Karachi" },
-  { label: "Lahore", value: "Lahore" },
-  { label: "Quetta", value: "Quetta" },
-];
+const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
+>>>>>>> Stashed changes
 
 export default function HomeScreen() {
-  // Retrieve city info from URL parameters.
   const { city } = useLocalSearchParams();
-  const cityData = city
-    ? JSON.parse(city as string)
-    : { name: "", places: [], foods: [] };
+  const cityData = city ? JSON.parse(city as string) : { name: "", places: [], foods: [] };
 
   const router = useRouter();
+<<<<<<< Updated upstream
   // Tourist routing handler
   const handleViewSpot = (city: string, spotName: string) => {
     router.push({
@@ -48,13 +53,17 @@ export default function HomeScreen() {
   const isTallScreen = height > 800;
 
   // State for content, search, and tabs.
+=======
+  const [temperature, setTemperature] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+>>>>>>> Stashed changes
   const [touristSpots, setTouristSpots] = useState<any[]>([]);
   const [hotels, setHotels] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [temperature, setTemperature] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
+<<<<<<< Updated upstream
   const [email, setEmail] = useState("");
 
   // DROP DOWN MENU MAN
@@ -66,10 +75,18 @@ export default function HomeScreen() {
     lng: number;
   } | null>(null);
   // Active tab: "touristSpots", "hotels", "food", or "carRentals"
+=======
+  const [selectedCity, setSelectedCity] = useState(cityData.name);
+  const [cityCoords, setCityCoords] = useState<{ lat: number; lng: number } | null>(null);
+>>>>>>> Stashed changes
   const [activeTab, setActiveTab] = useState("touristSpots");
 
-  const WEATHER_API = "IrcewJS0mpnHD8YvYx0F21aMGnqdlwLx";
+  const screenWidth = Dimensions.get("window").width;
+  const isSmallScreen = screenWidth < 375;
+  const { height } = Dimensions.get("window");
+  const isTallScreen = height > 800;
 
+<<<<<<< Updated upstream
   const API_BASE_URL = "http://34.226.13.20:3000"; // changed localhost to IP address to fix error. replace with your IP for local testing. switch to upper url for deployment
   const GOOGLE_API_KEY = "AIzaSyDx_TwV8vhwbKTTWn0tV2BVRDGIipfwzlc";
   const hasFetchedWeather = useRef(false);
@@ -83,19 +100,36 @@ export default function HomeScreen() {
       console.error("Error loading email:", error);
     }
   };
+=======
+  const WEATHER_API = "IrcewJS0mpnHD8YvYx0F21aMGnqdlwLx";
+  const GOOGLE_API_KEY = "AIzaSyDx_TwV8vhwbKTTWn0tV2BVRDGIipfwzlc";
+  const hasFetchedWeather = useRef(false);
 
-  // Fetch tourist spots if the active tab is "touristSpots"
+  // Load email from AsyncStorage
+  useEffect(() => {
+    const loadEmail = async () => {
+      try {
+        const storedEmail = await AsyncStorage.getItem("email");
+        if (storedEmail) setEmail(storedEmail);
+      } catch (error) {
+        console.error("Error loading email:", error);
+      }
+    };
+    loadEmail();
+  }, []);
+>>>>>>> Stashed changes
+
+  // Fetch tourist spots if active tab is "touristSpots"
   useEffect(() => {
     if (activeTab !== "touristSpots") return;
     setLoading(true);
+<<<<<<< Updated upstream
     loadEmail();
     console.log("The city", cityData);
+=======
+>>>>>>> Stashed changes
     axios
-      .get(`${API_BASE_URL}/api/tourist-spots`, {
-        params: {
-          cityName: cityData.name,
-        },
-      })
+      .get(`${API_BASE_URL}/api/tourist-spots`, { params: { cityName: cityData.name } })
       .then((response) => {
         console.log(response.data);
         setTouristSpots(response.data);
@@ -107,7 +141,7 @@ export default function HomeScreen() {
       });
   }, [activeTab]);
 
-  // Fetch hotels if the active tab is "hotels" and a city is selected
+  // Fetch hotels if active tab is "hotels"
   useEffect(() => {
     if (activeTab !== "hotels" || !cityData?.name) return;
     setLoading(true);
@@ -128,21 +162,16 @@ export default function HomeScreen() {
       });
   }, [activeTab, cityData.name]);
 
-  // Fetch weather (only once)
+  // Fetch weather once
   useEffect(() => {
     if (!cityData?.name || hasFetchedWeather.current) return;
     hasFetchedWeather.current = true;
     axios
-      .get(
-        `http://dataservice.accuweather.com/locations/v1/cities/search?apikey=${WEATHER_API}&q=${cityData.name}`
-      )
+      .get(`http://dataservice.accuweather.com/locations/v1/cities/search?apikey=${WEATHER_API}&q=${cityData.name}`)
       .then((locationResponse) => {
-        if (!locationResponse.data.length)
-          throw new Error("Location not found");
+        if (!locationResponse.data.length) throw new Error("Location not found");
         const locationKey = locationResponse.data[0].Key;
-        return axios.get(
-          `http://dataservice.accuweather.com/currentconditions/v1/${locationKey}?apikey=${WEATHER_API}`
-        );
+        return axios.get(`http://dataservice.accuweather.com/currentconditions/v1/${locationKey}?apikey=${WEATHER_API}`);
       })
       .then((weatherResponse) => {
         const tempCelsius = weatherResponse.data[0].Temperature.Metric.Value;
@@ -155,37 +184,49 @@ export default function HomeScreen() {
   }, []);
 
   const handleProfile = (email: string, city: string) => {
-    router.push({
-      pathname: "/Profile",
-      params: { email, city },
-    });
+    router.push({ pathname: "/Profile", params: { email, city } });
   };
+
+  const handleCityChange = (value: string) => {
+    setSelectedCity(value);
+    const newCityData = JSON.stringify({ name: value, places: [], foods: [] });
+    router.replace({ pathname: "/home", params: { city: newCityData } });
+  };
+
+  const handleNavigate = (hotelName: string) => {
+    router.push(`/GoogleMapScreen?placeName=${encodeURIComponent(hotelName)}`);
+  };
+  const handleCheckReviews = (hotelName: string) => {
+    router.push(`/Reviews?placeName=${encodeURIComponent(hotelName)}`);
+  };
+  const handleMakeReservation = (placeID: string) => {
+    router.push(`/ReservationScreen?placeID=${encodeURIComponent(placeID)}`);
+  };
+<<<<<<< Updated upstream
   // Re-implemented handleSearch using Google Places Text Search API.
+=======
+
+>>>>>>> Stashed changes
   const handleSearch = async (query: string) => {
     setSearchQuery(query);
     if (query.length >= 3) {
       setSearchLoading(true);
       try {
         let coords = cityCoords;
+<<<<<<< Updated upstream
         // If city coordinates are not set, retrieve them using the Geocoding API.
+=======
+>>>>>>> Stashed changes
         if (!coords) {
-          const geocodeResponse = await axios.get(
-            "https://maps.googleapis.com/maps/api/geocode/json",
-            {
-              params: {
-                address: cityData.name,
-                key: GOOGLE_API_KEY,
-              },
-            }
-          );
-          if (
-            geocodeResponse.data.status === "OK" &&
-            geocodeResponse.data.results.length > 0
-          ) {
+          const geocodeResponse = await axios.get("https://maps.googleapis.com/maps/api/geocode/json", {
+            params: { address: cityData.name, key: GOOGLE_API_KEY },
+          });
+          if (geocodeResponse.data.status === "OK" && geocodeResponse.data.results.length > 0) {
             coords = geocodeResponse.data.results[0].geometry.location;
             setCityCoords(coords);
           }
         }
+<<<<<<< Updated upstream
         // Now perform the Places Text Search restricted by location and a radius.
         const response = await axios.get(
           "https://maps.googleapis.com/maps/api/place/textsearch/json",
@@ -198,6 +239,11 @@ export default function HomeScreen() {
             },
           }
         );
+=======
+        const response = await axios.get("https://maps.googleapis.com/maps/api/place/textsearch/json", {
+          params: { query, location: `${coords?.lat},${coords?.lng}`, radius: 10000, key: GOOGLE_API_KEY },
+        });
+>>>>>>> Stashed changes
         if (response.data.status === "OK" && response.data.results.length > 0) {
           setSearchResults(response.data.results);
         } else {
@@ -213,6 +259,7 @@ export default function HomeScreen() {
     }
   };
 
+<<<<<<< Updated upstream
   // Hotel card button handlers.
   const handleNavigate = (hotelName: string) => {
     router.push(`/GoogleMapScreen?placeName=${encodeURIComponent(hotelName)}`);
@@ -397,26 +444,23 @@ export default function HomeScreen() {
           )}
         </View>
         {/* Render search results if query length is at least 3; otherwise render the tabs and popular content */}
+=======
+  return (
+    <ProtectedRoute>
+      <View style={styles.container}>
+        <Header cityData={cityData} selectedCity={selectedCity} onCityChange={handleCityChange} temperature={temperature} />
+        <SearchBar searchQuery={searchQuery} onSearchChange={handleSearch} loading={searchLoading} />
+>>>>>>> Stashed changes
         {searchQuery.length >= 3 ? (
           <FlatList
             data={searchResults}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
               <View style={styles.cityCard}>
-                <Image
-                  source={{
-                    uri:
-                      item.icon ||
-                      (item.photos &&
-                      item.photos[0] &&
-                      item.photos[0].photo_reference
-                        ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${item.photos[0].photo_reference}&key=${GOOGLE_API_KEY}`
-                        : ""),
-                  }}
-                  style={styles.cityImage}
-                />
+                <Image source={{ uri: item.icon || (item.photos && item.photos[0]?.photo_reference ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${item.photos[0].photo_reference}&key=${GOOGLE_API_KEY}` : "") }} style={styles.cityImage} />
                 <View style={styles.cityInfo}>
                   <Text style={styles.cityName}>{item.name}</Text>
+<<<<<<< Updated upstream
                   <Text style={styles.cityDescription}>
                     {item.formatted_address}
                   </Text>
@@ -435,105 +479,43 @@ export default function HomeScreen() {
                       <Text style={styles.searchResultButtonText}>
                         Navigate
                       </Text>
+=======
+                  <Text style={styles.cityDescription}>{item.formatted_address}</Text>
+                  <View style={styles.searchResultButtonsContainer}>
+                    <TouchableOpacity style={styles.searchResultButton} onPress={() => router.push(`/GoogleMapScreen?placeName=${encodeURIComponent(item.name)}`)}>
+                      <Text style={styles.searchResultButtonText}>Navigate</Text>
+>>>>>>> Stashed changes
                     </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.searchResultButton}
-                      onPress={() =>
-                        router.push(
-                          `/Reviews?placeName=${encodeURIComponent(item.name)}`
-                        )
-                      }
-                    >
-                      <Text style={styles.searchResultButtonText}>
-                        Check Reviews
-                      </Text>
+                    <TouchableOpacity style={styles.searchResultButton} onPress={() => router.push(`/Reviews?placeName=${encodeURIComponent(item.name)}`)}>
+                      <Text style={styles.searchResultButtonText}>Check Reviews</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
               </View>
             )}
-            ListEmptyComponent={() => (
-              <Text style={styles.cityDescription}>
-                No results found for "{searchQuery}"
-              </Text>
-            )}
+            ListEmptyComponent={() => <Text style={styles.cityDescription}>No results found for "{searchQuery}"</Text>}
           />
         ) : (
           <>
-            {/* Category Tabs */}
-            <View style={styles.tabsContainer}>
-              <TouchableOpacity
-                style={
-                  activeTab === "touristSpots"
-                    ? styles.activeTab
-                    : styles.inactiveTab
-                }
-                onPress={() => setActiveTab("touristSpots")}
-              >
-                <Text
-                  style={
-                    activeTab === "touristSpots"
-                      ? styles.activeTabText
-                      : styles.inactiveTabText
-                  }
-                >
-                  Tourist Spots
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={
-                  activeTab === "hotels" ? styles.activeTab : styles.inactiveTab
-                }
-                onPress={() => setActiveTab("hotels")}
-              >
-                <Text
-                  style={
-                    activeTab === "hotels"
-                      ? styles.activeTabText
-                      : styles.inactiveTabText
-                  }
-                >
-                  Hotels
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={
-                  activeTab === "food" ? styles.activeTab : styles.inactiveTab
-                }
-                onPress={() => setActiveTab("food")}
-              >
-                <Text
-                  style={
-                    activeTab === "food"
-                      ? styles.activeTabText
-                      : styles.inactiveTabText
-                  }
-                >
-                  Food
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={
-                  activeTab === "carRentals"
-                    ? styles.activeTab
-                    : styles.inactiveTab
-                }
-                onPress={() => setActiveTab("carRentals")}
-              >
-                <Text
-                  style={
-                    activeTab === "carRentals"
-                      ? styles.activeTabText
-                      : styles.inactiveTabText
-                  }
-                >
-                  Car Rentals
-                </Text>
-              </TouchableOpacity>
-            </View>
             <Text style={styles.sectionTitle}>Popular</Text>
-            {/* Render content based on the selected tab */}
-            {renderContent()}
+            <ContentTabs
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              loading={loading}
+              touristSpots={touristSpots}
+              hotels={hotels}
+              isSmallScreen={screenWidth < 375}
+              isTallScreen={isTallScreen}
+              cityData={cityData}
+              GOOGLE_API_KEY={GOOGLE_API_KEY}
+              searchResults={[]}
+              searchQuery={searchQuery}
+              searchLoading={false}
+              onNavigate={handleNavigate}
+              onCheckReviews={handleCheckReviews}
+              onMakeReservation={handleMakeReservation}
+            />
+            {/* {const renderContent = () => null;} */}
           </>
         )}
       </View>
