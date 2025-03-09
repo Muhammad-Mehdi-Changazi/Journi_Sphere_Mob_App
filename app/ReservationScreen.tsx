@@ -3,10 +3,12 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator
 import { useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 import io from 'socket.io-client';
-import DatePicker from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
 import moment from 'moment';
-import { Picker } from '@react-native-picker/picker'; // Import Picker
+import { Picker } from '@react-native-picker/picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import Constants from "expo-constants";
+
+const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
 
 interface Room {
     _id: string;
@@ -28,7 +30,6 @@ interface RoomDetails {
     hotelID: string;
 }
 
-
 let socket: any;
 export default function ReservationScreen() {
     const { placeID } = useLocalSearchParams<{ placeID: string }>();
@@ -49,8 +50,12 @@ export default function ReservationScreen() {
         paymentMethod: 'OTHERS', // Default value
     });
 
+    // Add state for showing the date pickers
+    const [showFromPicker, setShowFromPicker] = useState(false);
+    const [showToPicker, setShowToPicker] = useState(false);
+
     useEffect(() => {
-        socket = io('http://34.226.13.20:3000');
+        socket = io(`${API_BASE_URL}` /*'https://d1lxguzc6q41zr.cloudfront.net'*/);
         socket.on('connect', () => console.log('Connected to server'));
 
         socket.on("room_reserved", (data: { room: RoomDetails }) => {
@@ -69,7 +74,7 @@ export default function ReservationScreen() {
                         _id: data.room.roomID,
                         room_type: data.room.room_type,
                         room_number: data.room.room_number,
-                        hotel_id: data.room.hotelID, // Add this line
+                        hotel_id: data.room.hotelID,
                         rent: data.room.rent,
                         available: data.room.available,
                         bed_size: data.room.bed_size,
@@ -83,8 +88,9 @@ export default function ReservationScreen() {
         socket.on('disconnect', () => console.log('Disconnected from server'));
 
         const fetchRooms = async () => {
-            try {
-                const response = await axios.get(`http://34.226.13.20:3000/getRooms/${placeID}`);
+            console.log("Fetching rooms for placeID:", placeID);
+            try { 
+                const response = await axios.get(`${API_BASE_URL}/getRooms/${placeID}`/*`https://d1lxguzc6q41zr.cloudfront.net/getRooms/${placeID}`*/);
                 setRooms(response.data);
             } catch (err) {
                 setError('Failed to fetch rooms. Please try again.');
@@ -122,11 +128,11 @@ export default function ReservationScreen() {
         const reservationStatus = reservationDetails.paymentMethod === 'ONLINE' ? 'CONFIRMED' : 'PENDING';
 
         try {
-            const response = await axios.post('http://34.226.13.20:3000/api/reservations', {
+            const response = await axios.post(`${API_BASE_URL}/api/reservations`/*'https://d1lxguzc6q41zr.cloudfront.net/api/reservations'*/, {
                 ...reservationDetails,
                 roomID: reservationDetails.roomID,
                 placeID: reservationDetails.placeID,
-                reservationStatus, // Automatically set status
+                reservationStatus,
             });
 
             socket.emit('reservation-updated', { placeID, reservationDetails });
@@ -199,10 +205,44 @@ export default function ReservationScreen() {
                         <TextInput style={styles.modalInput} placeholder="Your Phone Number" value={reservationDetails.phone} onChangeText={(text) => setReservationDetails({ ...reservationDetails, phone: text })} />
 
                         <Text style={styles.dateText}>From Date:</Text>
-                        <DatePicker selected={reservationDetails.fromDate ? new Date(reservationDetails.fromDate) : null} onChange={(date) => setReservationDetails({ ...reservationDetails, fromDate: moment(date).format('YYYY-MM-DD') })} dateFormat="yyyy/MM/dd" />
+                        <TouchableOpacity onPress={() => setShowFromPicker(true)}>
+                            <Text style={styles.modalInput}>
+                                {reservationDetails.fromDate ? reservationDetails.fromDate : 'Select Date'}
+                            </Text>
+                        </TouchableOpacity>
+                        {showFromPicker && (
+                            <DateTimePicker
+                                value={reservationDetails.fromDate ? new Date(reservationDetails.fromDate) : new Date()}
+                                mode="date"
+                                display="default"
+                                onChange={(event, selectedDate) => {
+                                    setShowFromPicker(false);
+                                    if (selectedDate) {
+                                        setReservationDetails({ ...reservationDetails, fromDate: moment(selectedDate).format('YYYY-MM-DD') });
+                                    }
+                                }}
+                            />
+                        )}
 
                         <Text style={styles.dateText}>To Date:</Text>
-                        <DatePicker selected={reservationDetails.toDate ? new Date(reservationDetails.toDate) : null} onChange={(date) => setReservationDetails({ ...reservationDetails, toDate: moment(date).format('YYYY-MM-DD') })} dateFormat="yyyy/MM/dd" />
+                        <TouchableOpacity onPress={() => setShowToPicker(true)}>
+                            <Text style={styles.modalInput}>
+                                {reservationDetails.toDate ? reservationDetails.toDate : 'Select Date'}
+                            </Text>
+                        </TouchableOpacity>
+                        {showToPicker && (
+                            <DateTimePicker
+                                value={reservationDetails.toDate ? new Date(reservationDetails.toDate) : new Date()}
+                                mode="date"
+                                display="default"
+                                onChange={(event, selectedDate) => {
+                                    setShowToPicker(false);
+                                    if (selectedDate) {
+                                        setReservationDetails({ ...reservationDetails, toDate: moment(selectedDate).format('YYYY-MM-DD') });
+                                    }
+                                }}
+                            />
+                        )}
 
                         {/* Payment Method Picker */}
                         <Text style={styles.dateText}>Payment Method:</Text>
@@ -219,8 +259,6 @@ export default function ReservationScreen() {
         </ScrollView>
     );
 }
-
-
 
 const styles = StyleSheet.create({
     container: { padding: 15, alignItems: 'center' },

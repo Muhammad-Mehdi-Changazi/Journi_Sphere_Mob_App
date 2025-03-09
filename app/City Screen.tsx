@@ -3,18 +3,25 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import ProtectedRoute from './components/protectedroute';
 import axios from 'axios';
+import Constants from "expo-constants";
+
+const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
 
 // Modify fetchRecommendations to call your server API for hotels and the custom API for restaurants
 const fetchRecommendations = async (cityName: string) => {
   try {
     // Fetch hotels from your database (replace with your actual backend API URL)
-    const hotelsResponse = await axios.get(`http://34.226.13.20:3000/hotels/city/${cityName}`);
-    console.log("Hi", cityName);
+    const hotelsResponse = await axios.get(`${API_BASE_URL}/hotels/city/${cityName}`/*`https://d1lxguzc6q41zr.cloudfront.net/hotels/city/${cityName}`*/);
+    // console.log("Hi", cityName);
+    
     const hotels = hotelsResponse.data.hotels; // Assuming the backend returns an array of hotels
 
 
     // Fetch restaurants from the custom recommendation API
-    const restaurantsResponse = await axios.get(`http://34.226.13.20:3000/recommendations?city=${cityName}`);
+
+    const restaurantsResponse = await axios.get( `${API_BASE_URL}/recommendations?city=${cityName}`/*`https://d1lxguzc6q41zr.cloudfront.net/recommendations?city=${cityName}`*/);
+
+
     const restaurants = restaurantsResponse.data.restaurants; // Assuming the API returns an array of restaurants
 
     return {
@@ -38,46 +45,47 @@ export default function CityScreen() {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   useEffect(() => {
-    // Set screen size state
-    const updateScreenSize = () => {
-      const screenWidth = Dimensions.get('window').width;
-      setIsSmallScreen(screenWidth < 768); // Adjust this threshold based on your needs
-    };
+  // Set screen size state
+  const updateScreenSize = () => {
+    const screenWidth = Dimensions.get('window').width;
+    setIsSmallScreen(screenWidth < 768); // Adjust this threshold based on your needs
+  };
 
-    // Listen for screen size changes
-    Dimensions.addEventListener('change', updateScreenSize);
+  // Listen for screen size changes
+  const subscription = Dimensions.addEventListener('change', updateScreenSize);
 
-    // Initial check for screen size
-    updateScreenSize();
+  // Initial check for screen size
+  updateScreenSize();
 
-    // Fetch city recommendations
-    if (city) {
-      const parsedCity = JSON.parse(city);
-      const cityName = parsedCity.name;
+  // Fetch city recommendations
+  if (city) {
+    const parsedCity = JSON.parse(city);
+    const cityName = parsedCity.name;
 
-      console.log("City Name:", cityName);  // Log city name for debugging
+    console.log("City Name:", cityName);  // Log city name for debugging
 
-      // Fetch recommendations based on the city
-      fetchRecommendations(cityName).then((data) => {
-        console.log('Fetched Data:', data);  // Log the fetched data for debugging
-        setPlaces(data.places || []); // Ensure places data is set correctly
-        setFoods(data.foods || []);   // Ensure foods data is set correctly
-        setLoading(false);
-      }).catch((error) => {
-        console.error("Error fetching data:", error);
-        setError('Failed to load recommendations');
-        setLoading(false);
-      });
-    }
+    // Fetch recommendations based on the city
+    fetchRecommendations(cityName).then((data) => {
+      console.log('Fetched Data:', data);  // Log the fetched data for debugging
+      setPlaces(data.places || []); // Ensure places data is set correctly
+      setFoods(data.foods || []);   // Ensure foods data is set correctly
+      setLoading(false);
+    }).catch((error) => {
+      console.error("Error fetching data:", error);
+      setError('Failed to load recommendations');
+      setLoading(false);
+    });
+  }
 
-    // Clean up listener on component unmount
-    return () => {
-      Dimensions.removeEventListener('change', updateScreenSize);
-    };
-  }, [city]);
+  // Clean up listener on component unmount
+  return () => {
+    subscription?.remove();
+  };
+}, [city]);
 
-  const handleNavigate = (placeID: string) => {
-    router.push(`/Google Map?placeID=${encodeURIComponent(placeID)}`); // Navigate to GoogleMap screen
+  const handleNavigate = (placeName: string) => {
+    router.push(`/GoogleMapScreen?placeName=${encodeURIComponent(placeName)}`); // Navigate to GoogleMap screen
+
   };
 
   const handleCheckReviews = (placeID: string) => {
@@ -183,7 +191,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   columnsContainerVertical: {
-    flexDirection: 'column',  // Stacks columns vertically on smaller screens
+    flexDirection: 'column',  
   },
   column: {
     flex: 1,

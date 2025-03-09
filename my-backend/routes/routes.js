@@ -5,6 +5,9 @@ const cityController = require('../controllers/cityController');
 const recommendationController = require('../controllers/recommendationController');
 const hotelController = require('../controllers/hotelController');
 const roomController = require('../controllers/roomController');
+const tourismController = require('../controllers/tourismController');
+const userController = require('../controllers/userController');
+const itineraryController = require('../controllers/itineraryController')
 
 const router = express.Router();
 
@@ -15,9 +18,15 @@ router.post('/login', authController.login);
 // Reviews Routes
 router.get('/reviews', reviewController.getReviews);
 router.post('/reviews', reviewController.createReview);
+router.get('/api/reviews/', reviewController.getReviewsByUsername); // for Profile
 
 // City Routes
 router.get('/api/cities', cityController.getCities);
+
+// Tourism Routes
+router.get('/api/tourist-spots/', tourismController.fetchCitySpots);
+router.get('/api/tourism/', tourismController.getTouristSpot); // Fetch tourist spot by city & name
+
 
 // Recommendation Routes
 router.get('/recommendations', recommendationController.getRecommendations);
@@ -41,5 +50,13 @@ router.put('/editroominfo/:id', roomController.updateRoom);
 
 // Search Routes
 router.get('/api/search', recommendationController.searchPlaces);
+
+// User routes
+router.get('/api/user/', userController.getUser);
+router.put('/user/', userController.updateProfile);
+
+//itinerary routes
+router.post('/itinerary/save', itineraryController.saveItinerary);
+router.get('/itinerary/my', itineraryController.getUserItineraries);
 
 module.exports = router;

@@ -1,114 +1,56 @@
-# MANZIL - Tourist Guide Mobile Application  
+ **Manzil - Sprint 2**  
 
-**MANZIL** is a React Native mobile application designed to guide tourists in finding places, exploring reviews, and booking hotels for their stay. The application provides a seamless user experience for both customers and hotel management staff.
+ **Project Overview**  
+**Manzil** is a **React Native Expo** application designed to help tourists:  
+**Reserve hotels** 
+**Check for car rental companies & rent cars**   
+**Check reviews for tourist spots**  
+**Leave reviews for places they visit**  
 
----
+##  **Sprint 2 Updates**  
+In **Sprint 2**, we implemented the following changes:  
+**Updated data models** for better structure.  
+**Integrated an interactive UI** for a better user experience.  
+**Developed separate dashboards** for:  
+   - **Hotel Admin (Web Application)**   
+   - **Customer (Mobile Application)**  
 
-## **Features**
+## **How to Run the Application Locally**  
 
-### **For Customers:**
-1. **Sign up & Login:**
-   - Users can register by selecting the customer option on the sign up page.
-   - Login to access the app features.
-
-2. **Search & Explore:**
-   - Search for desired places using the search bar on the home page.
-   - The recommendation system suggests places based on the user's location (if enabled).
-
-3. **Explore Cities & Famous Places:**
-   - Browse cities and explore their famous attractions.
-
-4. **Hotel Features:**
-   - View details of hotels and their rooms.
-   - **Reviews Tab:** Check reviews from users and Google reviews.
-   - **Navigate Tab:** Navigate to the hotel's location using Google Maps integration.
-   - **Make Reservation Tab:** Place room reservation requests based on room availability.
-
-5. **Restaurant Features:**
-   - **Navigate Tab:** Find the location of restaurants via Google Maps.
-   - **Reviews Tab:** Check user reviews and Google reviews for restaurants.
-
----
-
-### **For Hotel Management Staff:**
-1. **Login:**
-   - Hotel management staff login credentials are manually assigned (email and password).
-   
-2. **Manage Hotel Information:**
-   - **Room Info Tab:** View details of their hotel rooms.
-   - **Reservation Requests Tab:** Monitor real-time reservation requests from customers.
-   - **Edit Room Info Tab:** Update room information as required.
-
-3. **Real-Time Communication:**
-   - Integrated **Socket.IO** for real-time updates and interactions between customers and hotel management staff.
-
----
-
-## **Technologies Used**
-- **Frontend:** React Native
-- **Backend:** Node.js, Express.js
-- **Database:** MongoDB
-- **Real-Time Communication:** Socket.IO
-- **Google Maps Integration:** Google Maps API
-- **Authentication:** JSON Web Tokens (JWT)
-
----
-
-## **Current Data Setup**
-### **Hotels Added:**
-1. **Pearl Continental Hotel Karachi**
-   - Includes room information.
-2. **Hotel One Downtown Lahore**
-   - Includes room information.
-
-### **Manual Data Handling:**
-- Hotels and their details are currently added manually.
-- Login credentials for hotel management staff are also assigned manually.
-
----
-
-## **Installation & Setup**
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Muhammad-Mehdi-Changazi/Manzil
-   ```
-2. Install dependencies:
-   ```bash
-   cd MANZIL
+### **For the Mobile App (Customer Side)**  
+1. **Go to the project root directory**  
+2. Run:  
+   ```sh
    npm install
-   ```
-3. Configure environment variables:
-   - Create a `.env` file and add the required variables:
-     ```env
-     MONGODB_URI= mongodb+srv://sQpbJkHNcJzho6Pd:sQpbJkHNcJzho6Pd@manzil.gxdiu.mongodb.net/
-     GOOGLE_API_KEY= AIzaSyAUwcgoinASwKDHlKDuW9HvNodSkBz64YI
-     ```
-4. Run the backend server:
-   ```bash
-   cd my-backend
    npm start
    ```
-5. Run the frontend:
-   ```bash
-   cd MANZIL
+3. Scan the QR code in Expo Go App.
+4. The app will run in Expo Go.
+
+### **For the Hotel Admin Panel (Web Application)**  
+1. The hotel admin panel is available in a **separate repository**.  
+2. The files are also uploaded in this repository.  
+3. **To run it locally:**  
+   ```sh
+   npm install
    npm start
    ```
+4. **Login with hotel credentials (Example):**  
+   - **Email:** `pc.admin@pc.com`  
+   - **Password:** `pcadminpass123`  
+   - Hotel admin credentials are provided manually.
+
+##  **Live Deployment**  
+The **Hotel Admin Panel** is available at:  
+[Hotel Admin Web Panel](http://myexpoapp-hoteladmin.s3-website-us-east-1.amazonaws.com/)
+
+## **User Authentication**  
+**Signup feature** is available for users.  
+**Hotel Admin credentials** are provided manually.  
 
 ---
 
-## **Future Enhancements**
-- Enable dynamic hotel addition by hotel management staff.
-- Implement user feedback for improving recommendations.
-- Expand real-time communication to include chat between users and hotel staff.
-- Add more hotels and more data.
-- Enable the hotel information editing feature.
-- Enable the reservation requests more, to deal in real time and accept or reject the request.
-- Send notification to the hotel management staff upon receiving a reservation request.
-- Send notification to the customer upon acceptance or rejection of their reservation request.
-
-
----
-
-**Authors:**  
-SPROJ Group 04
-
+###  **Tech Stack**
+- **Frontend:** React Native (Expo), React (for Web Panel)  
+- **Backend:** Hosted on **AWS** (No need to run separately) 
+- **Database & APIs:** MongoDB Integrated with AWS backend  

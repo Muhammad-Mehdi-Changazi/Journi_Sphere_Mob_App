@@ -8,4 +8,5 @@ export type RootStackParamList = {
   Reviews: { placeName: string };   // Type for Reviews screen
   ReservationScreen: { placeName: string };
   HotelAdmin: { username: string }; // Type for HotelAdmin screen, where username is passed
+  TouristSpotScreen: {spotName: string};
 };

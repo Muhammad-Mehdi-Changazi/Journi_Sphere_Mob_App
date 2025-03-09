@@ -10,6 +10,16 @@ exports.getReviews = async (req, res) => {
   }
 };
 
+exports.getReviewsByUsername = async (req, res) => {
+  const { user } = req.query;
+  try {
+    const reviews = await Review.find({ user });
+    res.json(reviews);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching reviews by username' });
+  }
+};
+
 // Controller to submit a review
 exports.createReview = async (req, res) => {
   const { placeName, user, rating, comment } = req.body;

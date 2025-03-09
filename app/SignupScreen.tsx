@@ -9,6 +9,9 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
+import Constants from "expo-constants";
+
+const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
 
 export default function SignupScreen() {
   const [username, setUsername] = useState('');
@@ -52,7 +55,7 @@ export default function SignupScreen() {
     try {
       setLoading(true);
       const response = await axios.post(
-        'http://34.226.13.20:3000/signup',
+        `${API_BASE_URL}/signup`,
         requestData,
         {
           headers: {
@@ -76,7 +79,7 @@ export default function SignupScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.headerText}>Sign Up</Text>
+      <Text style={styles.headerText}>Start Thy Journey</Text>
 
       <TextInput
         style={styles.input}
@@ -141,14 +144,14 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
     marginBottom: 30,
-    color: '#333',
+     color: 'rgb(17, 90, 138)'
   },
   input: {
     backgroundColor: '#fff',
-    borderRadius: 8,
-    paddingVertical: 12,
+    borderRadius: 20,
+    paddingVertical: 15,
     paddingHorizontal: 16,
-    marginBottom: 15,
+    marginBottom: 20,
     fontSize: 16,
     width: '100%',
     shadowColor: '#000',
@@ -162,7 +165,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderRadius: 25,
-    marginTop: 10,
+    marginTop: 84,
     alignItems: 'center',
     width: '80%',
   },

@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, TextInput, Button } from 'react-native';
 import axios from 'axios';
 import io from 'socket.io-client';
+import Constants from "expo-constants";
+
+const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
 
 let socket;
 
@@ -23,14 +26,14 @@ const EditRoomInfo = ({ hotel_id }: { hotel_id: string }) => {
     // Fetch all rooms from backend
     useEffect(() => {
 
-        socket = io('http://34.226.13.20:3000');
+        socket = io(`${API_BASE_URL}`/*'https://d1lxguzc6q41zr.cloudfront.net'*/);
 
         socket.on('connect', () => console.log('Connected to Socket.IO server'));
 
         console.log("Hotel ID:", hotel_id);
         const fetchRooms = async () => {
             try {
-                const response = await axios.get(`http://34.226.13.20:3000/${hotel_id}/rooms`);
+                const response = await axios.get(`${API_BASE_URL}/${hotel_id}/rooms`/*`https://d1lxguzc6q41zr.cloudfront.net/${hotel_id}/rooms`*/);
                 setRooms(response.data.rooms);
             } catch (error) {
                 console.error("Error fetching rooms:", error);
@@ -60,7 +63,7 @@ const EditRoomInfo = ({ hotel_id }: { hotel_id: string }) => {
     const handleUpdateRoom = async () => {
         if (!selectedRoom) return;
         try {
-            const response = await axios.put(`http://34.226.13.20:3000/editroominfo/${selectedRoom._id}`, updatedRoom);
+            const response = await axios.put(/*`https://d1lxguzc6q41zr.cloudfront.net/editroominfo/${selectedRoom._id}`*/ `${API_BASE_URL}/editroominfo/${selectedRoom._id}`, updatedRoom);
             console.log("Room updated successfully:", response.data);
 
             // Update the room list
