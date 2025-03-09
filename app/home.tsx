@@ -19,6 +19,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Footer from "./components/Footer";
 import Constants from "expo-constants";
 
+
 const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
 
 const cities = [
@@ -65,7 +66,8 @@ export default function HomeScreen() {
 
   // DROP DOWN MENU
   const [selectedCity, setSelectedCity] = useState(cityData.name);
-
+  const [carRentals, setCarRentals] = useState<any[]>([]);
+  const [carRentalsLoading, setCarRentalsLoading] = useState(false);
   // New state to hold city coordinates
   const [cityCoords, setCityCoords] = useState<{
     lat: number;
@@ -89,6 +91,60 @@ export default function HomeScreen() {
       console.error("Error loading email:", error);
     }
   };
+
+  const fetchCarRentals = async (cityName: string) => {
+      setCarRentalsLoading(true);
+      try {
+        let coords = cityCoords;
+        // If city coordinates are not set, retrieve them using the Geocoding API
+        if (!coords) {
+          const geocodeResponse = await axios.get(
+            "https://maps.googleapis.com/maps/api/geocode/json",
+            {
+              params: {
+                address: cityName,
+                key: GOOGLE_API_KEY,
+              },
+            }
+          );
+          if (
+            geocodeResponse.data.status === "OK" &&
+            geocodeResponse.data.results.length > 0
+          ) {
+            coords = geocodeResponse.data.results[0].geometry.location;
+            setCityCoords(coords);
+          }
+        }
+        // Perform the Places Text Search for car rentals
+        const response = await axios.get(
+          "https://maps.googleapis.com/maps/api/place/textsearch/json",
+          {
+            params: {
+              query: `car rentals in ${cityName}`,
+              location: `${coords?.lat},${coords?.lng}`,
+              radius: 10000, // radius in meters
+              key: GOOGLE_API_KEY,
+            },
+          }
+        );
+        if (response.data.status === "OK" && response.data.results.length > 0) {
+          setCarRentals(response.data.results);
+        } else {
+          setCarRentals([]);
+        }
+        setCarRentalsLoading(false);
+      } catch (error) {
+        console.error("Error fetching car rentals:", error);
+        setCarRentalsLoading(false);
+      }
+    };
+
+
+useEffect(() => {
+  if (activeTab === "carRentals" && cityData?.name) {
+    fetchCarRentals(cityData.name);
+  }
+}, [activeTab, cityData.name]);
 
   // Fetch tourist spots if the active tab is "touristSpots"
   useEffect(() => {
@@ -224,6 +280,7 @@ export default function HomeScreen() {
     router.push(`/GoogleMapScreen?placeName=${encodeURIComponent(hotelName)}`);
   };
   const handleCheckReviews = (hotelName: string) => {
+    console.log("Checking reviews for", hotelName);
     router.push(`/Reviews?placeName=${encodeURIComponent(hotelName)}`);
   };
   const handleMakeReservation = (placeID: string) => {
@@ -350,11 +407,37 @@ export default function HomeScreen() {
           <Text>Food recommendations coming soon!!!</Text>
         </View>
       );
-    } else if (activeTab === "carRentals") {
+    } 
+    else if (activeTab === "carRentals") {
+      if (carRentalsLoading) {
+        return <ActivityIndicator size="large" color="#A8CCF0" />;
+      }
       return (
-        <View style={{ alignItems: "center", marginTop: 20 }}>
-          <Text>Car rentals functionality coming soon!</Text>
-        </View>
+        <FlatList
+          data={carRentals}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <View style={styles.card}>
+              <Text style={styles.hotelPlaceName}>{item.name}</Text>
+              <Text style={styles.hotelDetails}>{item.formatted_address}</Text>
+              <View style={styles.buttonsContainer}>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => handleNavigate(item.name)}
+                >
+                  <Text style={styles.buttonText}>Navigate</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => handleCheckReviews(item.name)}
+                >
+                  <Text style={styles.buttonText}>Check Reviews</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+          showsVerticalScrollIndicator={false}
+        />
       );
     }
   };
@@ -367,11 +450,12 @@ export default function HomeScreen() {
           <Text style={styles.headerTitle}>Explore</Text>
           <Text style={styles.cityName}>{cityData.name}</Text>
           <RNPickerSelect
-            onValueChange={handleCityChange}
-            items={cities}
-            value={selectedCity}
-            style={pickerSelectStyles}
-          />
+          onValueChange={handleCityChange}
+          items={cities}
+          value={selectedCity}
+          style={pickerSelectStyles}
+          placeholder={{ label: 'Select a city...', value: null }} // Optional placeholder
+        />
         </View>
 
         {/* Temperature Display */}
