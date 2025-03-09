@@ -32,6 +32,18 @@
     ],
     "experiments": {
       "typedRoutes": true
+<<<<<<< Updated upstream
+=======
+    },
+    "extra": {
+      "API_BASE_URL": "http://34.226.13.20:3000",
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "73b2b26f-e61a-4397-8585-9d87205225f1"
+      }
+>>>>>>> Stashed changes
     }
   }
 }
