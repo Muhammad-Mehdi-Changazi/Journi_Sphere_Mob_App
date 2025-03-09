@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   cityName: {
-    fontSize: 18,
+    fontSize: 28,
     fontWeight: "bold",
     color: "#333",
     marginBottom: 5,
