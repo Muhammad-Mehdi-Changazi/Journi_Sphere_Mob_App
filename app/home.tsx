@@ -304,7 +304,7 @@ export default function HomeScreen() {
             <View style={styles.card}>
               <Text style={styles.hotelPlaceName}>{item.hotel_name}</Text>
               <Text style={styles.hotelDetails}>{item.complete_address}</Text>
-              <Text style={styles.hotelDetails}>{item.hotel_class} Hotel</Text>
+              <Text style={styles.hotelDetails2 }>{item.hotel_class} Hotel</Text>
               <View
                 style={[
                   styles.buttonsContainer,
@@ -330,13 +330,13 @@ export default function HomeScreen() {
                   ]}
                   onPress={() => handleCheckReviews(item.hotel_name)}
                 >
-                  <Text style={styles.buttonText}>Check Reviews</Text>
+                  <Text style={styles.buttonText}>Reviews</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.button, isSmallScreen && { width: "100%" }]}
                   onPress={() => handleMakeReservation(item._id)}
                 >
-                  <Text style={styles.buttonText}>Make Reservation</Text>
+                  <Text style={styles.buttonText}>Reserve</Text>
                 </TouchableOpacity>
               </View>
             </View>
