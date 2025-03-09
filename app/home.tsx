@@ -153,25 +153,68 @@ useEffect(() => {
 
   // Fetch tourist spots if the active tab is "touristSpots"
   useEffect(() => {
-    if (activeTab !== "touristSpots") return;
-    setLoading(true);
-    loadEmail();
-    axios
-      .get(`${API_BASE_URL}/api/tourist-spots`, {
-        params: {
-          cityName: cityData.name,
-        },
-      })
-      .then((response) => {
-        setTouristSpots(response.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching tourist spots:", error);
-        setLoading(false);
-      });
-  }, [activeTab]);
+  if (activeTab !== "touristSpots") return;
+  setLoading(true);
+  loadEmail();
 
+  const fetchTouristSpots = async () => {
+    try {
+      // Get city's coordinates via Google Geocoding API
+      const geocodeResponse = await axios.get(
+        `https://maps.googleapis.com/maps/api/geocode/json`,
+        {
+          params: {
+            address: cityData.name,
+            key: GOOGLE_API_KEY,
+          },
+        }
+      );
+      if (
+        geocodeResponse.data.status !== "OK" ||
+        geocodeResponse.data.results.length === 0
+      ) {
+        throw new Error("City not found");
+      }
+      const { lat, lng } = geocodeResponse.data.results[0].geometry.location;
+
+      // Fetch nearby tourist attractions using Places API with type "tourist_attraction"
+      const placesResponse = await axios.get(
+        `https://maps.googleapis.com/maps/api/place/nearbysearch/json`,
+        {
+          params: {
+            location: `${lat},${lng}`,
+            radius: 10000, // 10km radius
+            type: "tourist_attraction",
+            key: GOOGLE_API_KEY,
+          },
+        }
+      );
+      if (placesResponse.data.status !== "OK") {
+        throw new Error("Error fetching tourist attractions");
+      }
+
+      // Map the API results to match your schema (name, description, image)
+      const spots = placesResponse.data.results.map((spot) => ({
+        name: spot.name,
+        description: spot.vicinity || "No description available",
+        image:
+          spot.photos && spot.photos[0]
+            ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${spot.photos[0].photo_reference}&key=${GOOGLE_API_KEY}`
+            : "https://via.placeholder.com/400", // fallback image
+            rating: spot.rating,
+      }));
+
+      // Structure the state similar to before, if your rendering code expects touristSpots.touristSpots
+      setTouristSpots({ touristSpots: spots });
+    } catch (error) {
+      console.error("Error fetching tourist spots:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchTouristSpots();
+}, [activeTab, cityData.name]);
   // Fetch hotels if the active tab is "hotels" and a city is selected
   useEffect(() => {
     if (activeTab !== "hotels" || !cityData?.name) return;
@@ -378,6 +421,7 @@ useEffect(() => {
                     </Text>
                   </View>
                 </TouchableOpacity>
+                
                 <TouchableOpacity
                   style={[
                     styles.button2,
@@ -391,6 +435,7 @@ useEffect(() => {
             )}
             showsHorizontalScrollIndicator={false}
           />
+          
         </View>
       );
     } else if (activeTab === "hotels") {
