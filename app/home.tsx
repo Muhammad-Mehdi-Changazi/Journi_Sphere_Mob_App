@@ -490,7 +490,7 @@ useEffect(() => {
                   style={styles.button}
                   onPress={() => handleCheckReviews(item.name)}
                 >
-                  <Text style={styles.buttonText}>Check Reviews</Text>
+                  <Text style={styles.buttonText}>Reviews</Text>
                 </TouchableOpacity>
               </View>
             </View>
