@@ -201,6 +201,13 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     borderRadius: 10,
   },
+  cityName3: {
+    fontSize: 28,
+    fontWeight: "semibold",
+    color: "#333",
+    marginBottom: 5,
+    borderRadius: 10,
+  },
   cityDescription: {
     fontSize: 14,
     color: "#666",

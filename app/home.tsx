@@ -325,6 +325,11 @@ useEffect(() => {
     router.push(`/ReservationScreen?placeID=${encodeURIComponent(placeID)}`);
   };
 
+  const handleNavigateFoods = ({ name, vicinity }: { name: string; vicinity: string }) => {
+    const newname = name + " " + vicinity;
+  router.push(`/GoogleMapScreen?placeName=${encodeURIComponent(newname)}`);
+};
+
   // Handle city change in the dropdown
   const handleCityChange = (value: string) => {
     setSelectedCity(value);
@@ -455,10 +460,25 @@ useEffect(() => {
                   style={styles.cityImage}
                 />
               )}
-              <Text style={styles.cityName}>{item.name}</Text>
+              <Text style={styles.cityName3}>{item.name}</Text>
               <Text style={styles.cityDescription}>{item.vicinity}</Text>
               <Text>⭐ {item.rating || "No rating available"}</Text>
               <Text>📞 {item.formatted_phone_number || "No phone available"}</Text>
+              {/* Add "Navigate" and "Reviews" buttons */}
+              <View style={styles.buttonsContainer}>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => handleNavigateFoods({ name: item.name, vicinity: item.vicinity })}
+                >
+                  <Text style={styles.buttonText}>Navigate</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => handleCheckReviews(item.name)}
+                >
+                  <Text style={styles.buttonText}>Reviews</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           )}
           ListEmptyComponent={() => (
@@ -466,7 +486,7 @@ useEffect(() => {
           )}
         />
       );
-    } 
+    }
     else if (activeTab === "carRentals") {
       if (carRentalsLoading) {
         return <ActivityIndicator size="large" color="#A8CCF0" />;
