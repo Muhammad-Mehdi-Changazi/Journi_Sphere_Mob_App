@@ -64,14 +64,9 @@ export default function Profile() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const storedUsername = await AsyncStorage.getItem("username");
         const storedEmail = await AsyncStorage.getItem("email");
-        const storedPassword = await AsyncStorage.getItem("password");
-        setUserData({
-          username: storedUsername || "",
-          email: storedEmail || "",
-          password: storedPassword || "",
-        });
+        const response = await axios.get(`${API_BASE_URL}/api/user/?email=${storedEmail}`);
+        setUserData(response.data);
         setConfirmPassword(userData.password);
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -82,10 +77,10 @@ export default function Profile() {
     fetchUserData();
     fetchReviews();
   }, []);
-
+// load Reviews
   const fetchReviews = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/reviews/?email=${userData.email}`);//`https://d1lxguzc6q41zr.cloudfront.net/Reviews?placeName=${placeName}`);
+      const response = await axios.get(`${API_BASE_URL}/api/reviews/?email=${userData.email}`);
       setReviews(response.data);
     } catch (error) {
       console.error('Error fetching reviews:', error);
@@ -94,7 +89,7 @@ export default function Profile() {
     }
   };
 
-  // handlers for back button
+  // handler for homepage routing
   const handleBack = (city: string) => {
     console.log()
     router.push({
@@ -140,7 +135,6 @@ export default function Profile() {
       // Update AsyncStorage with new values.
       await AsyncStorage.setItem("username", updatedProfile.username);
       await AsyncStorage.setItem("email", updatedProfile.email);
-      await AsyncStorage.setItem("password", updatedProfile.password);
     } catch (error: unknown) {
       let errorMessage = "Profile update failed!";
       if (axios.isAxiosError(error)) {
