@@ -63,7 +63,6 @@ export default function LoginScreen() {
       await AsyncStorage.setItem('username', username);
       await AsyncStorage.setItem('role', role);
       await AsyncStorage.setItem('email', email); //added email for profile
-      await AsyncStorage.setItem('password', password); // using for update profile. not secure change to another method asap
 
 
       console.log('Login successful, token and username stored');
