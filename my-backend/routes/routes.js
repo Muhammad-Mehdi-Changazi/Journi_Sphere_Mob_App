@@ -24,9 +24,8 @@ router.get('/api/reviews/', reviewController.getReviewsByEmail); // for Profile
 router.get('/api/cities', cityController.getCities);
 
 // Tourism Routes
-router.get('/api/tourist-spots/', tourismController.fetchCitySpots);
-router.get('/api/tourism/', tourismController.getTouristSpot); // Fetch tourist spot by city & name
-
+// router.get('/api/tourist-spots/', tourismController.fetchCitySpots);
+// router.get('/api/tourism/', tourismController.getTouristSpot); // Fetch tourist spot by city & name
 
 // Recommendation Routes
 router.get('/recommendations', recommendationController.getRecommendations);

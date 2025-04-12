@@ -9,7 +9,8 @@ import EditRoomInfo from './editroominfo';
 import ReservationRequests from './components/ReservationsRequest';
 import Constants from "expo-constants";
 
-const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
+const API_BASE_URL ="http://34.226.13.20:3000";
+  
 
 let socket;
 

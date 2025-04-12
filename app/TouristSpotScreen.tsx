@@ -7,19 +7,23 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from "react-native";
-import { useRouter, useLocalSearchParams, usePathname } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import axios from "axios";
-import Constants from "expo-constants";
 
-const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
+const GOOGLE_API_KEY = "AIzaSyDx_TwV8vhwbKTTWn0tV2BVRDGIipfwzlc";
 
 const TouristSpotScreen = () => {
   const router = useRouter();
-  const [spot, setSpot] = useState(null);
+  const [spot, setSpot] = useState<{
+    name: string;
+    description: string;
+    image: string;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
-  const { city, spotName } = useLocalSearchParams(); // Get params from URL
-  
+  const { city, spotName } = useLocalSearchParams();
+
   // handlers for back button and navigation button
   const handleBack = (city: string) => {
     router.push({
@@ -27,29 +31,103 @@ const TouristSpotScreen = () => {
       params: { city: `{\"name\":\"${city}\",\"places\":[],\"foods\":[]}` },
     });
   };
+
   const handleNavigate = (spotName: string) => {
     router.push(`/GoogleMapScreen?placeName=${encodeURIComponent(spotName)}`);
   };
-  
-  // fetch spot
+
+  // Fetch spot details from Google Places API and generate description using Gemini
   useEffect(() => {
-    setLoading(true);
-    axios
-      .get(`${API_BASE_URL}/api/tourism`, {
-        params: {
-          city: city,
-          spotName: spotName,
-        },
-      })
-      .then((res) => {
-        console.log(res.data);
-        setSpot(res.data);
+    const fetchSpotDetails = async () => {
+      try {
+        setLoading(true);
+        
+        // First get the spot details from Google Places API
+        const geocodeResponse = await axios.get(
+          "https://maps.googleapis.com/maps/api/geocode/json",
+          {
+            params: {
+              address: city,
+              key: GOOGLE_API_KEY,
+            },
+          }
+        );
+
+        if (geocodeResponse.data.status !== "OK") {
+          throw new Error("City not found");
+        }
+
+        const { lat, lng } = geocodeResponse.data.results[0].geometry.location;
+
+        // Search for the specific place by name
+        const placesResponse = await axios.get(
+          "https://maps.googleapis.com/maps/api/place/textsearch/json",
+          {
+            params: {
+              query: spotName,
+              location: `${lat},${lng}`,
+              radius: 10000, //10km
+              key: GOOGLE_API_KEY,
+            },
+          }
+        );
+
+        if (placesResponse.data.status !== "OK" || !placesResponse.data.results[0]) {
+          throw new Error("Tourist spot not found");
+        }
+
+        const place = placesResponse.data.results[0];
+        const image = place.photos?.[0]?.photo_reference
+          ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${place.photos[0].photo_reference}&key=${GOOGLE_API_KEY}`
+          : "https://via.placeholder.com/400";
+
+        // Generate description using Gemini API
+        const prompt = `Provide a 3-4 line engaging description about ${spotName} in ${city} for tourists. Focus on its historical/cultural significance, unique features, and visitor experience.`;
+        
+        const geminiResponse = await fetch(
+          "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyBkgLBRXEfnqb0IFKf7On2tY3bpK-DEc_g",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              contents: [{
+                parts: [{ text: prompt }],
+              }],
+            }),
+          }
+        );
+
+        if (!geminiResponse.ok) {
+          const errorData = await geminiResponse.json();
+          throw new Error(`Gemini API Error: ${errorData.error.message}`);
+        }
+
+        const geminiData = await geminiResponse.json();
+        const description = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || 
+          "No description available for this location.";
+
+        setSpot({
+          name: spotName as string,
+          description,
+          image,
+        });
+
+      } catch (error) {
+        console.error("Error fetching spot details:", error);
+        Alert.alert("Error", error.message);
+        setSpot({
+          name: spotName as string,
+          description: "Could not load description for this location.",
+          image: "https://via.placeholder.com/400",
+        });
+      } finally {
         setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error Fetch Tourist Spot:", spotName);
-        setLoading(false);
-      });
+      }
+    };
+
+    fetchSpotDetails();
   }, [city, spotName]);
 
   if (loading) {
@@ -58,31 +136,12 @@ const TouristSpotScreen = () => {
     );
   }
 
-  // spot not found case
-  if (!spot) {
-    return (
-      <View style={styles.center}>
-        <Text style={styles.errorText}>
-          Tourist Spot Not Found, {city}, {spotName}
-        </Text>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => {
-            handleBack(city);
-          }}
-        >
-          <Text style={styles.backText}>⬅</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       {/* Back Button */}
       <TouchableOpacity
         style={styles.backButton}
-        onPress={() => handleBack(city)}
+        onPress={() => handleBack(city as string)}
       >
         <Image
           source={require("../assets/images/backicon.png")}
@@ -91,17 +150,17 @@ const TouristSpotScreen = () => {
       </TouchableOpacity>
 
       {/* Image */}
-      <Image source={{ uri: spot.image }} style={styles.image} />
+      <Image source={{ uri: spot?.image }} style={styles.image} />
 
       {/* Details */}
       <View style={styles.detailsContainer}>
-        <Text style={styles.title}>{spot.name}</Text>
-        <Text style={styles.description}>{spot.description}</Text>
+        <Text style={styles.title}>{spot?.name}</Text>
+        <Text style={styles.description}>{spot?.description}</Text>
 
         {/* Show Map Button */}
         <TouchableOpacity 
           style={styles.button}
-          onPress={()=> handleNavigate(spot.name)}
+          onPress={() => handleNavigate(spot?.name || spotName as string)}
         >
           <Text style={styles.buttonText}>Show Map ➜</Text>
         </TouchableOpacity>

@@ -21,14 +21,30 @@ import Constants from "expo-constants";
 import * as Location from "expo-location";
 
 
-const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
-
+// const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
+const API_BASE_URL ="http://34.226.13.20:3000";
+  
 const cities = [
   { label: "Islamabad", value: "Islamabad" },
   { label: "Karachi", value: "Karachi" },
   { label: "Lahore", value: "Lahore" },
   { label: "Quetta", value: "Quetta" },
 ];
+
+function getDistance(loc1: {latitude: number, longitude: number}, loc2: {latitude: number, longitude: number}) {
+  const R = 6371e3; // metres
+  const φ1 = loc1.latitude * Math.PI/180;
+  const φ2 = loc2.latitude * Math.PI/180;
+  const Δφ = (loc2.latitude-loc1.latitude) * Math.PI/180;
+  const Δλ = (loc2.longitude-loc1.longitude) * Math.PI/180;
+
+  const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+            Math.cos(φ1) * Math.cos(φ2) *
+            Math.sin(Δλ/2) * Math.sin(Δλ/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+  return R * c;
+}
 
 export default function HomeScreen() {
   // Retrieve city info from URL parameters.
@@ -237,37 +253,78 @@ useEffect(() => {
   }, [activeTab, cityData.name]);
 
     // Fetch restaurants when the "food" tab is active
-  useEffect(() => {
-    if (activeTab !== "food") return;
+useEffect(() => {
+  if (activeTab !== "food") return;
 
-    const fetchRestaurants = async () => {
-      setRestaurantLoading(true);
+  const fetchRestaurants = async () => {
+    setRestaurantLoading(true);
+    try {
+      // First get coordinates for the selected city
+      const geocodeResponse = await axios.get(
+        "https://maps.googleapis.com/maps/api/geocode/json",
+        {
+          params: {
+            address: cityData.name,
+            key: GOOGLE_API_KEY,
+          },
+        }
+      );
+
+      if (geocodeResponse.data.status !== "OK" || !geocodeResponse.data.results[0]) {
+        throw new Error("Could not find coordinates for selected city");
+      }
+
+      const cityCoords = geocodeResponse.data.results[0].geometry.location;
+      
+      // Check if user's current location matches selected city
+      let useCurrentLocation = false;
+      
       try {
         // Request location permissions
         let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== "granted") {
-          alert("Permission to access location was denied.");
-          return;
+        if (status === "granted") {
+          const userLocation = await Location.getCurrentPositionAsync({});
+          const distance = getDistance(
+            { latitude: userLocation.coords.latitude, longitude: userLocation.coords.longitude },
+            { latitude: cityCoords.lat, longitude: cityCoords.lng }
+          );
+          
+          // If within 50km, consider it the same city
+          useCurrentLocation = distance < 50000;
         }
-
-        // Get user's current location
-        let userLocation = await Location.getCurrentPositionAsync({});
-        const { latitude, longitude } = userLocation.coords;
-
-        // Fetch nearby restaurants using Google Places API
-        const response = await axios.get(
-          `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=5000&type=restaurant&key=${GOOGLE_API_KEY}`
-        );
-        setRestaurants(response.data.results);
       } catch (error) {
-        console.error("Error fetching restaurants:", error);
-      } finally {
-        setRestaurantLoading(false);
+        console.log("Location permission error or location unavailable", error);
       }
-    };
 
-    fetchRestaurants();
-  }, [activeTab]);
+      // Fetch restaurants using either current location or city coordinates
+      const location = useCurrentLocation 
+        ? `${userLocation.coords.latitude},${userLocation.coords.longitude}`
+        : `${cityCoords.lat},${cityCoords.lng}`;
+
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/place/nearbysearch/json`,
+        {
+          params: {
+            location,
+            radius: 10000, // 10km radius
+            type: "restaurant",
+            key: GOOGLE_API_KEY,
+          },
+        }
+      );
+
+      setRestaurants(response.data.results);
+    } catch (error) {
+      console.error("Error fetching restaurants:", error);
+      Alert.alert("Error", "Could not fetch restaurants for this city");
+      setRestaurants([]);
+    } finally {
+      setRestaurantLoading(false);
+    }
+  };
+
+  fetchRestaurants();
+}, [activeTab, cityData.name]);
 
   // Fetch weather (only once)
   useEffect(() => {
@@ -495,7 +552,8 @@ useEffect(() => {
         <FlatList
           data={restaurants}
           keyExtractor={(item) => item.place_id}
-          renderItem={({ item }) => (
+          renderItem={({ item }) => 
+          (
             <View style={styles.cityCard}>
               {item.photos && (
                 <Image
@@ -507,8 +565,8 @@ useEffect(() => {
               )}
               <Text style={styles.cityName3}>{item.name}</Text>
               <Text style={styles.cityDescription}>{item.vicinity}</Text>
-              <Text>⭐ {item.rating || "No rating available"}</Text>
-              <Text>📞 {item.formatted_phone_number || "No phone available"}</Text>
+              <Text>⭐ {`${item.rating}/5` || "No rating available"} </Text>
+              
               {/* Add "Navigate" and "Reviews" buttons */}
               <View style={styles.buttonsContainer}>
                 <TouchableOpacity
@@ -578,7 +636,6 @@ useEffect(() => {
           items={cities}
           value={selectedCity}
           style={pickerSelectStyles}
-          placeholder={{ label: 'Select a city...', value: null }} // Optional placeholder
         />
         </View>
 
@@ -588,7 +645,7 @@ useEffect(() => {
             {temperature ? `~ ${temperature}` : "Loading..."}
           </Text>
         </View>
-
+ 
         {/* Search Bar */}
         <View style={styles.searchContainer}>
           <FontAwesome

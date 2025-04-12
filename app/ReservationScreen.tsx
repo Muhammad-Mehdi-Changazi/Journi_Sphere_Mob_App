@@ -6,10 +6,9 @@ import io from 'socket.io-client';
 import moment from 'moment';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import Constants from "expo-constants";
 
-const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
-
+const API_BASE_URL ="http://34.226.13.20:3000";
+  
 interface Room {
     _id: string;
     room_type: string;

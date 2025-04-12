@@ -20,7 +20,8 @@ import { ScrollView } from "react-native";
 import Constants from "expo-constants";
 import Reviews from './Reviews';
 
-const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
+const API_BASE_URL ="http://34.226.13.20:3000";
+  
 
 interface Review {
   _id: string;
