@@ -17,8 +17,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import Constants from "expo-constants";
 
-const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
-
 export default function TripItineraryScreen() {
   const params = useLocalSearchParams();
   const router = useRouter();

@@ -21,6 +21,9 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "config": {
+        "cleartextTraffic": true
       }
     },
     "web": {
@@ -36,13 +39,14 @@
       "typedRoutes": true
     },
     "extra": {
-      "API_BASE_URL": "http://10.130.88.60:3000",
+      "API_BASE_URL": "http://10.130.218.95:3000",
       "router": {
         "origin": false
       },
       "eas": {
         "projectId": "73b2b26f-e61a-4397-8585-9d87205225f1"
       }
-    }
+    },
+    "owner": "osman123123"
   }
 }

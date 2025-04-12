@@ -3,7 +3,9 @@ import axios from 'axios';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import Constants from "expo-constants";
 
-const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
+// const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
+const API_BASE_URL ="http://34.226.13.20:3000";
+  
 
 interface Location {
   address: string;
