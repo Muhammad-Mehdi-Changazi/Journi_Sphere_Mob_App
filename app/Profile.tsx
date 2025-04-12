@@ -84,7 +84,7 @@ export default function Profile() {
 
   const fetchReviews = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/reviews/?user=${encodeURIComponent(userData.username)}`);//`https://d1lxguzc6q41zr.cloudfront.net/Reviews?placeName=${placeName}`);
+      const response = await axios.get(`${API_BASE_URL}/api/reviews/?email=${userData.email}`);//`https://d1lxguzc6q41zr.cloudfront.net/Reviews?placeName=${placeName}`);
       setReviews(response.data);
     } catch (error) {
       console.error('Error fetching reviews:', error);

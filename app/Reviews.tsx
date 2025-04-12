@@ -38,10 +38,13 @@ export default function Reviews() {
   const [newReview, setNewReview] = useState('');
   const [rating, setRating] = useState<number>(0);
   const [username, setUsername] = useState<string | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
 
   useEffect(() => {
     fetchReviews();
     loadUsername();
+    loadEmail();
+
   }, []);
 
   const fetchReviews = async () => {
@@ -61,6 +64,14 @@ export default function Reviews() {
       console.error('Error loading username:', error);
     }
   };
+  const loadEmail = async () => {
+    try {
+      const storedEmail = await AsyncStorage.getItem('email');
+      if (storedEmail) setEmail(storedEmail);
+    } catch (error) {
+      console.error('Error loading username:', error);
+    }
+  };
 
   const submitReview = async () => {
     if (!newReview || rating <= 0 || !username) return;
@@ -69,6 +80,7 @@ export default function Reviews() {
       await axios.post(/*`https://d1lxguzc6q41zr.cloudfront.net/Reviews`,*/ `${API_BASE_URL}/Reviews`, {
         placeName,
         user: username,
+        email: email,
         rating,
         comment: newReview,
       });

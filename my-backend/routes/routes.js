@@ -18,7 +18,7 @@ router.post('/login', authController.login);
 // Reviews Routes
 router.get('/reviews', reviewController.getReviews);
 router.post('/reviews', reviewController.createReview);
-router.get('/api/reviews/', reviewController.getReviewsByUsername); // for Profile
+router.get('/api/reviews/', reviewController.getReviewsByEmail); // for Profile
 
 // City Routes
 router.get('/api/cities', cityController.getCities);

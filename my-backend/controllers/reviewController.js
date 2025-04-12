@@ -10,10 +10,10 @@ exports.getReviews = async (req, res) => {
   }
 };
 
-exports.getReviewsByUsername = async (req, res) => {
-  const { user } = req.query;
+exports.getReviewsByEmail = async (req, res) => {
+  const { email } = req.query;
   try {
-    const reviews = await Review.find({ user });
+    const reviews = await Review.find({ email });
     res.json(reviews);
   } catch (error) {
     res.status(500).json({ error: 'Error fetching reviews by username' });
@@ -22,10 +22,10 @@ exports.getReviewsByUsername = async (req, res) => {
 
 // Controller to submit a review
 exports.createReview = async (req, res) => {
-  const { placeName, user, rating, comment } = req.body;
+  const { placeName, user, email, rating, comment } = req.body;
   console.log("User and place:", user, placeName);
 
-  const review = new Review({ placeName, user, rating, comment });
+  const review = new Review({ placeName, user, email, rating, comment });
 
   try {
     await review.save();
