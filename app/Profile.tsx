@@ -23,12 +23,28 @@ const API_BASE_URL ="http://34.226.13.20:3000";
   
 
 interface Review {
-  id: string;
+  _id: string;
   user: string;
   rating: number;
   comment: string;
-  placeName: string
+  placeName: string;
 }
+
+interface Reservation {
+  _id: string;
+  hotel_ID: {
+    _id: string;
+    hotel_name: string;
+  };
+  reservationStatus: string;
+  createdAt: string;
+  reservation_date: { 
+    from: string,
+    to: string,   
+  };
+  hotel_name: string;
+}
+
 
 const STAR_ICON = "★";
 
@@ -57,6 +73,8 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("updateProfile");
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [hotel, setHotel] = useState("");
   const { email, city } = useLocalSearchParams(); // Get params from URL
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -76,6 +94,7 @@ export default function Profile() {
     };
     fetchUserData();
     fetchReviews();
+    fetchReservations();
   }, []);
 // load Reviews
   const fetchReviews = async () => {
@@ -88,7 +107,17 @@ export default function Profile() {
       setLoading(false);
     }
   };
-
+  // load Reservations
+  const fetchReservations = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/reservations/?email=${userData.email}`);
+      setReservations(response.data);
+    } catch (error) {
+      console.error('Error fetching reservations:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
   // handler for homepage routing
   const handleBack = (city: string) => {
     console.log()
@@ -205,20 +234,34 @@ export default function Profile() {
       );
     } else if (activeTab === "reservations") {
       return (
-        <View style={{ alignItems: "center", marginTop: 20 }}>
-          <Text>Reservations coming soon!!!</Text>
+        <View style={styles.reviews_container}>
+          <View style={{ marginTop: 15, padding: 5, marginBottom: 10 }}>
+            <Text style= {styles.sectionTitle_review}>Your reservations:</Text>
+          </View>
+          <FlatList showsVerticalScrollIndicator={false}
+            data={reservations}
+            keyExtractor={(reservation) => reservation._id}
+            renderItem={({ item }) => (
+              <View style={styles.card}>
+                <Text style={styles.hotelPlaceName}>{item.hotel_ID?.hotel_name ?? 'Unknown Hotel'}</Text>
+                <Text style={styles.hotelDetails}>Status: {item.reservationStatus}</Text>
+                <Text style={styles.hotelDetails}>{'From: ' + item.reservation_date.from.slice(0, 10)}</Text>
+                <Text style={styles.hotelDetails}>{'To: ' + item.reservation_date.to.slice(0, 10)}</Text>
+                <Text style={styles.hotelDetails}>{'Created at: ' + item.createdAt.slice(0, 10)}</Text>
+              </View>
+            )}
+          /> 
         </View>
       );
     } else if (activeTab === "reviews") {
-      return (
-        <View style={styles.reviews_container}>
-        <ProtectedRoute>
-          <View style={{ marginTop: 15, padding: 5, marginBottom: 10 }}>
-            <Text style= {styles.sectionTitle_review}>Your experiences:</Text>
-          </View>
+        return (
+          <View style={styles.reviews_container}>
+            <View style={{ marginTop: 15, padding: 5, marginBottom: 10 }}>
+              <Text style= {styles.sectionTitle_review}>Your experiences:</Text>
+            </View> 
             <FlatList showsVerticalScrollIndicator={false}
               data={reviews}
-              keyExtractor={(review) => review.id}
+              keyExtractor={(review) => review._id}
               renderItem={({ item }) => (
                 <View style={styles.reviewCard}>
                   <View style={styles.reviewHeader}>
@@ -229,9 +272,8 @@ export default function Profile() {
                 </View>
               )}
             />
-        </ProtectedRoute>
-        </View>
-      );
+          </View>
+        );
     } else if (activeTab === "favourites") {
       return (
         <View style={{ alignItems: "center", marginTop: 20 }}>

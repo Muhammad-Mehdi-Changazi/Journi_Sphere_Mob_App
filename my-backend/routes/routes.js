@@ -40,6 +40,7 @@ router.post('/api/reservations', hotelController.createReservation);
 router.get('/GetAllReservationsByHotelID', hotelController.getReservationsByHotelId);
 router.get('/GetReservations', hotelController.getReservationsByStatus);
 router.put('/UpdateReservationsStatus/:id/updateStatus', hotelController.updateReservationStatus);
+router.get('/api/reservations/', hotelController.getReservationsByEmail); // for Profile
 
 // Room Routes
 router.post('/room', roomController.createRoom);
