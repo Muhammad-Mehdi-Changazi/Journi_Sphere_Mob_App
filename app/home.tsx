@@ -132,14 +132,16 @@ const fetchCarRentals = async (cityName) => {
   } catch (error) {
     console.error("Error fetching car rentals:", error);
     // Detailed error logging (keep this part)
-    if (error.response) {
+    if (axios.isAxiosError(error) && error.response) {
       console.error("Error response data:", error.response.data);
       console.error("Error response status:", error.response.status);
       console.error("Error response headers:", error.response.headers);
-    } else if (error.request) {
+    } else if (axios.isAxiosError(error) && error.request) {
       console.error("No response received:", error.request);
-    } else {
+    } else if (error instanceof Error) {
       console.error("Error message:", error.message);
+    } else {
+      console.error("An unknown error occurred:", error);
     }
     
     setCarRentals([]);
