@@ -25,6 +25,25 @@ exports.createHotel = async (req, res) => {
   }
 };
 
+// Edit hotel information
+exports.editHotel = async (req, res) => {
+    const { hotel_id } = req.params;
+    const updatedHotelData = req.body;
+
+    try {
+        const updatedHotel = await Hotel.findByIdAndUpdate(hotel_id, updatedHotelData, { new: true });
+
+        if (!updatedHotel) {
+            return res.status(404).json({ message: 'Hotel not found' });
+        }
+
+        res.status(200).json(updatedHotel);
+    } catch (error) {
+        console.error('Error updating hotel:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
 // Get all hotels
 exports.getHotels = async (req, res) => {
   try {
@@ -164,7 +183,6 @@ exports.createReservation = async (req, res) => {
 };
 
 
-
 exports.getReservationsByHotelId = async (req, res) => {
   try {
     const { hotel_id } = req.query;
@@ -173,12 +191,18 @@ exports.getReservationsByHotelId = async (req, res) => {
       return res.status(400).json({ error: "Hotel ID is required" });
     }
 
-    // Fetch reservations for the given hotel_id
     const reservations = await Reservation.find({ hotel_ID: hotel_id });
-    // console.log("Reservations",reservations);
 
-    // Return the reservations
-    res.status(200).json(reservations);
+    const enrichedReservations = await Promise.all(
+      reservations.map(async (reservation) => {
+        const room = await Room.findById(reservation.room_ID);
+        return {
+          ...reservation.toObject(),
+          roomDetails: room,
+        };
+      })
+    );
+    res.status(200).json(enrichedReservations);
   } catch (error) {
     console.error("Error fetching reservations:", error);
     res.status(500).json({ error: "Server error" });
@@ -212,20 +236,32 @@ exports.getReservationsByStatus = async (req, res) => {
   try {
     const { status, hotel_id } = req.query;
 
+    console.log("Status", status);
     if (!status || !hotel_id) {
       return res.status(400).json({ error: "Status and hotel_id are required" });
     }
 
-    // If multiple statuses are sent as an array, use $in operator
+    // If multiple statuses are sent as a comma-separated string, convert to array
     const statusArray = status.includes(",") ? status.split(",") : [status];
 
     // Fetch reservations filtered by both status and hotel_id
     const reservations = await Reservation.find({
       reservationStatus: { $in: statusArray },
-      hotel_ID: hotel_id,  // Filtering by hotel_id
+      hotel_ID: hotel_id,
     });
-    
-    res.status(200).json(reservations);
+
+    // Fetch room details for each reservation
+    const reservationsWithRoom = await Promise.all(
+      reservations.map(async (resv) => {
+        const room = await Room.findById(resv.room_ID);
+        return {
+          ...resv._doc, // Spread the reservation data
+          roomDetails: room, // Attach room info
+        };
+      })
+    );
+
+    res.status(200).json(reservationsWithRoom);
   } catch (error) {
     console.error("Error fetching reservations:", error);
     res.status(500).json({ error: "Server error" });
@@ -242,6 +278,7 @@ exports.getReservationsByEmail = async (req, res) => {
     res.status(500).json({ error: 'Error fetching reservations by email' });
   }
 };
+
 
 exports.updateReservationStatus = async (req, res) => {
   try {

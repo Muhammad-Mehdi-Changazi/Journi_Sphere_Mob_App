@@ -7,6 +7,6 @@ export type RootStackParamList = {
   GoogleMap: { placeName: string };  // Type for Google Map screen
   Reviews: { placeName: string };   // Type for Reviews screen
   ReservationScreen: { placeName: string };
-  HotelAdmin: { username: string }; // Type for HotelAdmin screen, where username is passed
+  CarRental: { username: string }; // Type for HotelAdmin screen, where username is passed
   TouristSpotScreen: {spotName: string};
 };

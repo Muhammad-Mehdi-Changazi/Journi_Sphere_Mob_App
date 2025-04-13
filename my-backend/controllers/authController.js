@@ -9,7 +9,7 @@ exports.signup = async (req, res) => {
 
   try {
     // Validate the role
-    const validRoles = ['Customer', 'Hotel Management Staff']; // Add more roles if needed
+    const validRoles = ['Customer', 'Hotel Management Staff', 'Car Rental Staff']; // Add more roles if needed
     if (!validRoles.includes(role)) {
       return res.status(400).json({ message: 'Invalid role specified' });
     }
