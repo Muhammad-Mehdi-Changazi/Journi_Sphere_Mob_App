@@ -65,6 +65,10 @@ router.get('/itinerary/my', itineraryController.getUserItineraries);
 
 // Car Rental Routes
 router.post('/car-rental-companies', carRentalCompanyController.createCarRentalCompany);
+router.get('/companies/:id', carRentalCompanyController.getCompanyDetails);
+router.post('/api/cars', carRentalCompanyController.addCar);
+router.put('/api/cars/:registration_number', carRentalCompanyController.updateCar);
+
 
 
 

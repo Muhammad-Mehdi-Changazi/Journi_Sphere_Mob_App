@@ -63,6 +63,7 @@ exports.login = async (req, res) => {
         username: existingUser.username,
         role: existingUser.role,
         hotel_id: existingUser.hotel_id,
+        car_rental_company_id: existingUser.car_rental_company_id,
       },
       'your_secret_key',
       { expiresIn: '1h' }
