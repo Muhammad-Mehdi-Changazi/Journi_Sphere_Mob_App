@@ -252,7 +252,7 @@ useEffect(() => {
       });
   }, [activeTab, cityData.name]);
 
-    // Fetch restaurants when the "food" tab is active
+// Fetch restaurants when the "food" tab is active
 useEffect(() => {
   if (activeTab !== "food") return;
 
@@ -278,12 +278,13 @@ useEffect(() => {
       
       // Check if user's current location matches selected city
       let useCurrentLocation = false;
+      let userLocation = null;
       
       try {
         // Request location permissions
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status === "granted") {
-          const userLocation = await Location.getCurrentPositionAsync({});
+          userLocation = await Location.getCurrentPositionAsync({});
           const distance = getDistance(
             { latitude: userLocation.coords.latitude, longitude: userLocation.coords.longitude },
             { latitude: cityCoords.lat, longitude: cityCoords.lng }
@@ -297,7 +298,7 @@ useEffect(() => {
       }
 
       // Fetch restaurants using either current location or city coordinates
-      const location = useCurrentLocation 
+      const location = useCurrentLocation && userLocation
         ? `${userLocation.coords.latitude},${userLocation.coords.longitude}`
         : `${cityCoords.lat},${cityCoords.lng}`;
 
@@ -585,7 +586,14 @@ useEffect(() => {
             </View>
           )}
           ListEmptyComponent={() => (
-            <Text style={styles.cityDescription}>No restaurants found.</Text>
+            restaurantLoading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#0000ff" />
+                <Text style={styles.loadingText}>Loading restaurants...</Text>
+              </View>
+            ) : (
+              <Text style={styles.cityDescription}>No restaurants found.</Text>
+            )
           )}
         />
       );

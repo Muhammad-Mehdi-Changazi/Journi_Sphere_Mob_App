@@ -17,6 +17,17 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
   },
+  loadingContainer: {
+  flex: 1,
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: 20,
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#666',
+  },
   locationText: {
     fontSize: 14,
   },
