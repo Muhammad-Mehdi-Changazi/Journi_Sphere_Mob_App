@@ -20,15 +20,14 @@ router.post('/login', authController.login);
 // Reviews Routes
 router.get('/reviews', reviewController.getReviews);
 router.post('/reviews', reviewController.createReview);
-router.get('/api/reviews/', reviewController.getReviewsByUsername); // for Profile
+router.get('/api/reviews/', reviewController.getReviewsByEmail); // for Profile
 
 // City Routes
 router.get('/api/cities', cityController.getCities);
 
 // Tourism Routes
-router.get('/api/tourist-spots/', tourismController.fetchCitySpots);
-router.get('/api/tourism/', tourismController.getTouristSpot); // Fetch tourist spot by city & name
-
+// router.get('/api/tourist-spots/', tourismController.fetchCitySpots);
+// router.get('/api/tourism/', tourismController.getTouristSpot); // Fetch tourist spot by city & name
 
 // Recommendation Routes
 router.get('/recommendations', recommendationController.getRecommendations);
@@ -44,6 +43,7 @@ router.post('/api/reservations', hotelController.createReservation);
 router.get('/GetAllReservationsByHotelID', hotelController.getReservationsByHotelId);
 router.get('/GetReservations', hotelController.getReservationsByStatus);
 router.put('/UpdateReservationsStatus/:id/updateStatus', hotelController.updateReservationStatus);
+router.get('/api/reservations/', hotelController.getReservationsByEmail); // for Profile
 
 // Room Routes
 router.post('/room', roomController.createRoom);

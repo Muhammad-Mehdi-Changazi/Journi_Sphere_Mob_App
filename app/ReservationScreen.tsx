@@ -10,8 +10,8 @@ import Constants from "expo-constants";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
-
+const API_BASE_URL ="http://34.226.13.20:3000";
+  
 interface Room {
     _id: string;
     room_type: string;

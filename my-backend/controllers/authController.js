@@ -44,21 +44,19 @@ exports.signup = async (req, res) => {
 exports.login = async (req, res) => {
   const { email, password } = req.body;
   try {
+    console.log('Received login request:', { email, password });
+
     const existingUser = await User.findOne({ email });
-    console.log(existingUser)
     if (!existingUser) {
+      console.log(`User with email ${email} not found`);
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    // Compare plaintext passwords directly
     if (password !== existingUser.password) {
+      console.log(`Password mismatch for user ${email}`);
       return res.status(400).json({ message: 'Invalid credentials' });
     }
-    // console.log("User found:", existingUser.username);
-    // console.log("Hotel ID:", existingUser.hotel_id);
 
-
-    // Generate a JWT token including the role
     const token = jwt.sign(
       {
         email: existingUser.email,
@@ -66,18 +64,21 @@ exports.login = async (req, res) => {
         role: existingUser.role,
         hotel_id: existingUser.hotel_id,
       },
-      'your_secret_key', // Use an environment variable for the secret key in production
+      'your_secret_key',
       { expiresIn: '1h' }
     );
+
+    console.log(`Generated token for user ${email}`);
 
     res.status(200).json({
       message: 'Login successful',
       token,
       role: existingUser.role,
-      hotel_id: existingUser.hotel_id // Ensure hotel_id is sent
+      hotel_id: existingUser.hotel_id
     });
 
   } catch (error) {
+    console.error('Error during login:', error);
     res.status(500).json({ message: 'Error logging in', error });
   }
 };

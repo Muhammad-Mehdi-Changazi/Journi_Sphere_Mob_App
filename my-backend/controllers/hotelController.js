@@ -267,6 +267,17 @@ exports.getReservationsByStatus = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+exports.getReservationsByEmail = async (req, res) => {
+  const { email } = req.query;
+  try {
+    const reservations = await Reservation.find({ email })
+    .populate('hotel_ID', 'hotel_name') // only get hotel_name from Hotel document
+    .exec();
+    res.status(200).json(reservations);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching reservations by email' });
+  }
+};
 
 
 exports.updateReservationStatus = async (req, res) => {

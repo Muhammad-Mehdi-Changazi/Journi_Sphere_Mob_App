@@ -18,16 +18,34 @@ import { styles } from "./styles/profilestyles";
 import Footer from "./components/Footer";
 import { ScrollView } from "react-native";
 import Constants from "expo-constants";
+import Reviews from './Reviews';
 
-const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
+const API_BASE_URL ="http://34.226.13.20:3000";
+  
 
 interface Review {
-  id: string;
+  _id: string;
   user: string;
   rating: number;
   comment: string;
-  placeName: string
+  placeName: string;
 }
+
+interface Reservation {
+  _id: string;
+  hotel_ID: {
+    _id: string;
+    hotel_name: string;
+  };
+  reservationStatus: string;
+  createdAt: string;
+  reservation_date: { 
+    from: string,
+    to: string,   
+  };
+  hotel_name: string;
+}
+
 
 const STAR_ICON = "★";
 
@@ -56,6 +74,8 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("updateProfile");
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [hotel, setHotel] = useState("");
   const { email, city } = useLocalSearchParams(); // Get params from URL
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -63,14 +83,9 @@ export default function Profile() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const storedUsername = await AsyncStorage.getItem("username");
         const storedEmail = await AsyncStorage.getItem("email");
-        const storedPassword = await AsyncStorage.getItem("password");
-        setUserData({
-          username: storedUsername || "",
-          email: storedEmail || "",
-          password: storedPassword || "",
-        });
+        const response = await axios.get(`${API_BASE_URL}/api/user/?email=${storedEmail}`);
+        setUserData(response.data);
         setConfirmPassword(userData.password);
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -79,21 +94,51 @@ export default function Profile() {
       }
     };
     fetchUserData();
-    fetchReviews();
   }, []);
 
-  const fetchReviews = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/api/reviews/?user=${encodeURIComponent(userData.username)}`);//`https://d1lxguzc6q41zr.cloudfront.net/Reviews?placeName=${placeName}`);
-      setReviews(response.data);
-    } catch (error) {
-      console.error('Error fetching reviews:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // handlers for back button
+// load Reviews
+  useEffect(() => {
+    if (activeTab !== "reviews" || !userData?.email) return;
+    setLoading(true);
+    axios
+      .get(`${API_BASE_URL}/api/Reviews/?email=${userData.email}`)
+      .then((response) => {
+        if (response.data) {
+          setReviews(response.data);
+        } else {
+          setReviews([]);
+        }
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching reviews:", error);
+        setReviews([]);
+        setLoading(false);
+      });
+  }, [activeTab, userData.email]);
+  
+  // load Reservations
+  useEffect(() => {
+    if (activeTab !== "reservations" || !userData?.email) return;
+    setLoading(true);
+    axios
+      .get(`${API_BASE_URL}/api/reservations/?email=${userData.email}`)
+      .then((response) => {
+        if (response.data) {
+          setReservations(response.data);
+        } else {
+          setReservations([]);
+        }
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching reservations:", error);
+        setReservations([]);
+        setLoading(false);
+      });
+  }, [activeTab, userData.email]);
+  
+  // handler for homepage routing
   const handleBack = (city: string) => {
     console.log()
     router.push({
@@ -139,7 +184,6 @@ export default function Profile() {
       // Update AsyncStorage with new values.
       await AsyncStorage.setItem("username", updatedProfile.username);
       await AsyncStorage.setItem("email", updatedProfile.email);
-      await AsyncStorage.setItem("password", updatedProfile.password);
     } catch (error: unknown) {
       let errorMessage = "Profile update failed!";
       if (axios.isAxiosError(error)) {
@@ -210,31 +254,44 @@ export default function Profile() {
       );
     } else if (activeTab === "reservations") {
       return (
-        <View style={{ alignItems: "center", marginTop: 20 }}>
-          <Text>Reservations coming soon!!!</Text>
+        <View style={styles.reviews_container}>
+          <View style={{ marginTop: 15, padding: 5, marginBottom: 10 }}>
+            <Text style= {styles.sectionTitle_review}>Your reservations:</Text>
+          </View>
+          <FlatList showsVerticalScrollIndicator={false}
+            data={reservations}
+            keyExtractor={(reservation) => reservation._id}
+            renderItem={({ item }) => (
+              <View style={styles.card}>
+                <Text style={styles.hotelPlaceName}>{item.hotel_ID?.hotel_name ?? 'Unknown Hotel'}</Text>
+                <Text style={styles.hotelDetails}>Status: {item.reservationStatus}</Text>
+                <Text style={styles.hotelDetails}>{'From: ' + item.reservation_date.from.slice(0, 10)}</Text>
+                <Text style={styles.hotelDetails}>{'To: ' + item.reservation_date.to.slice(0, 10)}</Text>
+                <Text style={styles.hotelDetails}>{'Created at: ' + item.createdAt.slice(0, 10)}</Text>
+              </View>
+            )}
+          /> 
         </View>
       );
     } else if (activeTab === "reviews") {
       return (
         <View style={styles.reviews_container}>
-        <ProtectedRoute>
           <View style={{ marginTop: 15, padding: 5, marginBottom: 10 }}>
             <Text style= {styles.sectionTitle_review}>Your experiences:</Text>
-          </View>
-            <FlatList showsVerticalScrollIndicator={false}
-              data={reviews}
-              keyExtractor={(review) => review.id}
-              renderItem={({ item }) => (
-                <View style={styles.reviewCard}>
-                  <View style={styles.reviewHeader}>
-                    <Text style={styles.userName}>{item.placeName}</Text>
-                  </View>
-                  {renderStars(item.rating)}
-                  <Text style={styles.comment}>{item.comment}</Text>
+          </View> 
+          <FlatList showsVerticalScrollIndicator={false}
+            data={reviews}
+            keyExtractor={(review) => review._id}
+            renderItem={({ item }) => (
+              <View style={styles.reviewCard}>
+                <View style={styles.reviewHeader}>
+                  <Text style={styles.userName}>{item.placeName}</Text>
                 </View>
-              )}
-            />
-        </ProtectedRoute>
+                {renderStars(item.rating)}
+                <Text style={styles.comment}>{item.comment}</Text>
+              </View>
+            )}
+          />
         </View>
       );
     } else if (activeTab === "favourites") {

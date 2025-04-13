@@ -1,6 +1,6 @@
 {
   "expo": {
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "name": "manzil",
     "slug": "manzil",
     "version": "1.0.0",
@@ -14,13 +14,21 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true
+        }
+      }
     },
     "android": {
       "package": "com.usmanarshid.manzil",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "config": {
+        "cleartextTraffic": true
       }
     },
     "web": {
@@ -43,6 +51,7 @@
       "eas": {
         "projectId": "73b2b26f-e61a-4397-8585-9d87205225f1"
       }
-    }
+    },
+    "owner": "osman123123"
   }
 }
