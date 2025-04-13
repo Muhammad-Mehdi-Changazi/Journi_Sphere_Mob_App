@@ -536,6 +536,14 @@ useEffect(() => {
                     <Text style={styles.buttonText}>Navigate</Text>
                   </View>
                 </TouchableOpacity>
+                
+                <TouchableOpacity
+                  style={[styles.button1, isSmallScreen && { width: "100%" }]}
+                  onPress={() => handleMakeReservation(item._id)}
+                >
+                  <Text style={styles.buttonText}>Reserve</Text>
+                </TouchableOpacity>
+
                 <TouchableOpacity
                   style={[
                     styles.button,
@@ -544,12 +552,6 @@ useEffect(() => {
                   onPress={() => handleCheckReviews(item.hotel_name)}
                 >
                   <Text style={styles.buttonText}>Reviews</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.button, isSmallScreen && { width: "100%" }]}
-                  onPress={() => handleMakeReservation(item._id)}
-                >
-                  <Text style={styles.buttonText}>Reserve</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -628,7 +630,7 @@ useEffect(() => {
                 
                 <TouchableOpacity
                   style={styles.button}
-                  onPress={() => handleNavigate(item.name + " " + item.location.address)}>
+                  onPress={() => handleNavigate(item.name + " " + item.location.address + " " + item.location.city)}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <FontAwesome name="map-marker" size={16} color="#fff" style={{ marginRight: 5 }} />
                     <Text style={styles.buttonText}>Navigate</Text>
