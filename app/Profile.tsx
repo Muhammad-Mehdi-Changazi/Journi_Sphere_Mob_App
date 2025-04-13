@@ -75,7 +75,6 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState("updateProfile");
   const [reviews, setReviews] = useState<Review[]>([]);
   const [reservations, setReservations] = useState<Reservation[]>([]);
-  const [hotel, setHotel] = useState("");
   const { email, city } = useLocalSearchParams(); // Get params from URL
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -140,13 +139,17 @@ export default function Profile() {
   
   // handler for homepage routing
   const handleBack = (city: string) => {
-    console.log()
+    // Make sure we have a valid city or use a default
+    const cityParam = city && city !== "undefined" 
+      ? `{\"name\":\"${city}\",\"places\":[],\"foods\":[]}` 
+      : userData.lastCity || "{\"name\":\"Islamabad\",\"places\":[],\"foods\":[]}";
+      
     router.push({
       pathname: "/home",
-      params: { city: `{\"name\":\"${city}\",\"places\":[],\"foods\":[]}` },
+      params: { city: cityParam },
     });
   };
-  
+    
   // Handle updating the profile.
   const handleUpdateProfile = async () => {
     setErrorMessage('');
@@ -294,12 +297,6 @@ export default function Profile() {
           />
         </View>
       );
-    } else if (activeTab === "favourites") {
-      return (
-        <View style={{ alignItems: "center", marginTop: 20 }}>
-          <Text>Favourites coming soon!!!</Text>
-        </View>
-      );
     }
   };
 
@@ -346,15 +343,6 @@ return (
         >
           <Text style={activeTab === "reviews" ? styles.activeTabText : styles.inactiveTabText}>
             Reviews
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={activeTab === "favourites" ? styles.activeTab : styles.inactiveTab}
-          onPress={() => setActiveTab("favourites")}
-        >
-          <Text style={activeTab === "favourites" ? styles.activeTabText : styles.inactiveTabText}>
-            Favourites
           </Text>
         </TouchableOpacity>
       </ScrollView>

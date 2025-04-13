@@ -353,6 +353,22 @@ useEffect(() => {
       });
   }, []);
 
+  // Store city in AsyncStorage whenever it changes
+  useEffect(() => {
+    const storeCityData = async () => {
+      if (cityData?.name && cityData.name !== "undefined") {
+        try {
+          await AsyncStorage.setItem('lastCity', cityData.name);
+          console.log("City stored in AsyncStorage:", cityData.name);
+        } catch (error) {
+          console.error("Error storing city in AsyncStorage:", error);
+        }
+      }
+    };
+    
+    storeCityData();
+  }, [cityData.name]);
+
   // Handle profile navigation
   const handleProfile = (email: string, city: string) => {
     router.push({

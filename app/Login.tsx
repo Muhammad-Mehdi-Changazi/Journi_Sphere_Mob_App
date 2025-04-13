@@ -167,7 +167,7 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.headerText}>Continue the Journey</Text>
+      <Text style={styles.headerText}>Continue thy Journey</Text>
 
       <View style={styles.inputContainer}>
         <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} autoCapitalize="none" />
@@ -208,7 +208,10 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16, backgroundColor: '#f4f4f4' },
   
-  headerText: { fontSize: 32, fontWeight: 'bold', marginBottom: 80, color: '#333' },
+  headerText: {     fontSize: 32,
+    fontWeight: 'bold',
+    marginBottom: 80,
+     color: 'rgb(17, 90, 138)'},
   
   inputContainer: { width: '100%', marginBottom: 30 },
   

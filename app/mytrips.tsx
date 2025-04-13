@@ -67,9 +67,18 @@ export default function MyTripsScreen() {
   };
 
   // Navigate back to Profile screen
-  const handleBackPress = () => {
+const handleBackPress = async () => {
+  try {
+    const storedCity = await AsyncStorage.getItem('lastCity');
+    router.push({
+      pathname: '/Profile',
+      params: { city: storedCity }
+    });
+  } catch (error) {
+    console.error("Error retrieving city:", error);
     router.push('/Profile');
-  };
+  }
+};
 
   // Render each itinerary item
   const renderItem = ({ item }) => (
