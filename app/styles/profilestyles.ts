@@ -88,12 +88,14 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#176FF2',
     fontFamily: 'Abhaya Libre Medium',
+    marginHorizontal: 10,
   },
   inactiveTab: {
     paddingVertical: 12,
     paddingHorizontal: 15,
     borderRadius: 20,
     backgroundColor: '#FFF',
+    marginHorizontal: 10,
   },
   inactiveTabText: {
     fontSize: 16,
@@ -104,6 +106,10 @@ tabsScrollView: {
     maxHeight: 70,
     backgroundColor: '#FFF', // Ensure it's not black
     paddingVertical: 10, // Adjust padding if necessary
+},
+scrollContainer: {
+  justifyContent: 'center',
+  alignItems: 'center',
 },
 reviews_container: {
     flex: 1,

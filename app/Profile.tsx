@@ -320,36 +320,37 @@ return (
         >
           <Text style={styles.myTripsButtonText}>My Trips</Text>
         </TouchableOpacity>
+      <View style ={styles.scrollContainer}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabsScrollView}>
+          <TouchableOpacity
+            style={activeTab === "updateProfile" ? styles.activeTab : styles.inactiveTab}
+            onPress={() => setActiveTab("updateProfile")}
+          >
+            <Text style={activeTab === "updateProfile" ? styles.activeTabText : styles.inactiveTabText}>
+              Profile
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={activeTab === "reservations" ? styles.activeTab : styles.inactiveTab}
+            onPress={() => setActiveTab("reservations")}
+          >
+            <Text style={activeTab === "reservations" ? styles.activeTabText : styles.inactiveTabText}>
+              Reservations
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={activeTab === "reviews" ? styles.activeTab : styles.inactiveTab}
+            onPress={() => setActiveTab("reviews")}
+          >
+            <Text style={activeTab === "reviews" ? styles.activeTabText : styles.inactiveTabText}>
+              Reviews
+            </Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </View>
       
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabsScrollView}>
-        <TouchableOpacity
-          style={activeTab === "updateProfile" ? styles.activeTab : styles.inactiveTab}
-          onPress={() => setActiveTab("updateProfile")}
-        >
-          <Text style={activeTab === "updateProfile" ? styles.activeTabText : styles.inactiveTabText}>
-            Profile
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={activeTab === "reservations" ? styles.activeTab : styles.inactiveTab}
-          onPress={() => setActiveTab("reservations")}
-        >
-          <Text style={activeTab === "reservations" ? styles.activeTabText : styles.inactiveTabText}>
-            Reservations
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={activeTab === "reviews" ? styles.activeTab : styles.inactiveTab}
-          onPress={() => setActiveTab("reviews")}
-        >
-          <Text style={activeTab === "reviews" ? styles.activeTabText : styles.inactiveTabText}>
-            Reviews
-          </Text>
-        </TouchableOpacity>
-      </ScrollView>
-
       {renderContent()}
       
     </View>
