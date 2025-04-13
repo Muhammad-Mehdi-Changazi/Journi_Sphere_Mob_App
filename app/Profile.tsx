@@ -21,7 +21,6 @@ import Constants from "expo-constants";
 import Reviews from './Reviews';
 
 const API_BASE_URL ="http://10.130.218.95:3000";
-  
 
 interface Review {
   _id: string;
@@ -261,19 +260,21 @@ export default function Profile() {
           <View style={{ marginTop: 15, padding: 5, marginBottom: 10 }}>
             <Text style= {styles.sectionTitle_review}>Your reservations:</Text>
           </View>
-          <FlatList showsVerticalScrollIndicator={false}
-            data={reservations}
-            keyExtractor={(reservation) => reservation._id}
-            renderItem={({ item }) => (
-              <View style={styles.card}>
-                <Text style={styles.hotelPlaceName}>{item.hotel_ID?.hotel_name ?? 'Unknown Hotel'}</Text>
-                <Text style={styles.hotelDetails}>Status: {item.reservationStatus}</Text>
-                <Text style={styles.hotelDetails}>{'From: ' + item.reservation_date.from.slice(0, 10)}</Text>
-                <Text style={styles.hotelDetails}>{'To: ' + item.reservation_date.to.slice(0, 10)}</Text>
-                <Text style={styles.hotelDetails}>{'Created at: ' + item.createdAt.slice(0, 10)}</Text>
-              </View>
-            )}
-          /> 
+          <View style = {{marginBottom: 120}}>
+            <FlatList showsVerticalScrollIndicator={false}
+              data={reservations}
+              keyExtractor={(reservation) => reservation._id}
+              renderItem={({ item }) => (
+                <View style={styles.card}>
+                  <Text style={styles.hotelPlaceName}>{item.hotel_ID?.hotel_name ?? 'Unknown Hotel'}</Text>
+                  <Text style={styles.hotelDetails}>Status: {item.reservationStatus}</Text>
+                  <Text style={styles.hotelDetails}>{'From: ' + item.reservation_date.from.slice(0, 10)}</Text>
+                  <Text style={styles.hotelDetails}>{'To: ' + item.reservation_date.to.slice(0, 10)}</Text>
+                  <Text style={styles.hotelDetails}>{'Created at: ' + item.createdAt.slice(0, 10)}</Text>
+                </View>
+              )}
+            /> 
+          </View>
         </View>
       );
     } else if (activeTab === "reviews") {
@@ -282,19 +283,21 @@ export default function Profile() {
           <View style={{ marginTop: 15, padding: 5, marginBottom: 10 }}>
             <Text style= {styles.sectionTitle_review}>Your experiences:</Text>
           </View> 
-          <FlatList showsVerticalScrollIndicator={false}
-            data={reviews}
-            keyExtractor={(review) => review._id}
-            renderItem={({ item }) => (
-              <View style={styles.reviewCard}>
-                <View style={styles.reviewHeader}>
-                  <Text style={styles.userName}>{item.placeName}</Text>
+          <View style = {{marginBottom: 130}}>
+            <FlatList showsVerticalScrollIndicator={false}
+              data={reviews}
+              keyExtractor={(review) => review._id}
+              renderItem={({ item }) => (
+                <View style={styles.reviewCard}>
+                  <View style={styles.reviewHeader}>
+                    <Text style={styles.userName}>{item.placeName}</Text>
+                  </View>
+                  {renderStars(item.rating)}
+                  <Text style={styles.comment}>{item.comment}</Text>
                 </View>
-                {renderStars(item.rating)}
-                <Text style={styles.comment}>{item.comment}</Text>
-              </View>
-            )}
-          />
+              )}
+            />
+          </View>
         </View>
       );
     }

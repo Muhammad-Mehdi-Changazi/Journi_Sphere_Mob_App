@@ -505,6 +505,45 @@ useEffect(() => {
       );
     } else if (activeTab === "hotels") {
       return (
+        <View style= {{marginBottom: 400}}>
+          <FlatList
+            data={hotels}
+            keyExtractor={(item) =>
+              item._id ? item._id.toString() : item.hotel_name
+            }
+            renderItem={({ item }) => (
+              <View style={styles.card}>
+                <Text style={styles.hotelPlaceName}>{item.hotel_name}</Text>
+                <Text style={styles.hotelDetails}>{item.complete_address}</Text>
+                <Text style={styles.hotelDetails2 }>{item.hotel_class} Hotel</Text>
+                <View
+                  style={[
+                    styles.buttonsContainer,
+                    isSmallScreen && {
+                      flexDirection: "column",
+                      alignItems: "stretch",
+                    },
+                  ]}
+                >
+                  <TouchableOpacity
+                    style={[
+                      styles.button,
+                      isSmallScreen && { width: "100%", marginBottom: 8 },
+                    ]}
+                    onPress={() => handleNavigate(item.hotel_name)}
+                  >
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <FontAwesome name="map-marker" size={16} color="#fff" style={{ marginRight: 5 }} />
+                      <Text style={styles.buttonText}>Navigate</Text>
+                    </View>
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity
+                    style={[styles.button1, isSmallScreen && { width: "100%" }]}
+                    onPress={() => handleMakeReservation(item._id)}
+                  >
+                    <Text style={styles.buttonText}>Reserve</Text>
+                  </TouchableOpacity>
         <FlatList
           data={hotels}
           keyExtractor={(item) =>
@@ -544,73 +583,78 @@ useEffect(() => {
                   <Text style={styles.buttonText}>Reserve</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                  style={[
-                    styles.button,
-                    isSmallScreen && { width: "100%", marginBottom: 8 },
-                  ]}
-                  onPress={() => handleCheckReviews(item.hotel_name)}
-                >
-                  <Text style={styles.buttonText}>Reviews</Text>
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[
+                      styles.button,
+                      isSmallScreen && { width: "100%", marginBottom: 8 },
+                    ]}
+                    onPress={() => handleCheckReviews(item.hotel_name)}
+                  >
+                    <Text style={styles.buttonText}>Reviews</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          )}
-          showsVerticalScrollIndicator={false}
-        />
+            )}
+            showsVerticalScrollIndicator={false}
+          />
+        </View>
+        
       );
     } 
     else if (activeTab === "food") {
       return (
-        <FlatList
-          data={restaurants}
-          keyExtractor={(item) => item.place_id}
-          renderItem={({ item }) => 
-          (
-            <View style={styles.cityCard}>
-              {item.photos && (
-                <Image
-                  source={{
-                    uri: `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${item.photos[0].photo_reference}&key=${GOOGLE_API_KEY}`,
-                  }}
-                  style={styles.cityImage}
-                />
-              )}
-              <Text style={styles.cityName3}>{item.name}</Text>
-              <Text style={styles.cityDescription}>{item.vicinity}</Text>
-              <Text>⭐ {`${item.rating}/5` || "No rating available"} </Text>
-              
-              {/* Add "Navigate" and "Reviews" buttons */}
-              <View style={styles.buttonsContainer}>
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={() => handleNavigateFoods({ name: item.name, vicinity: item.vicinity })}
-                >
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <FontAwesome name="map-marker" size={16} color="#fff" style={{ marginRight: 5 }} />
-                    <Text style={styles.buttonText}>Navigate</Text>
-                  </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={() => handleCheckReviews(item.name)}
-                >
-                  <Text style={styles.buttonText}>Reviews</Text>
-                </TouchableOpacity>
+        <View style = {{marginBottom: 400}}>
+          <FlatList
+            data={restaurants}
+            keyExtractor={(item) => item.place_id}
+            renderItem={({ item }) => 
+            (
+              <View style={styles.cityCard}>
+                {item.photos && (
+                  <Image
+                    source={{
+                      uri: `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${item.photos[0].photo_reference}&key=${GOOGLE_API_KEY}`,
+                    }}
+                    style={styles.cityImage}
+                  />
+                )}
+                <Text style={styles.cityName3}>{item.name}</Text>
+                <Text style={styles.cityDescription}>{item.vicinity}</Text>
+                <Text>⭐ {`${item.rating}/5` || "No rating available"} </Text>
+                
+                {/* Add "Navigate" and "Reviews" buttons */}
+                <View style={styles.buttonsContainer}>
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => handleNavigateFoods({ name: item.name, vicinity: item.vicinity })}
+                  >
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <FontAwesome name="map-marker" size={16} color="#fff" style={{ marginRight: 5 }} />
+                      <Text style={styles.buttonText}>Navigate</Text>
+                    </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => handleCheckReviews(item.name)}
+                  >
+                    <Text style={styles.buttonText}>Reviews</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          )}
-          ListEmptyComponent={() => (
-            restaurantLoading ? (
-              <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#0000ff" />
-                <Text style={styles.loadingText}>Loading restaurants...</Text>
-              </View>
-            ) : (
-              <Text style={styles.cityDescription}>No restaurants found.</Text>
-            )
-          )}
-        />
+            )}
+            ListEmptyComponent={() => (
+              restaurantLoading ? (
+                <View style={styles.loadingContainer}>
+                  <ActivityIndicator size="large" color="#0000ff" />
+                  <Text style={styles.loadingText}>Loading restaurants...</Text>
+                </View>
+              ) : (
+                <Text style={styles.cityDescription}>No restaurants found.</Text>
+              )
+            )}
+          />
+        </View>
+        
       );
     }
     else if (activeTab === "carRentals") {
@@ -618,46 +662,49 @@ useEffect(() => {
         return <ActivityIndicator size="large" color="#A8CCF0" />;
       }
       return (
-        <FlatList
-          data={carRentals}
-          keyExtractor={(item) => item._id}
-          renderItem={({ item }) => (
-            <View style={styles.card}>
-              <Text style={styles.hotelPlaceName}>{item.name}</Text>
-              <Text style={styles.hotelDetails}>{item.location.address}, {item.location.city}</Text>
-              <Text style={styles.hotelDetails}>Available Cars: {item.cars?.filter(car => car.available).length || 0}</Text>
-              <View style={styles.buttonsContainer}>
-                
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={() => handleNavigate(item.name + " " + item.location.address + " " + item.location.city)}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <FontAwesome name="map-marker" size={16} color="#fff" style={{ marginRight: 5 }} />
-                    <Text style={styles.buttonText}>Navigate</Text>
-                  </View>
-                </TouchableOpacity>  
+        <View style = {{marginBottom: 400}}>
+          <FlatList
+            data={carRentals}
+            keyExtractor={(item) => item._id}
+            renderItem={({ item }) => (
+              <View style={styles.card}>
+                <Text style={styles.hotelPlaceName}>{item.name}</Text>
+                <Text style={styles.hotelDetails}>{item.location.address}, {item.location.city}</Text>
+                <Text style={styles.hotelDetails}>Available Cars: {item.cars?.filter(car => car.available).length || 0}</Text>
+                <View style={styles.buttonsContainer}>
+                  
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => handleNavigate(item.name + " " + item.location.address + " " + item.location.city)}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <FontAwesome name="map-marker" size={16} color="#fff" style={{ marginRight: 5 }} />
+                      <Text style={styles.buttonText}>Navigate</Text>
+                    </View>
+                  </TouchableOpacity>  
 
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={() => router.push({
-                    pathname: "/CarRentalDetailsPage",
-                    params: { rentalId: item._id }
-                  })}
-                >
-                  <Text style={styles.buttonText}>Details</Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={() => handleCheckReviews(item.name)}
-                >
-                  <Text style={styles.buttonText}>Reviews</Text>
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => router.push({
+                      pathname: "/CarRentalDetailsPage",
+                      params: { rentalId: item._id }
+                    })}
+                  >
+                    <Text style={styles.buttonText}>Details</Text>
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => handleCheckReviews(item.name)}
+                  >
+                    <Text style={styles.buttonText}>Reviews</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          )}
-          showsVerticalScrollIndicator={false}
-        />
+            )}
+            showsVerticalScrollIndicator={false}
+          />
+        </View>
+        
       );
     }
   };

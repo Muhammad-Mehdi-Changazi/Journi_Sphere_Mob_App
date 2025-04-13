@@ -270,7 +270,6 @@ const CarRentalDetailsPage = () => {
           <TouchableOpacity style={styles.backButton} onPress={handleBack}>
             <Ionicons name="arrow-back" size={24} color="#333" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>{company?.name}</Text>
         </View>
 
         <View style={styles.companyInfoCard}>
