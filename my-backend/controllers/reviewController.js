@@ -16,7 +16,7 @@ exports.getReviewsByEmail = async (req, res) => {
     const reviews = await Review.find({ email });
     res.json(reviews);
   } catch (error) {
-    res.status(500).json({ error: 'Error fetching reviews by username' });
+    res.status(500).json({ error: 'Error fetching reviews by email' });
   }
 };
 

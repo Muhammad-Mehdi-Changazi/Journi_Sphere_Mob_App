@@ -64,7 +64,6 @@ export default function LoginScreen() {
       await AsyncStorage.setItem('role', role);
       await AsyncStorage.setItem('email', email); //added email for profile
 
-
       console.log('Login successful, token and username stored');
 
       // Show city selection modal
