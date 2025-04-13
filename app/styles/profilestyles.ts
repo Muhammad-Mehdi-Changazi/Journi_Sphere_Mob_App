@@ -70,8 +70,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   tabsContainer: {
-    marginLeft: 15,
-
+    marginLeft: 75,
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 33,

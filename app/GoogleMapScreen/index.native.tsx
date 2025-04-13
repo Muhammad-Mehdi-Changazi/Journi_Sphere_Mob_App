@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, Alert, Dimensions } from 'react-native';
-import MapView, { Marker, Polyline } from 'react-native-maps';
 import * as Location from 'expo-location';
-import axios from 'axios';
+import { WebView } from 'react-native-webview';
 import { useLocalSearchParams } from 'expo-router';
 
 const { height } = Dimensions.get('window');
 const MAP_HEIGHT = height * 0.65; // Map takes ~65% of screen height
 
-const GOOGLE_API_KEY = 'AIzaSyDx_TwV8vhwbKTTWn0tV2BVRDGIipfwzlc';
+const GOOGLE_API_KEY = 'AIzaSyDx_TwV8vhwbKTTWn0tV2BVRDGIipfwzlc'; // Replace with your actual API key or use environment variables
 
 type Coordinates = {
   latitude: number;
@@ -20,13 +19,19 @@ export default function GoogleMapScreen() {
   const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
   const [userAddress, setUserAddress] = useState<string>('Fetching location...');
   const [destinationLocation, setDestinationLocation] = useState<Coordinates | null>(null);
-  const [routeCoordinates, setRouteCoordinates] = useState<Coordinates[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
       try {
+        // Validate placeName
+        if (!placeName || placeName.trim() === '') {
+          throw new Error('No destination provided');
+        }
+        console.log('placeName:', placeName);
+
+        // Request location permission
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
           setError('Permission to access location was denied');
@@ -34,6 +39,7 @@ export default function GoogleMapScreen() {
           return;
         }
 
+        // Get user location
         let location = await Location.getCurrentPositionAsync({});
         const userCoords = {
           latitude: location.coords.latitude,
@@ -42,54 +48,49 @@ export default function GoogleMapScreen() {
         setUserLocation(userCoords);
 
         // Reverse Geocoding - Get Address
-        const geoReverseResponse = await axios.get(
-          'https://maps.googleapis.com/maps/api/geocode/json',
-          {
-            params: {
-              latlng: `${userCoords.latitude},${userCoords.longitude}`,
-              key: GOOGLE_API_KEY,
-            },
-          }
+        const geoReverseResponse = await fetch(
+          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${userCoords.latitude},${userCoords.longitude}&key=${GOOGLE_API_KEY}`
         );
-
-        if (geoReverseResponse.data.status === 'OK') {
-          const address = geoReverseResponse.data.results[0].formatted_address;
+        const geoData = await geoReverseResponse.json();
+        if (geoData.status === 'OK' && geoData.results?.length > 0) {
+          const address = geoData.results[0].formatted_address;
           setUserAddress(address);
         } else {
+          console.warn('Reverse geocoding failed:', geoData);
           setUserAddress('Unknown Location');
         }
 
         // Geocode destination
-        const geoResponse = await axios.get(
-          'https://maps.googleapis.com/maps/api/geocode/json',
-          { params: { address: placeName, key: GOOGLE_API_KEY } }
+        const geoResponse = await fetch(
+          `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(placeName)}&key=${GOOGLE_API_KEY}`
         );
+        const geoResponseData = await geoResponse.json();
+        console.log('Geocoding response:', geoResponseData);
 
-        if (geoResponse.data.status !== 'OK') throw new Error('Location not found');
+        if (geoResponseData.status !== 'OK') {
+          let errorMessage = 'Location not found';
+          if (geoResponseData.status === 'ZERO_RESULTS') {
+            errorMessage = `No results found for "${placeName}"`;
+          } else if (geoResponseData.status === 'INVALID_REQUEST') {
+            errorMessage = 'Invalid request. Please check the destination name.';
+          } else if (geoResponseData.status === 'OVER_QUERY_LIMIT') {
+            errorMessage = 'API quota exceeded. Please try again later.';
+          } else if (geoResponseData.status === 'REQUEST_DENIED') {
+            errorMessage = 'API key is invalid or not authorized for Geocoding API.';
+          }
+          throw new Error(errorMessage);
+        }
 
-        const destCoords = geoResponse.data.results[0].geometry.location;
+        if (!geoResponseData.results?.length) {
+          throw new Error('No location data returned');
+        }
+
+        const destCoords = geoResponseData.results[0].geometry.location;
         const destination = { latitude: destCoords.lat, longitude: destCoords.lng };
         setDestinationLocation(destination);
-
-        // Fetch directions
-        const dirResponse = await axios.get(
-          'https://maps.googleapis.com/maps/api/directions/json',
-          {
-            params: {
-              origin: `${userCoords.latitude},${userCoords.longitude}`,
-              destination: `${destination.latitude},${destination.longitude}`,
-              key: GOOGLE_API_KEY,
-              mode: 'driving',
-            },
-          }
-        );
-
-        if (dirResponse.data.status !== 'OK') throw new Error('Directions not available');
-
-        const points = dirResponse.data.routes[0].overview_polyline.points;
-        setRouteCoordinates(decodePolyline(points));
       } catch (err: unknown) {
         const errorMessage = err instanceof Error ? err.message : 'Something went wrong';
+        console.error('Error:', errorMessage);
         Alert.alert('Error', errorMessage);
         setError(errorMessage);
       } finally {
@@ -97,43 +98,6 @@ export default function GoogleMapScreen() {
       }
     })();
   }, [placeName]);
-
-  const decodePolyline = (encoded: string) => {
-    let index = 0;
-    const len = encoded.length;
-    const array = [];
-    let lat = 0;
-    let lng = 0;
-
-    while (index < len) {
-      let b;
-      let shift = 0;
-      let result = 0;
-      do {
-        b = encoded.charCodeAt(index++) - 63;
-        result |= (b & 0x1f) << shift;
-        shift += 5;
-      } while (b >= 0x20);
-      const dlat = (result & 1) !== 0 ? ~(result >> 1) : result >> 1;
-      lat += dlat;
-
-      shift = 0;
-      result = 0;
-      do {
-        b = encoded.charCodeAt(index++) - 63;
-        result |= (b & 0x1f) << shift;
-        shift += 5;
-      } while (b >= 0x20);
-      const dlng = (result & 1) !== 0 ? ~(result >> 1) : result >> 1;
-      lng += dlng;
-
-      array.push({
-        latitude: lat * 1e-5,
-        longitude: lng * 1e-5,
-      });
-    }
-    return array;
-  };
 
   if (loading) {
     return (
@@ -152,24 +116,45 @@ export default function GoogleMapScreen() {
     );
   }
 
+  // Construct Google Maps Embed URL
+  const mapUrl = `https://www.google.com/maps/embed/v1/directions?key=${GOOGLE_API_KEY}&origin=${userLocation?.latitude},${userLocation?.longitude}&destination=${destinationLocation?.latitude},${destinationLocation?.longitude}&mode=driving`;
+
+  // HTML content with iframe for WebView
+  const injectedHtml = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <style>
+          body, html { margin: 0; padding: 0; height: 100%; width: 100%; }
+          iframe { border: none; width: 100%; height: 100%; }
+        </style>
+      </head>
+      <body>
+        <iframe
+          src="${mapUrl}"
+          width="100%"
+          height="100%"
+          frameborder="0"
+          style="border:0;"
+          allowfullscreen
+        ></iframe>
+      </body>
+    </html>
+  `;
+
   return (
     <View style={styles.container}>
-      {/* Map Section */}
-      <MapView
+      {/* WebView to display Google Map */}
+      <WebView
+        originWhitelist={['*']}
+        source={{ html: injectedHtml }}
         style={styles.map}
-        initialRegion={{
-          latitude: userLocation!.latitude,
-          longitude: userLocation!.longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
+        onError={(syntheticEvent) => {
+          const { nativeEvent } = syntheticEvent;
+          console.warn('WebView error: ', nativeEvent);
+          Alert.alert('WebView Error', nativeEvent.description);
         }}
-      >
-        <Marker coordinate={userLocation!} title="Your Location" pinColor="blue" />
-        <Marker coordinate={destinationLocation!} title={placeName || 'Destination'} />
-        {routeCoordinates.length > 0 && (
-          <Polyline coordinates={routeCoordinates} strokeColor="#007bff" strokeWidth={4} />
-        )}
-      </MapView>
+      />
 
       {/* Bottom Container */}
       <View style={styles.bottomContainer}>
@@ -187,7 +172,7 @@ const styles = StyleSheet.create({
   },
   map: {
     width: '100%',
-    height: MAP_HEIGHT, 
+    height: MAP_HEIGHT,
   },
   bottomContainer: {
     height: '35%',
@@ -202,9 +187,8 @@ const styles = StyleSheet.create({
   },
   destinationText: {
     fontSize: 25,
-    fontWeight: 'semibold',
+    fontWeight: '600', // Fixed from 'semibold'
     color: '#000',
-    fontFamily: 'Abhaya Libre Medium',
   },
   label: {
     fontSize: 14,
@@ -215,15 +199,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
     marginTop: 2,
-  },
-  bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    height: '10%',
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderColor: '#ddd',
   },
   errorText: {
     color: 'red',

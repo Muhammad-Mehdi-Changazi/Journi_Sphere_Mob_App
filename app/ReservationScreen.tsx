@@ -6,7 +6,6 @@ import io from 'socket.io-client';
 import moment from 'moment';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import Constants from "expo-constants";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
