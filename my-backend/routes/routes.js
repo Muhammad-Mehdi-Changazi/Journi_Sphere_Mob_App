@@ -8,6 +8,8 @@ const roomController = require('../controllers/roomController');
 const tourismController = require('../controllers/tourismController');
 const userController = require('../controllers/userController');
 const itineraryController = require('../controllers/itineraryController')
+const carRentalCompanyController = require('../controllers/carRentalController');
+
 
 const router = express.Router();
 
@@ -35,6 +37,7 @@ router.get('/recommendations', recommendationController.getRecommendations);
 router.post('/hotel', hotelController.createHotel); // Make sure this function exists
 router.get('/hotels/city/:cityName', hotelController.getHotelsByCity); // Route to get hotels by city
 router.get('/hotels/:hotel_id', hotelController.getHotelById);
+router.put('/edithotel/:hotel_id', hotelController.editHotel);
 
 // Reservation Routes
 router.post('/api/reservations', hotelController.createReservation);
@@ -58,5 +61,11 @@ router.put('/user/', userController.updateProfile);
 //itinerary routes
 router.post('/itinerary/save', itineraryController.saveItinerary);
 router.get('/itinerary/my', itineraryController.getUserItineraries);
+
+
+// Car Rental Routes
+router.post('/car-rental-companies', carRentalCompanyController.createCarRentalCompany);
+
+
 
 module.exports = router;

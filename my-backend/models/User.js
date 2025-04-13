@@ -10,6 +10,11 @@ const UserSchema = new mongoose.Schema({
     ref: 'Hotel',
     default: null
   },
+  car_rental_company_id: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: 'CarRental',
+  default: null
+},
   // ➡️ Add an array of itineraries referencing the Itinerary model
   itineraries: [
     {
