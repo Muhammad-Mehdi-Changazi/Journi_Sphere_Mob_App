@@ -318,6 +318,17 @@ const styles = StyleSheet.create({
     marginRight: 15,
     marginLeft: -3, 
   },
+  button1: {
+    backgroundColor: '#007BFF',
+    paddingHorizontal: 15,
+    borderRadius: 35,
+    marginVertical: 6,
+    width: 95,
+    height: 35,
+    justifyContent: 'center',
+    marginRight: 15,
+    marginLeft: -3, 
+  },
   button_profile: {
     backgroundColor: '#007BFF',
     paddingVertical: 10,

@@ -215,8 +215,11 @@ export default function ReservationScreen() {
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
                         <Text style={styles.modalHeader}>Enter Reservation Details</Text>
+                        <Text style={styles.dateText}>Name:</Text>
                         <TextInput style={styles.modalInput} placeholder="Your Name" value={reservationDetails.name} onChangeText={(text) => setReservationDetails({ ...reservationDetails, name: text })} />
+                        <Text style={styles.dateText}>CNIC:</Text>
                         <TextInput style={styles.modalInput} placeholder="Your CNIC" value={reservationDetails.CNIC} onChangeText={(text) => setReservationDetails({ ...reservationDetails, CNIC: text })} />
+                        <Text style={styles.dateText}>Phone:</Text>
                         <TextInput style={styles.modalInput} placeholder="Your Phone Number" value={reservationDetails.phone} onChangeText={(text) => setReservationDetails({ ...reservationDetails, phone: text })} />
 
                         <Text style={styles.dateText}>From Date:</Text>
@@ -230,44 +233,112 @@ export default function ReservationScreen() {
                                 value={reservationDetails.fromDate ? new Date(reservationDetails.fromDate) : new Date()}
                                 mode="date"
                                 display="default"
+                                minimumDate={new Date()} // This prevents selecting dates before today
                                 onChange={(event, selectedDate) => {
                                     setShowFromPicker(false);
                                     if (selectedDate) {
-                                        setReservationDetails({ ...reservationDetails, fromDate: moment(selectedDate).format('YYYY-MM-DD') });
+                                        // Format the selected date
+                                        const formattedDate = moment(selectedDate).format('YYYY-MM-DD');
+                                        
+                                        // Check if toDate is now invalid (more than 8 days from new fromDate)
+                                        const currentToDate = reservationDetails.toDate ? new Date(reservationDetails.toDate) : null;
+                                        const maxAllowedDate = new Date(selectedDate);
+                                        maxAllowedDate.setDate(selectedDate.getDate() + 8);
+                                        
+                                        if (currentToDate && currentToDate > maxAllowedDate) {
+                                            // Reset the to date if it's now invalid
+                                            setReservationDetails({ 
+                                                ...reservationDetails,  // Spread all the existing properties
+                                                fromDate: formattedDate, 
+                                                toDate: null 
+                                            });
+                                            alert("To Date has been reset as it exceeded the 8-day limit from the new From Date");
+                                        } else {
+                                            setReservationDetails({ 
+                                                ...reservationDetails, 
+                                                fromDate: formattedDate 
+                                            });
+                                        }
                                     }
                                 }}
                             />
                         )}
 
                         <Text style={styles.dateText}>To Date:</Text>
-                        <TouchableOpacity onPress={() => setShowToPicker(true)}>
+                        <TouchableOpacity 
+                            onPress={() => {
+                                if (!reservationDetails.fromDate) {
+                                    alert("Please select a From Date first");
+                                    return;
+                                }
+                                setShowToPicker(true);
+                            }}
+                        >
                             <Text style={styles.modalInput}>
                                 {reservationDetails.toDate ? reservationDetails.toDate : 'Select Date'}
                             </Text>
                         </TouchableOpacity>
-                        {showToPicker && (
+                        {showToPicker && reservationDetails.fromDate && (
                             <DateTimePicker
-                                value={reservationDetails.toDate ? new Date(reservationDetails.toDate) : new Date()}
+                                value={reservationDetails.toDate ? new Date(reservationDetails.toDate) : new Date(reservationDetails.fromDate)}
                                 mode="date"
                                 display="default"
+                                minimumDate={new Date(reservationDetails.fromDate)} // Cannot select before from date
+                                maximumDate={(() => {
+                                    const maxDate = new Date(reservationDetails.fromDate);
+                                    maxDate.setDate(maxDate.getDate() + 8);
+                                    return maxDate;
+                                })()} // Maximum 8 days after from date
                                 onChange={(event, selectedDate) => {
                                     setShowToPicker(false);
                                     if (selectedDate) {
-                                        setReservationDetails({ ...reservationDetails, toDate: moment(selectedDate).format('YYYY-MM-DD') });
+                                        const fromDateObj = new Date(reservationDetails.fromDate);
+                                        const maxDate = new Date(fromDateObj);
+                                        maxDate.setDate(fromDateObj.getDate() + 8);
+                                        
+                                        if (selectedDate < fromDateObj) {
+                                            alert("To Date cannot be before From Date");
+                                            return;
+                                        }
+                                        
+                                        if (selectedDate > maxDate) {
+                                            alert("You can only book up to 8 days from the start date");
+                                            return;
+                                        }
+                                        
+                                        setReservationDetails({ 
+                                            ...reservationDetails, 
+                                            toDate: moment(selectedDate).format('YYYY-MM-DD') 
+                                        });
                                     }
                                 }}
                             />
                         )}
-
                         {/* Payment Method Picker */}
                         <Text style={styles.dateText}>Payment Method:</Text>
+                        <View  style={styles.droop}>
                         <Picker selectedValue={reservationDetails.paymentMethod} onValueChange={(itemValue) => setReservationDetails({ ...reservationDetails, paymentMethod: itemValue })}>
                             <Picker.Item label="Online" value="ONLINE" />
                             <Picker.Item label="Others" value="OTHERS" />
                         </Picker>
+                        </View>
 
-                        <Button title="Submit Reservation" onPress={handleSubmitReservation} />
-                        <Button title="Cancel" onPress={() => setModalVisible(false)} />
+                        <View style={styles.buttonColumn}>
+                        <TouchableOpacity style={styles.buttonWrapper}>
+                            <Button
+                            title="Submit Reservation"
+                            onPress={handleSubmitReservation}
+                            color="#007AFF"
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.buttonWrapper}>
+                            <Button
+                            title="Cancel"
+                            onPress={() => setModalVisible(false)}
+                            color="#FF3B30"
+                            />
+                        </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
             </Modal>
@@ -276,6 +347,9 @@ export default function ReservationScreen() {
 }
 
 const styles = StyleSheet.create({
+    droop: {backgroundColor: '#ADD8E6'},
+    buttonColumn: {marginTop: 15, padding: 5, gap: 10},
+    buttonWrapper: {borderRadius: 5},
     container: { padding: 15, alignItems: 'center' },
     centeredContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
     header: { fontSize: 22, fontWeight: 'bold', marginBottom: 20 },

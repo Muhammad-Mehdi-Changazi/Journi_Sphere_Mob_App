@@ -13,7 +13,7 @@ import axios from 'axios';
 import { useRouter } from 'expo-router';
 import Constants from "expo-constants";
 
-const API_BASE_URL = "http://34.226.13.20:3000" ;
+const API_BASE_URL = "http://10.130.218.95:3000" ;
 
 import { Ionicons } from '@expo/vector-icons';
 

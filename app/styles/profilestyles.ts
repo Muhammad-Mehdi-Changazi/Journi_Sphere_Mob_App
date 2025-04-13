@@ -70,11 +70,10 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   tabsContainer: {
-    marginLeft: 75,
+    marginLeft: 55,
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 33,
-    //backgroundColor: '#FFF',
     borderRadius: 15,
   },
   activeTab: {
@@ -254,10 +253,10 @@ reviews_container: {
   },
   card: {
     marginTop: 20,
-    backgroundColor: '#D6D5D5',
+    backgroundColor: '#fffeee',
     borderRadius: 20,
     marginBottom: 16,
-    padding: 20,
+    padding: 25,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
