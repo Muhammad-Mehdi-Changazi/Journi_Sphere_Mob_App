@@ -532,7 +532,7 @@ useEffect(() => {
                     ]}
                     onPress={() => handleNavigate(item.hotel_name)}
                   >
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                       <FontAwesome name="map-marker" size={16} color="#fff" style={{ marginRight: 5 }} />
                       <Text style={styles.buttonText}>Navigate</Text>
                     </View>
@@ -544,44 +544,6 @@ useEffect(() => {
                   >
                     <Text style={styles.buttonText}>Reserve</Text>
                   </TouchableOpacity>
-        <FlatList
-          data={hotels}
-          keyExtractor={(item) =>
-            item._id ? item._id.toString() : item.hotel_name
-          }
-          renderItem={({ item }) => (
-            <View style={styles.card}>
-              <Text style={styles.hotelPlaceName}>{item.hotel_name}</Text>
-              <Text style={styles.hotelDetails}>{item.complete_address}</Text>
-              <Text style={styles.hotelDetails2 }>{item.hotel_class} Hotel</Text>
-              <View
-                style={[
-                  styles.buttonsContainer,
-                  isSmallScreen && {
-                    flexDirection: "column",
-                    alignItems: "stretch",
-                  },
-                ]}
-              >
-                <TouchableOpacity
-                  style={[
-                    styles.button,
-                    isSmallScreen && { width: "100%", marginBottom: 8 },
-                  ]}
-                  onPress={() => handleNavigate(item.hotel_name)}
-                >
-                  <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                    <FontAwesome name="map-marker" size={16} color="#fff" style={{ marginRight: 5 }} />
-                    <Text style={styles.buttonText}>Navigate</Text>
-                  </View>
-                </TouchableOpacity>
-                
-                <TouchableOpacity
-                  style={[styles.button1, isSmallScreen && { width: "100%" }]}
-                  onPress={() => handleMakeReservation(item._id)}
-                >
-                  <Text style={styles.buttonText}>Reserve</Text>
-                </TouchableOpacity>
 
                   <TouchableOpacity
                     style={[
