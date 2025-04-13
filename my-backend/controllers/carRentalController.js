@@ -111,3 +111,40 @@ exports.getCompanyDetails = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+
+exports.updateCompanyDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      name,
+      contact_email,
+      contact_phone,
+      location,
+      cars,
+      total_cars
+    } = req.body;
+
+    const updatedCompany = await CarRentalCompany.findByIdAndUpdate(
+      id,
+      {
+        name,
+        contact_email,
+        contact_phone,
+        location,
+        cars,
+        total_cars
+      },
+      { new: true }
+    );
+
+    if (!updatedCompany) {
+      return res.status(404).json({ message: 'Company not found' });
+    }
+
+    return res.status(200).json(updatedCompany);
+  } catch (error) {
+    console.error('Error updating company:', error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};

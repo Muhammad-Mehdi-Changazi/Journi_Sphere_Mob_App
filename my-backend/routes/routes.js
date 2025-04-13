@@ -43,7 +43,7 @@ router.post('/api/reservations', hotelController.createReservation);
 router.get('/GetAllReservationsByHotelID', hotelController.getReservationsByHotelId);
 router.get('/GetReservations', hotelController.getReservationsByStatus);
 router.put('/UpdateReservationsStatus/:id/updateStatus', hotelController.updateReservationStatus);
-router.get('/api/reservations/', hotelController.getReservationsByEmail); // for Profile
+router.get('/api/reservations-by-email/', hotelController.getReservationsByEmail); // for Profile
 
 // Room Routes
 router.post('/room', roomController.createRoom);
@@ -68,7 +68,7 @@ router.post('/car-rental-companies', carRentalCompanyController.createCarRentalC
 router.get('/companies/:id', carRentalCompanyController.getCompanyDetails);
 router.post('/api/cars', carRentalCompanyController.addCar);
 router.put('/api/cars/:registration_number', carRentalCompanyController.updateCar);
-
+router.put('/update-company/:id', carRentalCompanyController.updateCompanyDetails);
 
 
 

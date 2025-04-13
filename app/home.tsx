@@ -236,7 +236,7 @@ useEffect(() => {
     if (activeTab !== "hotels" || !cityData?.name) return;
     setLoading(true);
     axios
-      .get(`${API_BASE_URL}/hotels/city/${cityData.name}`)
+      .get(`http://10.130.114.185:3000/hotels/city/${cityData.name}`)
       .then((response) => {
         if (response.data && response.data.hotels) {
           setHotels(response.data.hotels);

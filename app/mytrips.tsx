@@ -36,7 +36,7 @@ export default function MyTripsScreen() {
 
       // Call backend endpoint to get itineraries by username
       const response = await axios.get(
-        `${API_BASE_URL}/itinerary/my?username=${username}`
+        `http://10.130.114.185:3000/itinerary/my?username=${username}`
       );
       setItineraries(response.data);
     } catch (error) {

@@ -54,7 +54,7 @@ export default function SignupScreen() {
     try {
       setLoading(true);
       const response = await axios.post(
-        `${API_BASE_URL}/signup`,
+        `http://10.130.114.185:3000/signup`,
         requestData,
         {
           headers: {

@@ -83,7 +83,7 @@ export default function Profile() {
     const fetchUserData = async () => {
       try {
         const storedEmail = await AsyncStorage.getItem("email");
-        const response = await axios.get(`${API_BASE_URL}/api/user/?email=${storedEmail}`);
+        const response = await axios.get(`http://10.130.114.185:3000/api/user/?email=${storedEmail}`);
         setUserData(response.data);
         setConfirmPassword(userData.password);
       } catch (error) {
@@ -100,7 +100,7 @@ export default function Profile() {
     if (activeTab !== "reviews" || !userData?.email) return;
     setLoading(true);
     axios
-      .get(`${API_BASE_URL}/api/Reviews/?email=${userData.email}`)
+      .get(`http://10.130.114.185:3000/api/Reviews/?email=${userData.email}`)
       .then((response) => {
         if (response.data) {
           setReviews(response.data);
@@ -121,7 +121,7 @@ export default function Profile() {
     if (activeTab !== "reservations" || !userData?.email) return;
     setLoading(true);
     axios
-      .get(`${API_BASE_URL}/api/reservations/?email=${userData.email}`)
+      .get(`http://10.130.114.185:3000/api/reservations-by-email/?email=${userData.email}`)
       .then((response) => {
         if (response.data) {
           setReservations(response.data);
@@ -174,7 +174,7 @@ export default function Profile() {
     }
     try {
       const response = await axios.put(
-        `${API_BASE_URL}/user/?email=${userData.email}`,
+        `http://10.130.114.185:3000/user/?email=${userData.email}`,
         userData
       );
       //console.log(response.data);
