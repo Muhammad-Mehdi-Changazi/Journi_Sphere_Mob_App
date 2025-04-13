@@ -18,6 +18,7 @@ import { styles } from "./styles/profilestyles";
 import Footer from "./components/Footer";
 import { ScrollView } from "react-native";
 import Constants from "expo-constants";
+import Reviews from './Reviews';
 
 const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
 
@@ -92,31 +93,50 @@ export default function Profile() {
       }
     };
     fetchUserData();
-    fetchReviews();
-    fetchReservations();
   }, []);
+
 // load Reviews
-  const fetchReviews = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/api/reviews/?email=${userData.email}`);
-      setReviews(response.data);
-    } catch (error) {
-      console.error('Error fetching reviews:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    if (activeTab !== "reviews" || !userData?.email) return;
+    setLoading(true);
+    axios
+      .get(`${API_BASE_URL}/api/Reviews/?email=${userData.email}`)
+      .then((response) => {
+        if (response.data) {
+          setReviews(response.data);
+        } else {
+          setReviews([]);
+        }
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching reviews:", error);
+        setReviews([]);
+        setLoading(false);
+      });
+  }, [activeTab, userData.email]);
+  
   // load Reservations
-  const fetchReservations = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/api/reservations/?email=${userData.email}`);
-      setReservations(response.data);
-    } catch (error) {
-      console.error('Error fetching reservations:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    if (activeTab !== "reservations" || !userData?.email) return;
+    setLoading(true);
+    axios
+      .get(`${API_BASE_URL}/api/reservations/?email=${userData.email}`)
+      .then((response) => {
+        if (response.data) {
+          setReservations(response.data);
+        } else {
+          setReservations([]);
+        }
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching reservations:", error);
+        setReservations([]);
+        setLoading(false);
+      });
+  }, [activeTab, userData.email]);
+  
   // handler for homepage routing
   const handleBack = (city: string) => {
     console.log()
@@ -253,26 +273,26 @@ export default function Profile() {
         </View>
       );
     } else if (activeTab === "reviews") {
-        return (
-          <View style={styles.reviews_container}>
-            <View style={{ marginTop: 15, padding: 5, marginBottom: 10 }}>
-              <Text style= {styles.sectionTitle_review}>Your experiences:</Text>
-            </View> 
-            <FlatList showsVerticalScrollIndicator={false}
-              data={reviews}
-              keyExtractor={(review) => review._id}
-              renderItem={({ item }) => (
-                <View style={styles.reviewCard}>
-                  <View style={styles.reviewHeader}>
-                    <Text style={styles.userName}>{item.placeName}</Text>
-                  </View>
-                  {renderStars(item.rating)}
-                  <Text style={styles.comment}>{item.comment}</Text>
+      return (
+        <View style={styles.reviews_container}>
+          <View style={{ marginTop: 15, padding: 5, marginBottom: 10 }}>
+            <Text style= {styles.sectionTitle_review}>Your experiences:</Text>
+          </View> 
+          <FlatList showsVerticalScrollIndicator={false}
+            data={reviews}
+            keyExtractor={(review) => review._id}
+            renderItem={({ item }) => (
+              <View style={styles.reviewCard}>
+                <View style={styles.reviewHeader}>
+                  <Text style={styles.userName}>{item.placeName}</Text>
                 </View>
-              )}
-            />
-          </View>
-        );
+                {renderStars(item.rating)}
+                <Text style={styles.comment}>{item.comment}</Text>
+              </View>
+            )}
+          />
+        </View>
+      );
     } else if (activeTab === "favourites") {
       return (
         <View style={{ alignItems: "center", marginTop: 20 }}>
