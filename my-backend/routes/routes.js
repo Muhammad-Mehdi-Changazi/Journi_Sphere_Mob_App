@@ -64,6 +64,7 @@ router.get('/car-rental-companies/test', carRentalCompanyController.testCarRenta
 router.get('/car-rental-companies/city/:city', carRentalCompanyController.getCarRentalCompaniesByCity);
 router.get('/car-rental-companies/:id', carRentalCompanyController.getCarRentalCompanyById);
 
+router.post('/book', carRentalCompanyController.bookCar);
 router.post('/car-rental-companies', carRentalCompanyController.createCarRentalCompany);
 router.get('/companies/:id', carRentalCompanyController.getCompanyDetails);
 router.post('/api/cars', carRentalCompanyController.addCar);

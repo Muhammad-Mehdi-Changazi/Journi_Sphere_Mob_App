@@ -10,6 +10,8 @@ import {
   Alert,
   SafeAreaView,
   Dimensions,
+  TextInput, Modal,
+  Button
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import axios from "axios";
@@ -17,8 +19,10 @@ import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import ProtectedRoute from "./components/protectedroute";
 import Footer from "./components/Footer";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import DateTimePicker from '@react-native-community/datetimepicker';
 
-const API_BASE_URL = "http://10.130.218.95:3000";
+
+const API_BASE_URL = "http://10.130.114.185:3000";
 
 // Car type colors
 const carTypeColors = {
@@ -36,15 +40,38 @@ const carTypeColors = {
 const CarRentalDetailsPage = () => {
   const router = useRouter();
   const { rentalId } = useLocalSearchParams();
-  const [company, setCompany] = useState(null);
+  interface Company {
+    name: string;
+    location?: {
+      address: string;
+      city: string;
+    };
+    contact_phone?: string;
+    contact_email?: string;
+    cars?: {
+      model: string;
+      type: string;
+      rent_per_day: number;
+      registration_number: string;
+      available: boolean;
+    }[];
+  }
+
+  const [company, setCompany] = useState<Company | null>(null);
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState("");
   const [cityName, setCityName] = useState("");
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   // Modal state for car booking
-  const [selectedCar, setSelectedCar] = useState(null);
+  const [selectedCar, setSelectedCar] = useState<Car | null>(null);
   const [bookingModalVisible, setBookingModalVisible] = useState(false);
+  const [cnic, setCnic] = useState('');
+  const [contactNumber, setContactNumber] = useState('');
+  const [fromDate, setFromDate] = useState(new Date());
+  const [toDate, setToDate] = useState(new Date());
+  const [showFromPicker, setShowFromPicker] = useState(false);
+  const [showToPicker, setShowToPicker] = useState(false);
 
   // Load email and last city from AsyncStorage
   useEffect(() => {
@@ -63,8 +90,8 @@ const CarRentalDetailsPage = () => {
   }, []);
 
   // Fetch car rental company details
-  useEffect(() => {
-    const fetchCompanyDetails = async () => {
+
+  const fetchCompanyDetails = async () => {
       if (!rentalId) {
         setError("No rental company ID provided");
         setLoading(false);
@@ -82,43 +109,56 @@ const CarRentalDetailsPage = () => {
       }
     };
 
+  useEffect(() => {
+    
     fetchCompanyDetails();
   }, [rentalId]);
 
   // Handle booking a car
-  const handleBookCar = (car) => {
+  interface Car {
+    model: string;
+    type: string;
+    rent_per_day: number;
+    registration_number: string;
+    available: boolean;
+  }
+  
+  const handleBookCar = (car: Car): void => {
     setSelectedCar(car);
-    Alert.alert(
-      "Booking Confirmation",
-      `Would you like to book the ${car.model} (${car.type}) for PKR ${car.rent_per_day} per day?`,
-      [
-        {
-          text: "Cancel",
-          style: "cancel"
-        },
-        {
-          text: "Book Now",
-          onPress: () => processBooking(car)
-        }
-      ]
-    );
+    setBookingModalVisible(true);
   };
 
+
   // Process the booking
-  const processBooking = async (car) => {
-    try {
-      // Here you would make an API call to book the car
-      // For now we'll just show a success message
-      Alert.alert(
-        "Booking Successful",
-        `You have booked the ${car.model} (${car.registration_number}) successfully!`,
-        [{ text: "OK" }]
-      );
-    } catch (error) {
-      console.error("Error booking car:", error);
-      Alert.alert("Error", "Failed to book the car. Please try again.");
-    }
-  };
+  const processBooking = async () => {
+      if (!selectedCar) return;
+
+      try {
+        const email = await AsyncStorage.getItem('email');
+
+        const payload = {
+          cnic,
+          contactNumber,
+          fromDate,
+          endDate: toDate,
+          registrationNumber: selectedCar.registration_number,
+          rentCarCompanyId: rentalId,
+          userEmail: email,
+        };
+
+        await axios.post('http://10.130.114.185:3000/book', payload);
+
+        Alert.alert("Booking Successful", `You have booked the ${selectedCar.model} (${selectedCar.registration_number}) successfully!`);
+        setBookingModalVisible(false);
+        setCnic('');
+        setContactNumber('');
+        fetchCompanyDetails();
+      } catch (error) {
+        console.error("Error booking car:", error);
+        Alert.alert("Error", "Failed to book the car. Please try again.");
+      }
+    };
+
 
   // Handle back button
   const handleBack = () => {
@@ -134,15 +174,15 @@ const CarRentalDetailsPage = () => {
   };
 
   // Render car availability badge
-  const renderAvailabilityBadge = (available) => (
+  const renderAvailabilityBadge = (available: boolean): JSX.Element => (
     <View style={[styles.availabilityBadge, { backgroundColor: available ? '#4CAF50' : '#F44336' }]}>
       <Text style={styles.availabilityText}>{available ? 'Available' : 'Unavailable'}</Text>
     </View>
   );
 
   // Get color based on car type
-  const getTypeColor = (type) => {
-    return carTypeColors[type] || carTypeColors.default;
+  const getTypeColor = (type: string) => {
+      return carTypeColors[type as keyof typeof carTypeColors] || carTypeColors.default;
   };
 
   if (loading) {
@@ -167,6 +207,64 @@ const CarRentalDetailsPage = () => {
 
   return (
     <ProtectedRoute>
+      <Modal visible={bookingModalVisible} animationType="slide">
+        <View style={{ padding: 20 }}>
+          <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>
+            Booking Details for {selectedCar?.model}
+          </Text>
+
+          <TextInput
+            placeholder="CNIC"
+            value={cnic}
+            onChangeText={setCnic}
+            keyboardType="numeric"
+            style={{ borderBottomWidth: 1, marginBottom: 10 }}
+          />
+          <TextInput
+            placeholder="Contact Number"
+            value={contactNumber}
+            onChangeText={setContactNumber}
+            keyboardType="phone-pad"
+            style={{ borderBottomWidth: 1, marginBottom: 10 }}
+          />
+
+          {/* From Date Picker */}
+          <TouchableOpacity onPress={() => setShowFromPicker(true)} style={{ marginBottom: 10 }}>
+            <Text>Select From Date: {fromDate.toDateString()}</Text>
+          </TouchableOpacity>
+          {showFromPicker && (
+            <DateTimePicker
+              value={fromDate}
+              mode="date"
+              display="default"
+              onChange={(e, selectedDate) => {
+                setShowFromPicker(false);
+                if (selectedDate) setFromDate(selectedDate);
+              }}
+            />
+          )}
+
+          {/* To Date Picker */}
+          <TouchableOpacity onPress={() => setShowToPicker(true)} style={{ marginBottom: 10 }}>
+            <Text>Select To Date: {toDate.toDateString()}</Text>
+          </TouchableOpacity>
+          {showToPicker && (
+            <DateTimePicker
+              value={toDate}
+              mode="date"
+              display="default"
+              onChange={(e, selectedDate) => {
+                setShowToPicker(false);
+                if (selectedDate) setToDate(selectedDate);
+              }}
+            />
+          )}
+
+          <Button title="Confirm Booking" onPress={() => selectedCar && processBooking()} />
+          <Button title="Cancel" onPress={() => setBookingModalVisible(false)} color="gray" />
+        </View>
+      </Modal>
+
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity style={styles.backButton} onPress={handleBack}>

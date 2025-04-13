@@ -1,4 +1,6 @@
 const CarRentalCompany = require('../models/CarRental');
+const CarReservation = require('../models/CarReservation');
+const User = require('../models/User');
 
 // Add a new car to the company's embedded cars array
 exports.addCar = async (req, res) => {
@@ -201,5 +203,50 @@ exports.updateCompanyDetails = async (req, res) => {
   } catch (error) {
     console.error('Error updating company:', error);
     return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.bookCar = async (req, res) => {
+  try {
+    const {
+      cnic,
+      contactNumber,
+      fromDate,
+      endDate,
+      registrationNumber,
+      rentCarCompanyId,
+      userEmail
+    } = req.body;
+
+    const company = await CarRentalCompany.findById(rentCarCompanyId);
+    if (!company) return res.status(404).json({ message: 'Company not found' });
+
+    const car = company.cars.find(car => car.registration_number === registrationNumber);
+    if (!car || !car.available) return res.status(400).json({ message: 'Car not available' });
+
+    const user = await User.findOne({ email: userEmail });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // Reserve the car
+    car.available = false;
+    await company.save();
+
+    const reservation = new CarReservation({
+      cnic,
+      contactNumber,
+      fromDate,
+      endDate,
+      carModel: car.model,
+      registrationNumber,
+      rentCarCompany: company._id,
+      user: user._id
+    });
+
+    await reservation.save();
+    res.status(200).json({ message: 'Car booked successfully', reservation });
+
+  } catch (error) {
+    console.error('Booking error:', error);
+    res.status(500).json({ message: 'Booking failed', error });
   }
 };

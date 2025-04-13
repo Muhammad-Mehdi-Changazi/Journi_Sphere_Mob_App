@@ -531,7 +531,7 @@ useEffect(() => {
                   ]}
                   onPress={() => handleNavigate(item.hotel_name)}
                 >
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                     <FontAwesome name="map-marker" size={16} color="#fff" style={{ marginRight: 5 }} />
                     <Text style={styles.buttonText}>Navigate</Text>
                   </View>
