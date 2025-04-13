@@ -49,7 +49,7 @@ export default function Reviews() {
 
   const fetchReviews = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/Reviews?placeName=${placeName}`);//`https://d1lxguzc6q41zr.cloudfront.net/Reviews?placeName=${placeName}`);
+      const response = await axios.get(`http://10.130.114.185:3000/Reviews?placeName=${placeName}`);//`https://d1lxguzc6q41zr.cloudfront.net/Reviews?placeName=${placeName}`);
       setReviews(response.data);
     } catch (error) {
       console.error('Error fetching reviews:', error);
@@ -77,7 +77,7 @@ export default function Reviews() {
     if (!newReview || rating <= 0 || !username) return;
 
     try {
-      await axios.post(/*`https://d1lxguzc6q41zr.cloudfront.net/Reviews`,*/ `${API_BASE_URL}/Reviews`, {
+      await axios.post(/*`https://d1lxguzc6q41zr.cloudfront.net/Reviews`,*/ `http://10.130.114.185:3000/Reviews`, {
         placeName,
         user: username,
         email: email,

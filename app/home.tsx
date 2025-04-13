@@ -132,14 +132,16 @@ const fetchCarRentals = async (cityName) => {
   } catch (error) {
     console.error("Error fetching car rentals:", error);
     // Detailed error logging (keep this part)
-    if (error.response) {
+    if (axios.isAxiosError(error) && error.response) {
       console.error("Error response data:", error.response.data);
       console.error("Error response status:", error.response.status);
       console.error("Error response headers:", error.response.headers);
-    } else if (error.request) {
+    } else if (axios.isAxiosError(error) && error.request) {
       console.error("No response received:", error.request);
-    } else {
+    } else if (error instanceof Error) {
       console.error("Error message:", error.message);
+    } else {
+      console.error("An unknown error occurred:", error);
     }
     
     setCarRentals([]);
@@ -223,7 +225,7 @@ useEffect(() => {
     if (activeTab !== "hotels" || !cityData?.name) return;
     setLoading(true);
     axios
-      .get(`${API_BASE_URL}/hotels/city/${cityData.name}`)
+      .get(`http://10.130.114.185:3000/hotels/city/${cityData.name}`)
       .then((response) => {
         if (response.data && response.data.hotels) {
           setHotels(response.data.hotels);
@@ -532,7 +534,7 @@ useEffect(() => {
                     ]}
                     onPress={() => handleNavigate(item.hotel_name)}
                   >
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                       <FontAwesome name="map-marker" size={16} color="#fff" style={{ marginRight: 5 }} />
                       <Text style={styles.buttonText}>Navigate</Text>
                     </View>

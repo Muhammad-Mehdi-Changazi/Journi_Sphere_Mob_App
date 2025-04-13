@@ -88,9 +88,10 @@ exports.getHotelById = async (req, res) => {
 
 // Create a reservation
 exports.createReservation = async (req, res) => {
+  console.log("this is called");
   const io = getSocket();
   try {
-    console.log("Request Body", req.body);
+    // console.log("Request Body", req.body);
 
     // Ensure reservationDetails is extracted correctly
     const reservationDetails = req.body.reservationDetails || req.body;
@@ -172,6 +173,7 @@ exports.createReservation = async (req, res) => {
 
     // Emit event for new reservations
     if (io) {
+      console.log("Emitting reservation Live!");
       io.emit("reservation-created", { placeID: placeId, reservationDetails: savedReservation });
     } else {
       console.error("Socket.IO instance is undefined!");

@@ -12,7 +12,7 @@ const API_BASE_URL ="http://10.130.218.95:3000";
 const fetchRecommendations = async (cityName: string) => {
   try {
     // Fetch hotels from your database (replace with your actual backend API URL)
-    const hotelsResponse = await axios.get(`${API_BASE_URL}/hotels/city/${cityName}`/*`https://d1lxguzc6q41zr.cloudfront.net/hotels/city/${cityName}`*/);
+    const hotelsResponse = await axios.get(`http://10.130.114.185:3000/hotels/city/${cityName}`/*`https://d1lxguzc6q41zr.cloudfront.net/hotels/city/${cityName}`*/);
     // console.log("Hi", cityName);
     
     const hotels = hotelsResponse.data.hotels; // Assuming the backend returns an array of hotels
@@ -20,7 +20,7 @@ const fetchRecommendations = async (cityName: string) => {
 
     // Fetch restaurants from the custom recommendation API
 
-    const restaurantsResponse = await axios.get( `${API_BASE_URL}/recommendations?city=${cityName}`/*`https://d1lxguzc6q41zr.cloudfront.net/recommendations?city=${cityName}`*/);
+    const restaurantsResponse = await axios.get( `http://10.130.114.185:3000/recommendations?city=${cityName}`/*`https://d1lxguzc6q41zr.cloudfront.net/recommendations?city=${cityName}`*/);
 
 
     const restaurants = restaurantsResponse.data.restaurants; // Assuming the API returns an array of restaurants
