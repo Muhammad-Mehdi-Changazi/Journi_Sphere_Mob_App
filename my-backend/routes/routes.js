@@ -25,10 +25,6 @@ router.get('/api/reviews/', reviewController.getReviewsByEmail); // for Profile
 // City Routes
 router.get('/api/cities', cityController.getCities);
 
-// Tourism Routes
-// router.get('/api/tourist-spots/', tourismController.fetchCitySpots);
-// router.get('/api/tourism/', tourismController.getTouristSpot); // Fetch tourist spot by city & name
-
 // Recommendation Routes
 router.get('/recommendations', recommendationController.getRecommendations);
 
@@ -64,8 +60,10 @@ router.get('/itinerary/my', itineraryController.getUserItineraries);
 
 
 // Car Rental Routes
+router.get('/car-rental-companies/test', carRentalCompanyController.testCarRentalEndpoint);
+router.get('/car-rental-companies/city/:city', carRentalCompanyController.getCarRentalCompaniesByCity);
+router.get('/car-rental-companies/:id', carRentalCompanyController.getCarRentalCompanyById);
+
 router.post('/car-rental-companies', carRentalCompanyController.createCarRentalCompany);
-
-
 
 module.exports = router;

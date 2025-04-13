@@ -16,7 +16,7 @@
 // import RNPickerSelect from 'react-native-picker-select';
 // import Constants from "expo-constants";
 
-// const API_BASE_URL = "http://34.226.13.20:3000";
+// const API_BASE_URL = "http://10.130.218.95:3000";
    
 // // List of available cities
 // const cities = [
@@ -284,7 +284,7 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     try {
       console.log('Sending login request with:', { email, password });
-      const response = await axios.post('http://34.226.13.20:3000/login', { email, password });
+      const response = await axios.post('http://10.130.218.95:3000/login', { email, password });
 
       console.log('Login response:', response.data);
 

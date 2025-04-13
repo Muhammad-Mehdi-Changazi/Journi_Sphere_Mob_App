@@ -21,8 +21,7 @@ import Constants from "expo-constants";
 import * as Location from "expo-location";
 
 
-// const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
-const API_BASE_URL ="http://34.226.13.20:3000";
+const API_BASE_URL ="http://10.130.218.95:3000";
   
 const cities = [
   { label: "Islamabad", value: "Islamabad" },
@@ -113,53 +112,41 @@ export default function HomeScreen() {
     }
   };
 
-  const fetchCarRentals = async (cityName: string) => {
-      setCarRentalsLoading(true);
-      try {
-        let coords = cityCoords;
-        // If city coordinates are not set, retrieve them using the Geocoding API
-        if (!coords) {
-          const geocodeResponse = await axios.get(
-            "https://maps.googleapis.com/maps/api/geocode/json",
-            {
-              params: {
-                address: cityName,
-                key: GOOGLE_API_KEY,
-              },
-            }
-          );
-          if (
-            geocodeResponse.data.status === "OK" &&
-            geocodeResponse.data.results.length > 0
-          ) {
-            coords = geocodeResponse.data.results[0].geometry.location;
-            setCityCoords(coords);
-          }
-        }
-        // Perform the Places Text Search for car rentals
-        const response = await axios.get(
-          "https://maps.googleapis.com/maps/api/place/textsearch/json",
-          {
-            params: {
-              query: `car rentals in ${cityName}`,
-              location: `${coords?.lat},${coords?.lng}`,
-              radius: 10000, // radius in meters
-              key: GOOGLE_API_KEY,
-            },
-          }
-        );
-        if (response.data.status === "OK" && response.data.results.length > 0) {
-          setCarRentals(response.data.results);
-        } else {
-          setCarRentals([]);
-        }
-        setCarRentalsLoading(false);
-      } catch (error) {
-        console.error("Error fetching car rentals:", error);
-        setCarRentalsLoading(false);
-      }
-    };
+const fetchCarRentals = async (cityName) => {
+  setCarRentalsLoading(true);
+  try {
 
+    const requestUrl = `${API_BASE_URL}/car-rental-companies/city/${encodeURIComponent(cityName)}`;
+    // console.log("Requesting car rentals from:", requestUrl);
+    
+    const response = await axios.get(requestUrl);
+    
+    console.log("Car rental response:", response.status, response.data);
+    
+    if (response.data && Array.isArray(response.data)) {
+      setCarRentals(response.data);
+    } else {
+      console.log("Response data is not an array:", response.data);
+      setCarRentals([]);
+    }
+  } catch (error) {
+    console.error("Error fetching car rentals:", error);
+    // Detailed error logging (keep this part)
+    if (error.response) {
+      console.error("Error response data:", error.response.data);
+      console.error("Error response status:", error.response.status);
+      console.error("Error response headers:", error.response.headers);
+    } else if (error.request) {
+      console.error("No response received:", error.request);
+    } else {
+      console.error("Error message:", error.message);
+    }
+    
+    setCarRentals([]);
+  } finally {
+    setCarRentalsLoading(false);
+  }
+};
 
 useEffect(() => {
   if (activeTab === "carRentals" && cityData?.name) {
@@ -432,6 +419,7 @@ useEffect(() => {
 
   // Hotel card button handlers
   const handleNavigate = (hotelName: string) => {
+    // console.log("Navigating to", hotelName);
     router.push(`/GoogleMapScreen?placeName=${encodeURIComponent(hotelName)}`);
   };
   const handleCheckReviews = (hotelName: string) => {
@@ -503,7 +491,10 @@ useEffect(() => {
                   ]}
                   onPress={() => handleNavigate(item.name)}
                 >
-                  <Text style={styles.buttonText}>Navigation</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <FontAwesome name="map-marker" size={16} color="#fff" style={{ marginRight: 5 }} />
+                    <Text style={styles.buttonText}>Navigation</Text>
+                  </View>
                 </TouchableOpacity>
               </View>
             )}
@@ -540,7 +531,10 @@ useEffect(() => {
                   ]}
                   onPress={() => handleNavigate(item.hotel_name)}
                 >
-                  <Text style={styles.buttonText}>Navigate</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <FontAwesome name="map-marker" size={16} color="#fff" style={{ marginRight: 5 }} />
+                    <Text style={styles.buttonText}>Navigate</Text>
+                  </View>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[
@@ -590,7 +584,10 @@ useEffect(() => {
                   style={styles.button}
                   onPress={() => handleNavigateFoods({ name: item.name, vicinity: item.vicinity })}
                 >
-                  <Text style={styles.buttonText}>Navigate</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <FontAwesome name="map-marker" size={16} color="#fff" style={{ marginRight: 5 }} />
+                    <Text style={styles.buttonText}>Navigate</Text>
+                  </View>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.button}
@@ -621,18 +618,33 @@ useEffect(() => {
       return (
         <FlatList
           data={carRentals}
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
             <View style={styles.card}>
               <Text style={styles.hotelPlaceName}>{item.name}</Text>
-              <Text style={styles.hotelDetails}>{item.formatted_address}</Text>
+              <Text style={styles.hotelDetails}>{item.location.address}, {item.location.city}</Text>
+              <Text style={styles.hotelDetails}>Available Cars: {item.cars?.filter(car => car.available).length || 0}</Text>
               <View style={styles.buttonsContainer}>
+                
                 <TouchableOpacity
                   style={styles.button}
-                  onPress={() => handleNavigate(item.name)}
+                  onPress={() => handleNavigate(item.name + " " + item.location.address)}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <FontAwesome name="map-marker" size={16} color="#fff" style={{ marginRight: 5 }} />
+                    <Text style={styles.buttonText}>Navigate</Text>
+                  </View>
+                </TouchableOpacity>  
+
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => router.push({
+                    pathname: "/CarRentalDetailsPage",
+                    params: { rentalId: item._id }
+                  })}
                 >
-                  <Text style={styles.buttonText}>Navigate</Text>
+                  <Text style={styles.buttonText}>Details</Text>
                 </TouchableOpacity>
+                
                 <TouchableOpacity
                   style={styles.button}
                   onPress={() => handleCheckReviews(item.name)}

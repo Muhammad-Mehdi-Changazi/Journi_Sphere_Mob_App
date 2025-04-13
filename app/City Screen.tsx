@@ -6,7 +6,7 @@ import axios from 'axios';
 import Constants from "expo-constants";
 
 // const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
-const API_BASE_URL ="http://34.226.13.20:3000";
+const API_BASE_URL ="http://10.130.218.95:3000";
   
 // Modify fetchRecommendations to call your server API for hotels and the custom API for restaurants
 const fetchRecommendations = async (cityName: string) => {
