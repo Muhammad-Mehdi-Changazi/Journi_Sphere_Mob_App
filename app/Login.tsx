@@ -221,7 +221,7 @@
 
 
 // app/LoginScreen.tsx
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import {
   View,
   Text,
@@ -266,11 +266,29 @@ export default function LoginScreen() {
 
   const GOOGLE_API_KEY = 'AIzaSyDx_TwV8vhwbKTTWn0tV2BVRDGIipfwzlc'; // Replaced with Usman's API
 
+    const checkInternetAccess = async () => {
+    try {
+      const response = await axios.get('https://www.google.com');
+      console.log('Internet is working!');
+    } catch (error) {
+      console.error('No internet connection', error);
+    }
+  };
+
+  useEffect(() => {
+    // Call this function when the component is mounted
+    checkInternetAccess();
+  }, []);
+
+
   const handleLogin = async () => {
     try {
+      console.log('Sending login request with:', { email, password });
       const response = await axios.post('http://34.226.13.20:3000/login', { email, password });
 
-      console.log(password)
+      console.log('Login response:', response.data);
+
+      // console.log(password)
       const { token } = response.data;
 
       await AsyncStorage.setItem('authToken', token);
