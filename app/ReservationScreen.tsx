@@ -7,6 +7,8 @@ import moment from 'moment';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Constants from "expo-constants";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
 
@@ -49,10 +51,25 @@ export default function ReservationScreen() {
         toDate: '' as string | null,
         paymentMethod: 'OTHERS', // Default value
     });
-
-    // Add state for showing the date pickers
     const [showFromPicker, setShowFromPicker] = useState(false);
     const [showToPicker, setShowToPicker] = useState(false);
+
+
+    useEffect(() => {
+        const loadEmail = async () => {
+        try {
+            const storedEmail = await AsyncStorage.getItem('email');
+            if (storedEmail) {
+            setReservationDetails(prev => ({ ...prev, email: storedEmail }));
+            }
+        } catch (error) {
+            console.log('Error loading email:', error);
+        }
+        };
+
+        loadEmail();
+    }, []);
+
 
     useEffect(() => {
         socket = io(`${API_BASE_URL}` /*'https://d1lxguzc6q41zr.cloudfront.net'*/);
@@ -200,7 +217,6 @@ export default function ReservationScreen() {
                     <View style={styles.modalContent}>
                         <Text style={styles.modalHeader}>Enter Reservation Details</Text>
                         <TextInput style={styles.modalInput} placeholder="Your Name" value={reservationDetails.name} onChangeText={(text) => setReservationDetails({ ...reservationDetails, name: text })} />
-                        <TextInput style={styles.modalInput} placeholder="Your Email" value={reservationDetails.email} onChangeText={(text) => setReservationDetails({ ...reservationDetails, email: text })} />
                         <TextInput style={styles.modalInput} placeholder="Your CNIC" value={reservationDetails.CNIC} onChangeText={(text) => setReservationDetails({ ...reservationDetails, CNIC: text })} />
                         <TextInput style={styles.modalInput} placeholder="Your Phone Number" value={reservationDetails.phone} onChangeText={(text) => setReservationDetails({ ...reservationDetails, phone: text })} />
 

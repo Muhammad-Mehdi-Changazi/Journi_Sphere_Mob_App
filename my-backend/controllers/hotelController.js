@@ -236,6 +236,7 @@ exports.getReservationsByStatus = async (req, res) => {
   try {
     const { status, hotel_id } = req.query;
 
+    console.log("Status", status);
     if (!status || !hotel_id) {
       return res.status(400).json({ error: "Status and hotel_id are required" });
     }
