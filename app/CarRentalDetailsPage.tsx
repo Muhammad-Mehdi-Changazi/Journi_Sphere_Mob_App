@@ -22,7 +22,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 
-const API_BASE_URL = "http://10.130.114.185:3000";
+const API_BASE_URL = "http://34.226.13.20:3000";
 
 // Car type colors
 const carTypeColors = {
@@ -146,7 +146,7 @@ const CarRentalDetailsPage = () => {
           userEmail: email,
         };
 
-        await axios.post('http://10.130.114.185:3000/book', payload);
+        await axios.post('http://34.226.13.20:3000/book', payload);
 
         Alert.alert("Booking Successful", `You have booked the ${selectedCar.model} (${selectedCar.registration_number}) successfully!`);
         setBookingModalVisible(false);
