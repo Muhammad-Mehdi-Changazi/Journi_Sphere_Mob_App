@@ -263,3 +263,106 @@ exports.bookCar = async (req, res) => {
     res.status(500).json({ message: 'Booking failed', error });
   }
 };
+
+exports.getReservations = async (req, res) => {
+  const { companyId, status } = req.query;
+
+  try {
+    if (!companyId) {
+      return res.status(400).json({ message: 'companyId is required' });
+    }
+
+    const statusArray = Array.isArray(status)
+      ? status
+      : typeof status === 'string' && status.startsWith('[')
+        ? JSON.parse(status)
+        : [status];
+
+    // Get today's date and set the time to 00:00:00 (midnight) in PST
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);  // set time to midnight
+    const pakistanOffset = 5 * 60; // 5 hours for Pakistani Standard Time (PST)
+    today.setMinutes(today.getMinutes() + pakistanOffset); // adjust for PST
+    // console.log('Today in PST:', today);
+
+    let query = {
+      rentCarCompany: new mongoose.Types.ObjectId(companyId),
+    };
+
+    if (statusArray.length === 1 && statusArray[0] === 'CONFIRMED') {
+      query.reservationStatus = 'CONFIRMED';
+      query.endDate = { $gte: today }; // Get confirmed bookings that end today or later
+    } else if (statusArray.includes('CONFIRMED') && statusArray.includes('CANCELLED')) {
+      query.$or = [
+        {
+          reservationStatus: 'CONFIRMED',
+          endDate: { $lt: today }, // Get confirmed bookings that ended before today
+        },
+        {
+          reservationStatus: 'CANCELLED',
+        },
+      ];
+    } else {
+      query.reservationStatus = { $in: statusArray };
+    }
+
+    const reservations = await CarReservation.find(query)
+      .populate('user', 'name email')
+      .sort({ createdAt: -1 });
+
+    res.status(200).json(reservations);
+  } catch (error) {
+    console.error('Error fetching reservations:', error);
+    res.status(500).json({ message: 'Failed to fetch reservations' });
+  }
+};
+
+
+exports.updateReservationStatus = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  try {
+    // Check if status is either 'CONFIRMED' or 'CANCELLED'
+    if (!['CONFIRMED', 'CANCELLED'].includes(status)) {
+      return res.status(400).json({ message: 'Invalid status value' });
+    }
+
+    // Find the reservation by ID
+    const reservation = await CarReservation.findById(id).populate('rentCarCompany');
+    if (!reservation) {
+      return res.status(404).json({ message: 'Reservation not found' });
+    }
+
+    // If the status is 'CONFIRMED', we need to update the car availability
+    if (status === 'CONFIRMED') {
+      // Update reservation status to 'CONFIRMED'
+      reservation.reservationStatus = 'CONFIRMED';
+
+      // Find the car rental company and the specific car
+      const carRentalCompany = reservation.rentCarCompany;
+      const car = carRentalCompany.cars.find(
+        car => car.registration_number === reservation.registrationNumber
+      );
+
+      // If the car is found, update its availability to false
+      if (car) {
+        car.available = false;
+        await carRentalCompany.save(); // Save the updated company with the car status
+      } else {
+        return res.status(404).json({ message: 'Car not found in the company inventory' });
+      }
+    } else if (status === 'CANCELLED') {
+      // If the status is 'CANCELLED', just update the reservation status
+      reservation.reservationStatus = 'CANCELLED';
+    }
+
+    // Save the updated reservation
+    await reservation.save();
+
+    res.status(200).json({ message: `Reservation status updated to ${status}`, reservation });
+  } catch (error) {
+    console.error('Error updating reservation status:', error);
+    res.status(500).json({ message: 'Failed to update reservation status' });
+  }
+};
