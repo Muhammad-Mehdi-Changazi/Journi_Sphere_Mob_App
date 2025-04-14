@@ -10,7 +10,7 @@ import {
 import axios from 'axios';
 import { useRouter } from 'expo-router';
 
-const API_BASE_URL = "http://34.226.13.20:3000";
+const API_BASE_URL = "http://10.130.114.185:3000";
   
 export default function SignupScreen() {
   const [username, setUsername] = useState('');
@@ -54,7 +54,7 @@ export default function SignupScreen() {
     try {
       setLoading(true);
       const response = await axios.post(
-        `http://34.226.13.20:3000/signup`,
+        `http://10.130.114.185:3000/signup`,
         requestData,
         {
           headers: {

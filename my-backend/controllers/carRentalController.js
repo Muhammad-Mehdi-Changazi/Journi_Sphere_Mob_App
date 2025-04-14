@@ -213,6 +213,7 @@ exports.bookCar = async (req, res) => {
       contactNumber,
       fromDate,
       endDate,
+      paymentMethod,
       registrationNumber,
       rentCarCompanyId,
       userEmail
@@ -222,28 +223,40 @@ exports.bookCar = async (req, res) => {
     if (!company) return res.status(404).json({ message: 'Company not found' });
 
     const car = company.cars.find(car => car.registration_number === registrationNumber);
-    if (!car || !car.available) return res.status(400).json({ message: 'Car not available' });
+    if (!car) return res.status(400).json({ message: 'Car not found' });
+
+    if (paymentMethod === "ONLINE") {
+      if (!car.available) return res.status(400).json({ message: 'Car not available' });
+
+      // Make the car unavailable immediately
+      car.available = false;
+      await company.save();
+    }
 
     const user = await User.findOne({ email: userEmail });
     if (!user) return res.status(404).json({ message: 'User not found' });
-
-    // Reserve the car
-    car.available = false;
-    await company.save();
 
     const reservation = new CarReservation({
       cnic,
       contactNumber,
       fromDate,
       endDate,
+      paymentMethod,
       carModel: car.model,
       registrationNumber,
       rentCarCompany: company._id,
-      user: user._id
+      user: user._id,
+      reservationStatus: paymentMethod === "ONLINE" ? "CONFIRMED" : "PENDING"
     });
 
     await reservation.save();
-    res.status(200).json({ message: 'Car booked successfully', reservation });
+
+    const msg =
+      paymentMethod === "ONLINE"
+        ? 'Car booked successfully'
+        : 'Booking request submitted. Awaiting confirmation';
+
+    res.status(200).json({ message: msg, reservation });
 
   } catch (error) {
     console.error('Booking error:', error);

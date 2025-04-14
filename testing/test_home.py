@@ -12,7 +12,7 @@ def test_home_page():
     driver = webdriver.Chrome(service=service)
     
     # Point to your React app's URL (must be running!)
-    driver.get("http://34.226.13.20:3000")  # Replace with your app's URL
+    driver.get("http://10.130.114.185:3000")  # Replace with your app's URL
     
     # Test logic (example: check city selector exists)
     city_dropdown = WebDriverWait(driver, 10).until(

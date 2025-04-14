@@ -143,7 +143,7 @@ export default function TripItineraryScreen() {
       return;
     }
     try {
-      const response = await axios.post("http://34.226.13.20:3000/itinerary/save", {
+      const response = await axios.post("http://10.130.114.185:3000/itinerary/save", {
         username,
         name: itineraryName,
         content: itinerary,

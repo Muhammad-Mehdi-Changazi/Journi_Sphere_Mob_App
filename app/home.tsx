@@ -21,7 +21,7 @@ import Constants from "expo-constants";
 import * as Location from "expo-location";
 
 
-const API_BASE_URL ="http://34.226.13.20:3000";
+const API_BASE_URL ="http://10.130.114.185:3000";
   
 const cities = [
   { label: "Islamabad", value: "Islamabad" },
@@ -225,7 +225,7 @@ useEffect(() => {
     if (activeTab !== "hotels" || !cityData?.name) return;
     setLoading(true);
     axios
-      .get(`http://34.226.13.20:3000/hotels/city/${cityData.name}`)
+      .get(`http://10.130.114.185:3000/hotels/city/${cityData.name}`)
       .then((response) => {
         if (response.data && response.data.hotels) {
           setHotels(response.data.hotels);
