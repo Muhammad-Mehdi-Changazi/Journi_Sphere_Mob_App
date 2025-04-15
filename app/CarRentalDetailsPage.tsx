@@ -295,13 +295,14 @@ const CarRentalDetailsPage = () => {
 
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-            <Ionicons name="arrow-back" size={24} color="#333" />
-          </TouchableOpacity>
-        </View>
+      <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+        <Ionicons name="arrow-back" size={24} color="#333" />
+      </TouchableOpacity>
+      <Text style={styles.companyName}>{company?.name}</Text>
+    </View>
 
         <View style={styles.companyInfoCard}>
-          <Text style={styles.companyName}>{company?.name}</Text>
+        
           <Text style={styles.companyAddress}>
             {company?.location?.address}, {company?.location?.city}
           </Text>
@@ -416,17 +417,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  backButton: {
-    padding: 8,
-  },
+ 
+ 
   backButtonText: {
     color: '#176FF2',
     fontSize: 16,
@@ -449,15 +441,25 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
-  companyName: {
-    fontSize: 20,
-    fontWeight: 'semibold',
-    marginBottom: 8,
-    color: '#176FF2',
-    justifyContent: 'center',
-    textAlign: 'center',
-    backgroundColor: 'transparent', // Remove background color
-  },
+ header: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between', // Ensures proper spacing
+  padding: 16,
+  backgroundColor: '#fff',
+  borderBottomWidth: 1,
+  borderBottomColor: '#eee',
+},
+backButton: {
+  padding: 8,
+},
+companyName: {
+  fontSize: 20,
+  fontWeight: '600',
+  color: '#176FF2',
+  textAlign: 'center',
+  flex: 1, // Ensures the name takes up available space
+},
   companyAddress: {
     fontSize: 16,
     color: '#666',
