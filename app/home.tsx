@@ -21,7 +21,7 @@ import Constants from "expo-constants";
 import * as Location from "expo-location";
 
 
-const API_BASE_URL ="http://10.130.88.60:3000";
+const API_BASE_URL ="http://34.226.13.20:3000";
   
 const cities = [
   { label: "Islamabad", value: "Islamabad" },
