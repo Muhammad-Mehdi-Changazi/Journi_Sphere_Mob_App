@@ -160,6 +160,7 @@ exports.createReservation = async (req, res) => {
         };
 
         io.emit("room_reserved", {room: roomData });
+        io.emit("reservation-created", { placeID: placeId, reservationDetails: savedReservation });
       } else {
         console.error("Socket.IO instance is undefined!");
       }

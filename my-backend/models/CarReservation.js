@@ -7,7 +7,17 @@ const CarReservationSchema = new mongoose.Schema({
   endDate: { type: Date, required: true },
   carModel: { type: String, required: true },
   registrationNumber: { type: String, required: true },
+  paymentMethod: {
+          type: String,
+          enum: ["ONLINE", "OTHERS"],
+          required: true
+      }, // Payment method field
 
+  reservationStatus: {
+        type: String,
+        enum: ["PENDING", "CONFIRMED", "CANCELLED"],
+        default: "PENDING"
+    },
   rentCarCompany: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'CarRentalCompany',

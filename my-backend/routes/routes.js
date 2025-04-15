@@ -71,5 +71,6 @@ router.get('/companies/:id', carRentalCompanyController.getCompanyDetails);
 router.post('/api/cars', carRentalCompanyController.addCar);
 router.put('/api/cars/:registration_number', carRentalCompanyController.updateCar);
 router.put('/update-company/:id', carRentalCompanyController.updateCompanyDetails);
-
+router.get('/car-rental/reservations', carRentalCompanyController.getReservations);
+router.put('/update-reservations/:id', carRentalCompanyController.updateReservationStatus);
 module.exports = router;

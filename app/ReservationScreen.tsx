@@ -136,6 +136,9 @@ export default function ReservationScreen() {
     };
 
     const handleSubmitReservation = async () => {
+
+       
+
         if (!reservationDetails.name || !reservationDetails.email || !reservationDetails.phone || !reservationDetails.fromDate || !reservationDetails.toDate) {
             Alert.alert('Error', 'All fields are required.');
             return;
@@ -155,7 +158,13 @@ export default function ReservationScreen() {
 
             Alert.alert('Success', response.data.message);
             setModalVisible(false);
-            setReservationDetails({ name: '', email: '', CNIC: '', phone: '', roomID: '', placeID: '', fromDate: null, toDate: null, paymentMethod: 'OTHERS' });
+            setReservationDetails({ name: '', email: '', CNIC: '', phone: '', roomID: '', placeID: '', fromDate: '', toDate: '', paymentMethod: 'OTHERS' });
+             const storedEmail = await AsyncStorage.getItem('email');
+                if (storedEmail) {
+                    setReservationDetails((prevDetails) => ({ ...prevDetails, email: storedEmail }));
+                }
+
+
         } catch (error) {
             Alert.alert('Error', 'Failed to create reservation.');
         }

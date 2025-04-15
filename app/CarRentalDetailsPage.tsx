@@ -20,6 +20,7 @@ import ProtectedRoute from "./components/protectedroute";
 import Footer from "./components/Footer";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { Picker } from '@react-native-picker/picker';
 
 
 const API_BASE_URL = "http://10.130.88.60:3000";
@@ -72,6 +73,7 @@ const CarRentalDetailsPage = () => {
   const [toDate, setToDate] = useState(new Date());
   const [showFromPicker, setShowFromPicker] = useState(false);
   const [showToPicker, setShowToPicker] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState(""); // Default is ONLINE
 
   // Load email and last city from AsyncStorage
   useEffect(() => {
@@ -129,35 +131,37 @@ const CarRentalDetailsPage = () => {
   };
 
 
-  // Process the booking
-  const processBooking = async () => {
-      if (!selectedCar) return;
+ const processBooking = async () => {
+  if (!selectedCar) return;
 
-      try {
-        const email = await AsyncStorage.getItem('email');
+  try {
+    const email = await AsyncStorage.getItem('email');
 
-        const payload = {
-          cnic,
-          contactNumber,
-          fromDate,
-          endDate: toDate,
-          registrationNumber: selectedCar.registration_number,
-          rentCarCompanyId: rentalId,
-          userEmail: email,
-        };
-
-        await axios.post('http://10.130.88.60:3000/book', payload);
-
-        Alert.alert("Booking Successful", `You have booked the ${selectedCar.model} (${selectedCar.registration_number}) successfully!`);
-        setBookingModalVisible(false);
-        setCnic('');
-        setContactNumber('');
-        fetchCompanyDetails();
-      } catch (error) {
-        console.error("Error booking car:", error);
-        Alert.alert("Error", "Failed to book the car. Please try again.");
-      }
+    const payload = {
+      cnic,
+      contactNumber,
+      fromDate,
+      endDate: toDate,
+      paymentMethod,
+      registrationNumber: selectedCar.registration_number,
+      rentCarCompanyId: rentalId,
+      userEmail: email,
     };
+
+    const response = await axios.post('http://34.226.13.20:3000/book', payload);
+
+    Alert.alert(response.data.message); // 🔥 Show the actual backend message
+
+    setBookingModalVisible(false);
+    setCnic('');
+    setContactNumber('');
+    fetchCompanyDetails();
+  } catch (error) {
+    console.error("Error booking car:", error);
+    Alert.alert("Error", "Failed to book the car. Please try again.");
+  }
+};
+
 
 
   // Handle back button
@@ -214,23 +218,31 @@ const CarRentalDetailsPage = () => {
               Booking Details for {selectedCar?.model}
             </Text>
 
-            <Text style={styles.dateText}>CNIC:</Text>
-            <TextInput
-              placeholder="Your CNIC"
-              value={cnic}
-              onChangeText={setCnic}
-              keyboardType="numeric"
-              style={styles.modalInput} 
-            />
-            
-            <Text style={styles.dateText}>Contact number:</Text>
-            <TextInput
-              placeholder="Your Contact Number"
-              value={contactNumber}
-              onChangeText={setContactNumber}
-              keyboardType="phone-pad"
-              style={styles.modalInput} 
-            />
+          <TextInput
+            placeholder="CNIC"
+            value={cnic}
+            onChangeText={setCnic}
+            keyboardType="numeric"
+            style={{ borderBottomWidth: 1, marginBottom: 10 }}
+          />
+          <TextInput
+            placeholder="Contact Number"
+            value={contactNumber}
+            onChangeText={setContactNumber}
+            keyboardType="phone-pad"
+            style={{ borderBottomWidth: 1, marginBottom: 10 }}
+          />
+           {/* Payment Method Picker */}
+          <Text style={styles.dateText}>Payment Method:</Text>
+            <View style={{ borderWidth: 1, borderColor: '#ccc', borderRadius: 5, marginBottom: 10 }}>
+              <Picker
+                selectedValue={paymentMethod}
+                onValueChange={(itemValue) => setPaymentMethod(itemValue)}
+              >
+                <Picker.Item label="Online" value="ONLINE" />
+                <Picker.Item label="Others" value="OTHERS" />
+              </Picker>
+            </View>
 
             {/* From Date Picker */}
             <Text style={styles.dateText}>From Date:</Text>
@@ -384,6 +396,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: "#f9f9f9",
+  },
+  dateText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    color: '#333',
   },
   errorContainer: {
     flex: 1,
