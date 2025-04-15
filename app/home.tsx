@@ -1,22 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-<<<<<<< Updated upstream
-import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  ActivityIndicator,
-  Image,
-  TextInput,
-  Dimensions,
-} from "react-native";
-import { useRouter, useLocalSearchParams, usePathname } from "expo-router";
-import { FontAwesome } from "@expo/vector-icons";
-import ProtectedRoute from "./components/protectedroute";
-=======
 import { View, ActivityIndicator, FlatList, Image, Text, TouchableOpacity, Dimensions } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
->>>>>>> Stashed changes
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ProtectedRoute from "./components/protectedroute";
@@ -29,7 +13,34 @@ import Footer from "./components/Footer";
 import { styles, pickerSelectStyles } from "./styles/homestyles";
 import Constants from "expo-constants";
 
+<<<<<<< Updated upstream
 const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
+>>>>>>> Stashed changes
+=======
+
+const API_BASE_URL = Constants.expoConfig?.extra?.API_BASE_URL ?? '';
+  
+const cities = [
+  { label: "Islamabad", value: "Islamabad" },
+  { label: "Karachi", value: "Karachi" },
+  { label: "Lahore", value: "Lahore" },
+  { label: "Quetta", value: "Quetta" },
+];
+
+function getDistance(loc1: {latitude: number, longitude: number}, loc2: {latitude: number, longitude: number}) {
+  const R = 6371e3; // metres
+  const φ1 = loc1.latitude * Math.PI/180;
+  const φ2 = loc2.latitude * Math.PI/180;
+  const Δφ = (loc2.latitude-loc1.latitude) * Math.PI/180;
+  const Δλ = (loc2.longitude-loc1.longitude) * Math.PI/180;
+
+  const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+            Math.cos(φ1) * Math.cos(φ2) *
+            Math.sin(Δλ/2) * Math.sin(Δλ/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+  return R * c;
+}
 >>>>>>> Stashed changes
 
 export default function HomeScreen() {
@@ -81,6 +92,7 @@ export default function HomeScreen() {
 >>>>>>> Stashed changes
   const [activeTab, setActiveTab] = useState("touristSpots");
 
+<<<<<<< Updated upstream
   const screenWidth = Dimensions.get("window").width;
   const isSmallScreen = screenWidth < 375;
   const { height } = Dimensions.get("window");
@@ -89,6 +101,10 @@ export default function HomeScreen() {
 <<<<<<< Updated upstream
   const API_BASE_URL = "http://34.226.13.20:3000"; // changed localhost to IP address to fix error. replace with your IP for local testing. switch to upper url for deployment
   const GOOGLE_API_KEY = "AIzaSyDx_TwV8vhwbKTTWn0tV2BVRDGIipfwzlc";
+=======
+  const GOOGLE_API_KEY = Constants.expoConfig?.extra?.GOOGLE_API_KEY ?? '';
+  const WEATHER_API = Constants.expoConfig?.extra?.WEATHER_API ?? '';
+>>>>>>> Stashed changes
   const hasFetchedWeather = useRef(false);
 
   // setting email to access profile if active tab is "touristSpots"

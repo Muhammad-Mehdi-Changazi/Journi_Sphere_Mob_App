@@ -17,6 +17,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { styles } from "./styles/profilestyles";
 import Footer from "./components/Footer";
 import { ScrollView } from "react-native";
+import Constants from "expo-constants";
+import Reviews from './Reviews';
+
+const API_BASE_URL = Constants.expoConfig?.extra?.API_BASE_URL ?? '';
 
 interface Review {
   id: string;
@@ -61,12 +65,9 @@ export default function Profile() {
       try {
         const storedUsername = await AsyncStorage.getItem("username");
         const storedEmail = await AsyncStorage.getItem("email");
-        const storedPassword = await AsyncStorage.getItem("password");
-        setUserData({
-          username: storedUsername || "",
-          email: storedEmail || "",
-          password: storedPassword || "",
-        });
+        const response = await axios.get(`${API_BASE_URL}/api/user/?email=${storedEmail}`);
+        setUserData(response.data);
+        setConfirmPassword(userData.password);
       } catch (error) {
         console.error("Error fetching user data:", error);
       } finally {
@@ -77,18 +78,70 @@ export default function Profile() {
     fetchReviews();
   }, []);
 
-  const fetchReviews = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/api/Reviews/?user=${encodeURIComponent(userData.username)}`);//`https://d1lxguzc6q41zr.cloudfront.net/Reviews?placeName=${placeName}`);
-      setReviews(response.data);
-    } catch (error) {
-      console.error('Error fetching reviews:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // handlers for back button
+// load Reviews
+  useEffect(() => {
+    if (activeTab !== "reviews" || !userData?.email) return;
+    setLoading(true);
+    axios
+      .get(`${API_BASE_URL}/api/Reviews/?email=${userData.email}`)
+      .then((response) => {
+        if (response.data) {
+          setReviews(response.data);
+        } else {
+          setReviews([]);
+        }
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching reviews:", error);
+        setReviews([]);
+        setLoading(false);
+      });
+  }, [activeTab, userData.email]);
+  
+  // load Car rentals
+  useEffect(() => {
+    if (activeTab !== "rentals" || !userData?.email) return;
+    setLoading(true);
+    axios
+      .get(`${API_BASE_URL}/api/user-car-rentals/?email=${userData.email}`)
+      .then((response) => {
+        if (response.data) {
+          setRentals(response.data);
+        } else {
+          setRentals([]);
+        }
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching rentals:", error);
+        setRentals([]);
+        setLoading(false);
+      });
+  }, [activeTab, userData.email]);
+  
+  // load Reservations
+  useEffect(() => {
+    if (activeTab !== "reservations" || !userData?.email) return;
+    setLoading(true);
+    axios
+      .get(`${API_BASE_URL}/api/reservations-by-email/?email=${userData.email}`)
+      .then((response) => {
+        if (response.data) {
+          setReservations(response.data);
+        } else {
+          setReservations([]);
+        }
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching reservations:", error);
+        setReservations([]);
+        setLoading(false);
+      });
+  }, [activeTab, userData.email]);
+  
+  // handler for homepage routing
   const handleBack = (city: string) => {
     console.log()
     router.push({

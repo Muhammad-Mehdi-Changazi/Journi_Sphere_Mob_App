@@ -14,6 +14,7 @@ import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import RNPickerSelect from 'react-native-picker-select';
+import Constants from 'expo-constants';
 
 // List of available cities
 const cities = [
@@ -42,11 +43,13 @@ export default function LoginScreen() {
   const [selectedCity, setSelectedCity] = useState('');
   const router = useRouter();
 
-  const GOOGLE_API_KEY = 'AIzaSyDx_TwV8vhwbKTTWn0tV2BVRDGIipfwzlc'; // Replaced with Usman's API
+  const GOOGLE_API_KEY = Constants.expoConfig?.extra?.GOOGLE_API_KEY ?? '';
+  const API_BASE_URL = Constants.expoConfig?.extra?.API_BASE_URL ?? '';
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://34.226.13.20:3000/login', { email, password });
+      console.log('Sending login request with:', { email, password });
+      const response = await axios.post(`${API_BASE_URL}/login`, { email, password });
 
       console.log(password)
       const { token } = response.data;

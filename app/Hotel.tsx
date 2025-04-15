@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
+import Constants from "expo-constants";
+
+
+const API_BASE_URL = Constants.expoConfig?.extra?.API_BASE_URL ?? '';
+  
 
 interface Location {
   address: string;
@@ -22,7 +27,7 @@ const HotelsList: React.FC = () => {
   useEffect(() => {
     const fetchHotels = async () => {
       try {
-        const response = await axios.get('http://34.226.13.20:3000/hotels'/*'https://d1lxguzc6q41zr.cloudfront.net/hotels'*/);  
+        const response = await axios.get(`${API_BASE_URL}/hotels`/*'https://d1lxguzc6q41zr.cloudfront.net/hotels'*/);  
         setHotels(response.data);
         
       } catch (error) {

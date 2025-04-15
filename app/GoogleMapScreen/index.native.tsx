@@ -4,11 +4,12 @@ import MapView, { Marker, Polyline } from 'react-native-maps';
 import * as Location from 'expo-location';
 import axios from 'axios';
 import { useLocalSearchParams } from 'expo-router';
+import Constants from 'expo-constants';
 
 const { height } = Dimensions.get('window');
 const MAP_HEIGHT = height * 0.65; // Map takes ~65% of screen height
 
-const GOOGLE_API_KEY = 'AIzaSyDx_TwV8vhwbKTTWn0tV2BVRDGIipfwzlc';
+const GOOGLE_API_KEY = 'AIzaSyDx_TwV8vhwbKTTWn0tV2BVRDGIipfwzlc'; // Replace with your actual API key or use environment variables
 
 type Coordinates = {
   latitude: number;

@@ -10,6 +10,9 @@ import {
 } from "react-native";
 import { useRouter, useLocalSearchParams, usePathname } from "expo-router";
 import axios from "axios";
+import Constants from 'expo-constants';
+
+const GOOGLE_API_KEY = Constants.expoConfig?.extra?.GOOGLE_API_KEY ?? '';
 
 const TouristSpotScreen = () => {
   const router = useRouter();

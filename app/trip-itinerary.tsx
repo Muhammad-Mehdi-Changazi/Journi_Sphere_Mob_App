@@ -15,6 +15,7 @@ import {
 import itineraryStyles from "./styles/itineraryStyles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import Constants from "expo-constants";
 
 export default function TripItineraryScreen() {
   const params = useLocalSearchParams();
@@ -164,6 +165,35 @@ export default function TripItineraryScreen() {
         );
       }
     });
+  };
+
+
+
+
+  const handleConfirmSave = async () => {
+    const username = await AsyncStorage.getItem("username");
+    if (!username) {
+      Alert.alert("Error", "User not found. Please log in again.");
+      return;
+    }
+    try {
+      const response = await axios.post("http://34.226.13.20:3000/itinerary/save", {
+        username,
+        name: itineraryName,
+        content: itinerary,
+      });
+      if (response.status === 201) {
+        Alert.alert("Success", `Itinerary saved as \"${response.data.itinerary.name}\"!`);
+        setModalVisible(false);
+        setItineraryName("");
+        router.push("/mytrips");
+      } else {
+        throw new Error("Failed to save itinerary");
+      }
+    } catch (error) {
+      console.error("Error saving itinerary:", error.message);
+      Alert.alert("Error", error.message);
+    }
   };
 
   return (
