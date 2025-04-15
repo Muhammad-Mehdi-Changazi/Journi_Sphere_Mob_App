@@ -20,7 +20,7 @@ import { ScrollView } from "react-native";
 import Constants from "expo-constants";
 import Reviews from './Reviews';
 
-const API_BASE_URL ="http://10.130.88.60:3000";
+const API_BASE_URL ="http://34.226.13.20:3000";
 
 interface Review {
   _id: string;
@@ -135,7 +135,7 @@ export default function Profile() {
     if (activeTab !== "rentals" || !userData?.email) return;
     setLoading(true);
     axios
-      .get(`http://10.130.88.60:3000/api/user-car-rentals/?email=${userData.email}`)
+      .get(`http://34.226.13.20:3000/api/user-car-rentals/?email=${userData.email}`)
       .then((response) => {
         if (response.data) {
           setRentals(response.data);

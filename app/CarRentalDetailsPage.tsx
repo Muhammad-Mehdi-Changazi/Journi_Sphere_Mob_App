@@ -23,7 +23,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 
 
-const API_BASE_URL = "http://10.130.88.60:3000";
+const API_BASE_URL = "http://34.226.13.20:3000";
 
 // Car type colors
 const carTypeColors = {
@@ -101,7 +101,7 @@ const CarRentalDetailsPage = () => {
       }
 
       try {
-        const response = await axios.get(`http://10.130.88.60:3000/car-rental-companies/${rentalId}`);
+        const response = await axios.get(`http://34.226.13.20:3000/car-rental-companies/${rentalId}`);
         setCompany(response.data);
         setLoading(false);
       } catch (error) {

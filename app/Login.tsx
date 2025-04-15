@@ -62,7 +62,7 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     try {
       console.log('Sending login request with:', { email, password });
-      const response = await axios.post('http://10.130.88.60:3000/login', { email, password });
+      const response = await axios.post('http://34.226.13.20:3000/login', { email, password });
 
       console.log('Login response:', response.data);
 
