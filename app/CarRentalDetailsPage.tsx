@@ -23,7 +23,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 
 
-const API_BASE_URL = "http://34.226.13.20:3000";
+const API_BASE_URL = "http://10.130.88.60:3000";
 
 // Car type colors
 const carTypeColors = {
@@ -101,7 +101,7 @@ const CarRentalDetailsPage = () => {
       }
 
       try {
-        const response = await axios.get(`${API_BASE_URL}/car-rental-companies/${rentalId}`);
+        const response = await axios.get(`http://10.130.88.60:3000/car-rental-companies/${rentalId}`);
         setCompany(response.data);
         setLoading(false);
       } catch (error) {
@@ -211,11 +211,12 @@ const CarRentalDetailsPage = () => {
 
   return (
     <ProtectedRoute>
-      <Modal visible={bookingModalVisible} animationType="slide">
-        <View style={{ padding: 20 }}>
-          <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>
-            Booking Details for {selectedCar?.model}
-          </Text>
+      <Modal visible={bookingModalVisible} animationType="slide" transparent={true}>
+        <View style={styles.modalOverlay}>
+          <View style ={styles.modalContent}>
+            <Text style={styles.modalHeader}>
+              Booking Details for {selectedCar?.model}
+            </Text>
 
           <TextInput
             placeholder="CNIC"
@@ -243,40 +244,52 @@ const CarRentalDetailsPage = () => {
               </Picker>
             </View>
 
-          {/* From Date Picker */}
-          <TouchableOpacity onPress={() => setShowFromPicker(true)} style={{ marginBottom: 10 }}>
-            <Text>Select From Date: {fromDate.toDateString()}</Text>
-          </TouchableOpacity>
-          {showFromPicker && (
-            <DateTimePicker
-              value={fromDate}
-              mode="date"
-              display="default"
-              onChange={(e, selectedDate) => {
-                setShowFromPicker(false);
-                if (selectedDate) setFromDate(selectedDate);
-              }}
-            />
-          )}
+            {/* From Date Picker */}
+            <Text style={styles.dateText}>From Date:</Text>
+            <TouchableOpacity onPress={() => setShowFromPicker(true)} style={{ marginBottom: 10 }}>
+              <Text style={styles.modalInput}>
+                  {fromDate ? fromDate.toDateString() : 'Select Date'}
+              </Text>
+            </TouchableOpacity>
+            {showFromPicker && (
+              <DateTimePicker
+                value={fromDate}
+                mode="date"
+                display="default"
+                onChange={(e, selectedDate) => {
+                  setShowFromPicker(false);
+                  if (selectedDate) setFromDate(selectedDate);
+                }}
+              />
+            )}
 
-          {/* To Date Picker */}
-          <TouchableOpacity onPress={() => setShowToPicker(true)} style={{ marginBottom: 10 }}>
-            <Text>Select To Date: {toDate.toDateString()}</Text>
-          </TouchableOpacity>
-          {showToPicker && (
-            <DateTimePicker
-              value={toDate}
-              mode="date"
-              display="default"
-              onChange={(e, selectedDate) => {
-                setShowToPicker(false);
-                if (selectedDate) setToDate(selectedDate);
-              }}
-            />
-          )}
-
-          <Button title="Confirm Booking" onPress={() => selectedCar && processBooking()} />
-          <Button title="Cancel" onPress={() => setBookingModalVisible(false)} color="gray" />
+            {/* To Date Picker */}
+            <Text style={styles.dateText}>To Date:</Text>
+            <TouchableOpacity onPress={() => setShowToPicker(true)} style={{ marginBottom: 10 }}>
+              <Text style={styles.modalInput}>
+                  {toDate ? toDate.toDateString() : 'Select Date'}
+              </Text>
+            </TouchableOpacity>
+            {showToPicker && (
+              <DateTimePicker
+                value={toDate}
+                mode="date"
+                display="default"
+                onChange={(e, selectedDate) => {
+                  setShowToPicker(false);
+                  if (selectedDate) setToDate(selectedDate);
+                }}
+              />
+            )}
+            <View style={styles.buttonColumn}>
+              <TouchableOpacity style={styles.buttonWrapper}>
+                <Button title="Confirm Booking" onPress={() => selectedCar && processBooking()} color="#007AFF" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.buttonWrapper}>
+                <Button title="Cancel" onPress={() => setBookingModalVisible(false)} color="gray" color="#FF3B30" />
+              </TouchableOpacity>   
+            </View>       
+          </View>
         </View>
       </Modal>
 
@@ -312,50 +325,52 @@ const CarRentalDetailsPage = () => {
                 Available Cars ({company?.cars?.filter(car => car.available).length || 0}/{company?.cars?.length || 0})
             </Text>
         </View>
-
-        <FlatList
-          data={company?.cars}
-          keyExtractor={(item) => item.registration_number}
-          renderItem={({ item }) => (
-            <View style={styles.carCard}>
-              <View style={styles.carInfoContainer}>
-                <View style={styles.carBasicInfo}>
-                  <Text style={styles.carModel}>{item.model}</Text>
-                  <View 
-                    style={[styles.carTypeBadge, { backgroundColor: getTypeColor(item.type) }]}
-                  >
-                    <Text style={styles.carTypeText}>{item.type}</Text>
+        <View style={{marginBottom: 360}}>
+          <FlatList
+            data={company?.cars}
+            keyExtractor={(item) => item.registration_number}
+            renderItem={({ item }) => (
+              <View style={styles.carCard}>
+                <View style={styles.carInfoContainer}>
+                  <View style={styles.carBasicInfo}>
+                    <Text style={styles.carModel}>{item.model}</Text>
+                    <View 
+                      style={[styles.carTypeBadge, { backgroundColor: getTypeColor(item.type) }]}
+                    >
+                      <Text style={styles.carTypeText}>{item.type}</Text>
+                    </View>
+                    {renderAvailabilityBadge(item.available)}
                   </View>
-                  {renderAvailabilityBadge(item.available)}
+                  
+                  <View style={styles.carDetailsContainer}>
+                    <Text style={styles.carRegNumber}>
+                      Reg #: {item.registration_number}
+                    </Text>
+                    <Text style={styles.rentPerDay}>
+                      PKR {item.rent_per_day} / day
+                    </Text>
+                  </View>
+                  
+                  {item.available && (
+                    <TouchableOpacity
+                      style={styles.bookButton}
+                      onPress={() => handleBookCar(item)}
+                      disabled={!item.available}
+                    >
+                      <Text style={styles.bookButtonText}>Book Now</Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
-                
-                <View style={styles.carDetailsContainer}>
-                  <Text style={styles.carRegNumber}>
-                    Reg #: {item.registration_number}
-                  </Text>
-                  <Text style={styles.rentPerDay}>
-                    PKR {item.rent_per_day} / day
-                  </Text>
-                </View>
-                
-                {item.available && (
-                  <TouchableOpacity
-                    style={styles.bookButton}
-                    onPress={() => handleBookCar(item)}
-                    disabled={!item.available}
-                  >
-                    <Text style={styles.bookButtonText}>Book Now</Text>
-                  </TouchableOpacity>
-                )}
               </View>
-            </View>
-          )}
-          ListEmptyComponent={() => (
-            <View style={styles.emptyListContainer}>
-              <Text style={styles.emptyListText}>No cars available at this location</Text>
-            </View>
-          )}
-        />
+            )}
+            ListEmptyComponent={() => (
+              <View style={styles.emptyListContainer}>
+                <Text style={styles.emptyListText}>No cars available at this location</Text>
+              </View>
+            )}
+          />
+        </View>
+        
       </SafeAreaView>
       
       <Footer
@@ -555,6 +570,13 @@ const styles = StyleSheet.create({
     color: '#666',
     textAlign: 'center',
   },
+  modalOverlay: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' },
+  modalContent: { backgroundColor: 'white', padding: 20, borderRadius: 10, width: '80%' },
+  modalHeader: { fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
+  modalInput: { borderWidth: 1, borderColor: '#ddd', padding: 10, marginBottom: 10, borderRadius: 5 },
+  dateText: { fontSize: 16, color: '#007bff', marginBottom: 10 },
+  buttonWrapper: {borderRadius: 5},
+  buttonColumn: {marginTop: 15, padding: 5, gap: 10},
 });
 
 export default CarRentalDetailsPage;

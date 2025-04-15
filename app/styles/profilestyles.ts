@@ -69,15 +69,23 @@ const styles = StyleSheet.create({
   searchLoader: {
     marginLeft: 10,
   },
+  // tabsContainer: {
+  //   marginLeft: 55,
+  //   flexDirection: 'row',
+  //   justifyContent: 'space-between',
+  //   marginTop: 33,
+  //   borderRadius: 15,
+  // },
   tabsContainer: {
-    marginLeft: 55,
+    marginLeft: -15,
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 33,
+    backgroundColor: '#FFF',
     borderRadius: 15,
   },
   activeTab: {
-    paddingVertical: 12,
+    paddingVertical: 8,
     paddingHorizontal: 15,
     borderRadius: 30,
     backgroundColor: '#A8CCF0',
@@ -88,30 +96,28 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#176FF2',
     fontFamily: 'Abhaya Libre Medium',
-    marginHorizontal: 10,
   },
   inactiveTab: {
-    paddingVertical: 12,
+    paddingVertical: 8,
     paddingHorizontal: 15,
     borderRadius: 20,
     backgroundColor: '#FFF',
-    marginHorizontal: 10,
   },
   inactiveTabText: {
     fontSize: 16,
     color: '#B8B8B8',
     fontFamily: 'Abhaya Libre Medium',
   },
-tabsScrollView: {
+  tabsScrollView: {
     maxHeight: 70,
     backgroundColor: '#FFF', // Ensure it's not black
     paddingVertical: 10, // Adjust padding if necessary
 },
-scrollContainer: {
-  justifyContent: 'center',
-  alignItems: 'center',
-},
-reviews_container: {
+// scrollContainer: {
+//   justifyContent: 'center',
+//   alignItems: 'center',
+// },
+  reviews_container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 10,

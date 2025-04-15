@@ -20,7 +20,7 @@ import { ScrollView } from "react-native";
 import Constants from "expo-constants";
 import Reviews from './Reviews';
 
-const API_BASE_URL ="http://34.226.13.20:3000";
+const API_BASE_URL ="http://10.130.88.60:3000";
 
 interface Review {
   _id: string;
@@ -29,7 +29,6 @@ interface Review {
   comment: string;
   placeName: string;
 }
-
 interface Reservation {
   _id: string;
   hotel_ID: {
@@ -43,6 +42,21 @@ interface Reservation {
     to: string,   
   };
   hotel_name: string;
+}
+interface Rental {
+  _id: string,
+  carModel: string,
+  registrationNumber: string,
+  fromDate: string,
+  endDate: string,
+  rentCarCompany: {
+    name: string,
+    address: string
+    contact_phone: string
+    location: {
+      address: string
+    }
+  }
 }
 
 
@@ -73,6 +87,7 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("updateProfile");
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [rentals, setRentals] = useState<Rental[]>([]);
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const { email, city } = useLocalSearchParams(); // Get params from URL
   const [errorMessage, setErrorMessage] = useState("");
@@ -111,6 +126,27 @@ export default function Profile() {
       .catch((error) => {
         console.error("Error fetching reviews:", error);
         setReviews([]);
+        setLoading(false);
+      });
+  }, [activeTab, userData.email]);
+  
+  // load Car rentals
+  useEffect(() => {
+    if (activeTab !== "rentals" || !userData?.email) return;
+    setLoading(true);
+    axios
+      .get(`http://10.130.88.60:3000/api/user-car-rentals/?email=${userData.email}`)
+      .then((response) => {
+        if (response.data) {
+          setRentals(response.data);
+        } else {
+          setRentals([]);
+        }
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching rentals:", error);
+        setRentals([]);
         setLoading(false);
       });
   }, [activeTab, userData.email]);
@@ -293,7 +329,34 @@ export default function Profile() {
                     <Text style={styles.userName}>{item.placeName}</Text>
                   </View>
                   {renderStars(item.rating)}
-                  <Text style={styles.comment}>{item.comment}</Text>
+                  <Text style={styles.hotelDetails}>{item.comment}</Text>
+                </View>
+              )}
+            />
+          </View>
+        </View>
+      );
+    } else if (activeTab === "rentals") {
+      return (
+        <View style={styles.reviews_container}>
+          <View style={{ marginTop: 15, padding: 5, marginBottom: 10 }}>
+            <Text style= {styles.sectionTitle_review}>Your car rental bookings:</Text>
+          </View> 
+          <View style = {{marginBottom: 130}}>
+            <FlatList showsVerticalScrollIndicator={false}
+              data={rentals}
+              keyExtractor={(rental) => rental._id}
+              renderItem={({ item }) => (
+                <View style={styles.reviewCard}>
+                  <View style={styles.reviewHeader}>
+                    <Text style={styles.hotelPlaceName}>{item.rentCarCompany.name}</Text>
+                  </View>
+                  <Text style={styles.hotelDetails}>Model: {item.carModel}</Text>
+                  <Text style={styles.hotelDetails}>Registration number: {item.registrationNumber}</Text>
+                  <Text style={styles.hotelDetails}>From: {item.fromDate.slice(0, 10)}</Text>
+                  <Text style={styles.hotelDetails}>To: {item.endDate.slice(0, 10)}</Text>
+                  <Text style={styles.hotelDetails}>Rental address: {item.rentCarCompany.location.address}</Text>
+                  <Text style={styles.hotelDetails}>Rental contact: {item.rentCarCompany.contact_phone}</Text>
                 </View>
               )}
             />
@@ -318,41 +381,49 @@ return (
           style={styles.myTripsButton}
           onPress={() => router.push("/mytrips")}
         >
-          <Text style={styles.myTripsButtonText}>My Trips</Text>
+          <Text style={styles.myTripsButtonText}>View my trips</Text>
         </TouchableOpacity>
-      <View style ={styles.scrollContainer}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabsScrollView}>
-          <TouchableOpacity
-            style={activeTab === "updateProfile" ? styles.activeTab : styles.inactiveTab}
-            onPress={() => setActiveTab("updateProfile")}
-          >
-            <Text style={activeTab === "updateProfile" ? styles.activeTabText : styles.inactiveTabText}>
-              Profile
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={activeTab === "reservations" ? styles.activeTab : styles.inactiveTab}
-            onPress={() => setActiveTab("reservations")}
-          >
-            <Text style={activeTab === "reservations" ? styles.activeTabText : styles.inactiveTabText}>
-              Reservations
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={activeTab === "reviews" ? styles.activeTab : styles.inactiveTab}
-            onPress={() => setActiveTab("reviews")}
-          >
-            <Text style={activeTab === "reviews" ? styles.activeTabText : styles.inactiveTabText}>
-              Reviews
-            </Text>
-          </TouchableOpacity>
-        </ScrollView>
-      </View>
       
-      {renderContent()}
-      
+        {/* <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabsScrollView}> */}
+          <View style = {styles.tabsContainer}>
+            <TouchableOpacity
+              style={activeTab === "updateProfile" ? styles.activeTab : styles.inactiveTab}
+              onPress={() => setActiveTab("updateProfile")}
+            >
+              <Text style={activeTab === "updateProfile" ? styles.activeTabText : styles.inactiveTabText}>
+                Profile
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={activeTab === "reservations" ? styles.activeTab : styles.inactiveTab}
+              onPress={() => setActiveTab("reservations")}
+            >
+              <Text style={activeTab === "reservations" ? styles.activeTabText : styles.inactiveTabText}>
+                Reservations
+              </Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity
+              style={activeTab === "rentals" ? styles.activeTab : styles.inactiveTab}
+              onPress={() => setActiveTab("rentals")}
+            >
+              <Text style={activeTab === "rentals" ? styles.activeTabText : styles.inactiveTabText}>
+                Rentals
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={activeTab === "reviews" ? styles.activeTab : styles.inactiveTab}
+              onPress={() => setActiveTab("reviews")}
+            >
+              <Text style={activeTab === "reviews" ? styles.activeTabText : styles.inactiveTabText}>
+                Reviews
+              </Text>
+            </TouchableOpacity>
+          </View> 
+        {/* </ScrollView>       */}
+      {renderContent()} 
     </View>
     
     <Footer

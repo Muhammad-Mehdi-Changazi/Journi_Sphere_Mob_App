@@ -153,6 +153,27 @@ exports.getCarRentalCompanyById = async (req, res) => {
   }
 };
 
+exports.getCarRentalCompanyByEmail = async (req, res) => {
+  const { email } = req.query;
+
+  if (!email) return res.status(400).json({ error: "Email is required." });
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) return res.status(404).json({ error: "User not found." });
+
+    const reservations = await CarReservation.find({ user: user._id })
+      .populate('rentCarCompany') // optional: add fields to populate
+      .sort({ createdAt: -1 });   // optional: sort by most recent
+
+    res.status(200).json(reservations);
+  } catch (error) {
+    console.error("Error fetching car reservations:", error);
+    res.status(500).json({ error: "Internal server error." });
+  }
+};
+
 
 exports.testCarRentalEndpoint = async (req, res) => {
   try {
