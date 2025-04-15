@@ -1,6 +1,7 @@
 const CarRentalCompany = require('../models/CarRental');
 const CarReservation = require('../models/CarReservation');
 const User = require('../models/User');
+const { getSocket } = require('../socket')
 
 // Add a new car to the company's embedded cars array
 exports.addCar = async (req, res) => {
@@ -43,6 +44,8 @@ exports.addCar = async (req, res) => {
 exports.updateCar = async (req, res) => {
   const { registration_number } = req.params;
   const updateData = req.body;
+
+  const io = getSocket();
 
   try {
     const company = await CarRentalCompany.findOne({ 'cars.registration_number': registration_number });
@@ -219,11 +222,18 @@ exports.bookCar = async (req, res) => {
       userEmail
     } = req.body;
 
+    const io = getSocket();
+
     const company = await CarRentalCompany.findById(rentCarCompanyId);
     if (!company) return res.status(404).json({ message: 'Company not found' });
 
     const car = company.cars.find(car => car.registration_number === registrationNumber);
     if (!car) return res.status(400).json({ message: 'Car not found' });
+
+    const user = await User.findOne({ email: userEmail });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    let reservationStatus = "PENDING";
 
     if (paymentMethod === "ONLINE") {
       if (!car.available) return res.status(400).json({ message: 'Car not available' });
@@ -231,10 +241,9 @@ exports.bookCar = async (req, res) => {
       // Make the car unavailable immediately
       car.available = false;
       await company.save();
-    }
 
-    const user = await User.findOne({ email: userEmail });
-    if (!user) return res.status(404).json({ message: 'User not found' });
+      reservationStatus = "CONFIRMED";
+    }
 
     const reservation = new CarReservation({
       cnic,
@@ -246,13 +255,19 @@ exports.bookCar = async (req, res) => {
       registrationNumber,
       rentCarCompany: company._id,
       user: user._id,
-      reservationStatus: paymentMethod === "ONLINE" ? "CONFIRMED" : "PENDING"
+      reservationStatus
     });
 
     await reservation.save();
 
+    // Populate user field to send complete data
+    await reservation.populate('user');
+
+    // Emit the reservation via socket to the frontend
+    io.emit('newReservation', reservation);
+
     const msg =
-      paymentMethod === "ONLINE"
+      reservationStatus === "CONFIRMED"
         ? 'Car booked successfully'
         : 'Booking request submitted. Awaiting confirmation';
 
@@ -263,6 +278,7 @@ exports.bookCar = async (req, res) => {
     res.status(500).json({ message: 'Booking failed', error });
   }
 };
+
 
 exports.getReservations = async (req, res) => {
   const { companyId, status } = req.query;
@@ -321,6 +337,8 @@ exports.getReservations = async (req, res) => {
 exports.updateReservationStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
+
+  const io = getSocket();
 
   try {
     // Check if status is either 'CONFIRMED' or 'CANCELLED'

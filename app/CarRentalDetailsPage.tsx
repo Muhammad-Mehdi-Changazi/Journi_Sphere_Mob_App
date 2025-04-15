@@ -23,7 +23,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 
 
-const API_BASE_URL = "http://10.130.114.185:3000";
+const API_BASE_URL = "http://34.226.13.20:3000";
 
 // Car type colors
 const carTypeColors = {
@@ -148,7 +148,7 @@ const CarRentalDetailsPage = () => {
       userEmail: email,
     };
 
-    const response = await axios.post('http://10.130.114.185:3000/book', payload);
+    const response = await axios.post('http://34.226.13.20:3000/book', payload);
 
     Alert.alert(response.data.message); // 🔥 Show the actual backend message
 
