@@ -12,7 +12,7 @@ import {
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import tripFormStyles from "./styles/tripFormStyles";
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from "@expo/vector-icons";
 
 export default function TripCreateScreen() {
   const { control, handleSubmit, setValue, watch } = useForm();
@@ -62,8 +62,8 @@ export default function TripCreateScreen() {
     setShowEndDatePicker(false);
   };
 
-    const handleBackPress = () => {
-    router.push('/mytrips');
+  const handleBackPress = () => {
+    router.push("/mytrips");
   };
 
   const onSubmit = (data: any) => {
@@ -81,7 +81,10 @@ export default function TripCreateScreen() {
 
   return (
     <ScrollView style={tripFormStyles.container}>
-      <TouchableOpacity style={tripFormStyles.backButton} onPress={handleBackPress}>
+      <TouchableOpacity
+        style={tripFormStyles.backButton}
+        onPress={handleBackPress}
+      >
         <Ionicons name="arrow-back" size={24} color="rgb(56, 123, 167)" />
       </TouchableOpacity>
       <Text style={tripFormStyles.title}>Create a Trip</Text>
@@ -93,12 +96,17 @@ export default function TripCreateScreen() {
         name="from"
         rules={{ required: true }}
         render={({ field: { onChange, value } }) => (
-          <TextInput
-            style={tripFormStyles.input}
-            placeholder="Enter starting location"
-            onChangeText={onChange}
-            value={value}
-          />
+          <Picker
+            selectedValue={value}
+            style={tripFormStyles.picker}
+            onValueChange={(itemValue) => onChange(itemValue)}
+          >
+            <Picker.Item label="Select starting location" value="" />
+            <Picker.Item label="Lahore" value="Lahore" />
+            <Picker.Item label="Karachi" value="Karachi" />
+            <Picker.Item label="Islamabad" value="Islamabad" />
+            <Picker.Item label="Quetta" value="Quetta" />
+          </Picker>
         )}
       />
 
@@ -109,12 +117,17 @@ export default function TripCreateScreen() {
         name="to"
         rules={{ required: true }}
         render={({ field: { onChange, value } }) => (
-          <TextInput
-            style={tripFormStyles.input}
-            placeholder="Enter destination"
-            onChangeText={onChange}
-            value={value}
-          />
+          <Picker
+            selectedValue={value}
+            style={tripFormStyles.picker}
+            onValueChange={(itemValue) => onChange(itemValue)}
+          >
+            <Picker.Item label="Select destination" value="" />
+            <Picker.Item label="Lahore" value="Lahore" />
+            <Picker.Item label="Karachi" value="Karachi" />
+            <Picker.Item label="Islamabad" value="Islamabad" />
+            <Picker.Item label="Quetta" value="Quetta" />
+          </Picker>
         )}
       />
 
@@ -133,7 +146,6 @@ export default function TripCreateScreen() {
           value={startDate ? new Date(startDate) : new Date()}
           mode="date"
           display={Platform.OS === "ios" ? "spinner" : "default"}
-           // allowing any future date
           minimumDate={new Date()}
           onChange={(event, date) => date && handleStartDateChange(date)}
         />
@@ -151,11 +163,25 @@ export default function TripCreateScreen() {
       </TouchableOpacity>
       {showEndDatePicker && (
         <DateTimePicker
-          value={endDate ? new Date(endDate) : startDate ? new Date(startDate) : new Date()}
+          value={
+            endDate
+              ? new Date(endDate)
+              : startDate
+              ? new Date(startDate)
+              : new Date()
+          }
           mode="date"
           display={Platform.OS === "ios" ? "spinner" : "default"}
-          minimumDate={startDate ? new Date(startDate) : new Date()} // End date starts from start date
-          maximumDate={startDate ? new Date(new Date(startDate).setDate(new Date(startDate).getDate() + 6)) : new Date()} 
+          minimumDate={startDate ? new Date(startDate) : new Date()}
+          maximumDate={
+            startDate
+              ? new Date(
+                  new Date(startDate).setDate(
+                    new Date(startDate).getDate() + 6
+                  )
+                )
+              : new Date()
+          }
           onChange={(event, date) => date && handleEndDateChange(date)}
         />
       )}

@@ -45,6 +45,9 @@ export default function TripItineraryScreen() {
       - Only output the itinerary with proper day-wise structuring.
       - If trip is beyond 7 days. Just answer: "AI Trip Planning feature is currently limited to 7 days."
 
+      Note: If it is an unfeasible plan such as one that requires travel from one city to another in an impossibly low amount of time, then just say exactly: "It is an unfeasible plan. Please change parameters and regenerate." DO NOT ADD ANYTHING ELSE.
+      Also, if the from and to locations are same then use THE EXACT SAME FORMAT but remember that its a plan within the same city so don't act if you're departing from the city and returning back to it. Keep the overall format same though.
+
       Format the itinerary clearly with "Day X:" for each day.
     `;
     try {
