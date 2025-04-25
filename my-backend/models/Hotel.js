@@ -11,6 +11,7 @@ const hotelSchema = new mongoose.Schema({
   hotel_class: { type: String, required: true }, // e.g., "5 star"
   functional: { type: Boolean, required: true },
   mess_included: { type: Boolean, required: true },
+  url: { type: String, default: 'https://via.placeholder.com/400x300?text=Hotel+Image' }, 
 });
 
 // Prevent overwriting the model if already compiled

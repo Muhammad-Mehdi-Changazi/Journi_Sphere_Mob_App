@@ -31,7 +31,16 @@ exports.editHotel = async (req, res) => {
     const updatedHotelData = req.body;
 
     try {
-        const updatedHotel = await Hotel.findByIdAndUpdate(hotel_id, updatedHotelData, { new: true });
+        // Ensure room_types is an array
+        if (updatedHotelData.room_types && !Array.isArray(updatedHotelData.room_types)) {
+            updatedHotelData.room_types = [];
+        }
+
+        const updatedHotel = await Hotel.findByIdAndUpdate(
+            hotel_id, 
+            updatedHotelData, 
+            { new: true }
+        );
 
         if (!updatedHotel) {
             return res.status(404).json({ message: 'Hotel not found' });
@@ -43,7 +52,6 @@ exports.editHotel = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
-
 // Get all hotels
 exports.getHotels = async (req, res) => {
   try {
@@ -64,16 +72,19 @@ exports.getHotels = async (req, res) => {
 exports.getHotelById = async (req, res) => {
   try {
     const { hotel_id } = req.params;
-    // console.log("Before",hotel_id);
     const hotelId = new mongoose.Types.ObjectId(hotel_id);
-    // console.log("After" ,hotelId);
-    // Validate hotel_id
+    
     if (!mongoose.Types.ObjectId.isValid(hotelId)) {
       return res.status(400).json({ error: 'Invalid hotel_id format' });
     }
-    // Fetch the hotel details (no population of 'rooms')
+
     const hotel = await Hotel.findById(hotelId);
     if (!hotel) return res.status(404).json({ error: 'Hotel not found' });
+
+    // Ensure room_types is always an array
+    if (!hotel.room_types) {
+      hotel.room_types = [];
+    }
 
     res.status(200).json({
       message: 'Hotel fetched successfully',
@@ -83,7 +94,6 @@ exports.getHotelById = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
 
 
 // Create a reservation

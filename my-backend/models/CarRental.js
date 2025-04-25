@@ -5,7 +5,8 @@ const CarSchema = new mongoose.Schema({
   registration_number: { type: String, required: true, unique: true },
   type: { type: String, required: true }, // e.g., SUV, Sedan, etc.
   rent_per_day: { type: Number, required: true },
-  available: { type: Boolean, default: true }
+  available: { type: Boolean, default: true },
+  url: { type: String, default: 'https://via.placeholder.com/400x300?text=Car+Image' }
 });
 
 const CarRentalCompanySchema = new mongoose.Schema({
@@ -21,7 +22,9 @@ const CarRentalCompanySchema = new mongoose.Schema({
   contact_email: { type: String },
   contact_phone: { type: String },
   total_cars: { type: Number },
-  cars: [CarSchema] // Embedded documents for each car
+  cars: [CarSchema], // Embedded documents for each car
+  url:  { type: String, default: 'https://via.placeholder.com/400x300?text=Car+Image' }, 
+
 });
 
 module.exports = mongoose.model('CarRentalCompany', CarRentalCompanySchema);

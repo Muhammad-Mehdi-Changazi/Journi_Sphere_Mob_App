@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import ProtectedRoute from './components/protectedroute';
 
-const API_BASE_URL = "http://34.226.13.20:3000";
+const API_BASE_URL = "http://10.130.218.95:3000";
   
 
 interface Review {
@@ -49,7 +49,7 @@ export default function Reviews() {
 
   const fetchReviews = async () => {
     try {
-      const response = await axios.get(`http://34.226.13.20:3000/Reviews?placeName=${placeName}`);//`https://d1lxguzc6q41zr.cloudfront.net/Reviews?placeName=${placeName}`);
+      const response = await axios.get(`http://10.130.218.95:3000/Reviews?placeName=${placeName}`);//`https://d1lxguzc6q41zr.cloudfront.net/Reviews?placeName=${placeName}`);
       setReviews(response.data);
     } catch (error) {
       console.error('Error fetching reviews:', error);
@@ -77,7 +77,7 @@ export default function Reviews() {
     if (!newReview || rating <= 0 || !username) return;
 
     try {
-      await axios.post(/*`https://d1lxguzc6q41zr.cloudfront.net/Reviews`,*/ `http://34.226.13.20:3000/Reviews`, {
+      await axios.post(/*`https://d1lxguzc6q41zr.cloudfront.net/Reviews`,*/ `http://10.130.218.95:3000/Reviews`, {
         placeName,
         user: username,
         email: email,

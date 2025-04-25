@@ -1,6 +1,106 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 
 const styles = StyleSheet.create({
+
+  hotelCardSingle: {
+  backgroundColor: '#fff',
+  borderRadius: 15,
+  marginBottom: 20,
+  overflow: 'hidden',
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.1,
+  shadowRadius: 4,
+  elevation: 3,
+  marginHorizontal: 5,
+},
+hotelImageSingle: {
+  width: '100%',
+  height: 180,
+  borderTopLeftRadius: 15,
+  borderTopRightRadius: 15,
+},
+hotelInfoContainer: {
+  padding: 15,
+},
+hotelTextContainer: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: 12,
+},
+hotelNameSingle: {
+  fontSize: 18,
+  fontWeight: '600',
+  color: '#333',
+  flex: 1,
+},
+hotelButtonsContainer: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  marginTop: 10,
+},
+hotelButton: {
+  backgroundColor: '#007BFF',
+  paddingVertical: 8,
+  paddingHorizontal: 15,
+  borderRadius: 20,
+  flexDirection: 'row',
+  alignItems: 'center',
+  flex: 1,
+  marginHorizontal: 5,
+  justifyContent: 'center',
+},
+hotelButtonText: {
+  color: '#fff',
+  fontSize: 14,
+  fontWeight: '600',
+  marginLeft: 5,
+},
+
+  hotelGrid: {
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    marginBottom: 15,
+  },
+  hotelCard: {
+    width: (Dimensions.get('window').width - 50) / 2,
+    height: 200,
+    borderRadius: 15,
+    marginHorizontal: 5,
+    marginBottom: 20,
+    overflow: 'hidden',
+    backgroundColor: '#fff',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  hotelImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 15,
+  },
+  hotelOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    padding: 10,
+  },
+  hotelName: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 2,
+  },
+  hotelClassBadge: {
+    color: '#FFD700',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
