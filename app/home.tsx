@@ -99,7 +99,7 @@ export default function HomeScreen() {
 
   const WEATHER_API = "IrcewJS0mpnHD8YvYx0F21aMGnqdlwLx";
 
-  const GOOGLE_API_KEY = "AIzaSyDx_TwV8vhwbKTTWn0tV2BVRDGIipfwzlc";
+  const GOOGLE_API_KEY = "AIzaSyBe77YcJr7PbqKRbJZqiZJ760m6US1FXeI";
   const hasFetchedWeather = useRef(false);
 
   // Load email from AsyncStorage

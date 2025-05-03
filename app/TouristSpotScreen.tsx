@@ -12,7 +12,7 @@ import {
 import { useRouter, useLocalSearchParams } from "expo-router";
 import axios from "axios";
 
-const GOOGLE_API_KEY = "AIzaSyDx_TwV8vhwbKTTWn0tV2BVRDGIipfwzlc";
+const GOOGLE_API_KEY = "AIzaSyBe77YcJr7PbqKRbJZqiZJ760m6US1FXeI";
 
 const TouristSpotScreen = () => {
   const router = useRouter();

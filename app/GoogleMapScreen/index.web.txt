@@ -7,7 +7,7 @@ import axios from 'axios';
 import { useLocalSearchParams } from 'expo-router';
 
 // DEMO KEY - In production, secure or restrict your API key.
-const GOOGLE_API_KEY = 'AIzaSyDx_TwV8vhwbKTTWn0tV2BVRDGIipfwzlc';
+const GOOGLE_API_KEY = "AIzaSyBe77YcJr7PbqKRbJZqiZJ760m6US1FXeI";
 
 type Coordinates = {
   latitude: number;

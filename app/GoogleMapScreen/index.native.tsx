@@ -7,7 +7,7 @@ import { useLocalSearchParams } from 'expo-router';
 const { height } = Dimensions.get('window');
 const MAP_HEIGHT = height * 0.65; // Map takes ~65% of screen height
 
-const GOOGLE_API_KEY = 'AIzaSyDx_TwV8vhwbKTTWn0tV2BVRDGIipfwzlc'; // Replace with your actual API key or use environment variables
+const GOOGLE_API_KEY = "AIzaSyBe77YcJr7PbqKRbJZqiZJ760m6US1FXeI"; // Replace with your actual API key or use environment variables
 
 type Coordinates = {
   latitude: number;
