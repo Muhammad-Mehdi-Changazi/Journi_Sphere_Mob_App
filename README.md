@@ -1,4 +1,4 @@
-**# Manzil - Sprint 3**
+**# Manzil**
 
 ## **Project Overview**  
 **Manzil** is a **React Native Expo** application designed to help tourists with:  
