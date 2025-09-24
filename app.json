@@ -5,7 +5,7 @@
     "slug": "manzil",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/download.png",
+    "icon": "./assets/images/APK.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
