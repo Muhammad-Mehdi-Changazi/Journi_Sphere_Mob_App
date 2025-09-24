@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-nativ
 import Constants from "expo-constants";
 
 // const API_BASE_URL: string = Constants.expoConfig?.extra?.API_BASE_URL || "";
-const API_BASE_URL ="http://34.226.13.20:3000";
+const API_BASE_URL ="http://10.130.218.95:3000";
   
 
 interface Location {
@@ -27,7 +27,7 @@ const HotelsList: React.FC = () => {
   useEffect(() => {
     const fetchHotels = async () => {
       try {
-        const response = await axios.get(`http://34.226.13.20:3000/hotels`/*'https://d1lxguzc6q41zr.cloudfront.net/hotels'*/);  
+        const response = await axios.get(`http://10.130.218.95:3000/hotels`/*'https://d1lxguzc6q41zr.cloudfront.net/hotels'*/);  
         setHotels(response.data);
         
       } catch (error) {

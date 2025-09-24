@@ -83,8 +83,7 @@ export default function TripItineraryScreen() {
         throw new Error("No valid response returned from Gemini API.");
       }
     } catch (error) {
-      console.error("Error fetching itinerary:", error.message);
-      Alert.alert("Error", error.message);
+      console.error("Error fetching itinerary:", error);
     } finally {
       setLoading(false);
     }
@@ -146,7 +145,7 @@ export default function TripItineraryScreen() {
       return;
     }
     try {
-      const response = await axios.post("http://34.226.13.20:3000/itinerary/save", {
+      const response = await axios.post("http://10.130.218.95:3000/itinerary/save", {
         username,
         name: itineraryName,
         content: itinerary,
@@ -160,8 +159,7 @@ export default function TripItineraryScreen() {
         throw new Error("Failed to save itinerary");
       }
     } catch (error) {
-      console.error("Error saving itinerary:", error.message);
-      Alert.alert("Error", error.message);
+      console.error("Error saving itinerary:");
     }
   };
 

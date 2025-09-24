@@ -33,12 +33,11 @@ export default function MyTripsScreen() {
 
       // Call backend endpoint to get itineraries by username
       const response = await axios.get(
-        `http://34.226.13.20:3000/itinerary/my?username=${username}`
+        `http://10.130.218.95:3000/itinerary/my?username=${username}`
       );
       setItineraries(response.data);
     } catch (error) {
-      console.error('Error loading itineraries:', error.message);
-      Alert.alert('Error', error.message);
+      console.error('Error loading itineraries:', error);
     } finally {
       setLoading(false);
     }
@@ -49,7 +48,7 @@ export default function MyTripsScreen() {
   }, []);
 
   // Handler when a user taps an itinerary: navigate to details page.
-  const handleItineraryPress = (itinerary) => {
+  const handleItineraryPress = (itinerary: any) => {
     router.push({
       pathname: '/TripDetails',
       params: {
@@ -78,7 +77,7 @@ const handleBackPress = async () => {
 };
 
   // Render each itinerary item
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item }: { item: any }) => (
     <TouchableOpacity
       style={styles.itemContainer}
       onPress={() => handleItineraryPress(item)}
