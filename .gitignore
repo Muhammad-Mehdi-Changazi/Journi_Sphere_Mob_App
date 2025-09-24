@@ -9,6 +9,11 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
+*.env
+.env
+.env.local
+.env.development
+.env.production
 
 # macOS
 .DS_Store
@@ -18,3 +23,4 @@ web-build/
 
 expo-env.d.ts
 # @end expo-cli
+.env.example

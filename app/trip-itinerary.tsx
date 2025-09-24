@@ -52,7 +52,7 @@ export default function TripItineraryScreen() {
     `;
     try {
       const response = await fetch(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyBkgLBRXEfnqb0IFKf7On2tY3bpK-DEc_g",
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.EXPO_PUBLIC_GEMINI_API_KEY || ""}`,
         {
           method: "POST",
           headers: {

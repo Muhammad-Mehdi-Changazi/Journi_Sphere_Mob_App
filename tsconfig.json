@@ -1,9 +1,20 @@
 {
-  "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "target": "esnext",
+    "lib": [
+      "dom",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
     "jsx": "react-native",
     "paths": {
       "@/*": [
@@ -16,6 +27,8 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
-    "react-native-web-maps.d.ts" 
-, "app/GoogleMapScreen/index.tsx"  ]
+    "react-native-web-maps.d.ts",
+    "app/GoogleMapScreen/index.tsx"
+  ],
+  "extends": "expo/tsconfig.base"
 }

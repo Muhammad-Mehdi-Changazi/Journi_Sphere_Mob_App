@@ -8,6 +8,7 @@ import {
   Image,
   TextInput,
   Dimensions,
+  Alert,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
@@ -17,7 +18,6 @@ import RNPickerSelect from "react-native-picker-select";
 import { styles, pickerSelectStyles } from "./styles/homestyles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Footer from "./components/Footer";
-import Constants from "expo-constants";
 import * as Location from "expo-location";
 
 
@@ -48,9 +48,7 @@ function getDistance(loc1: {latitude: number, longitude: number}, loc2: {latitud
 export default function HomeScreen() {
   // Retrieve city info from URL parameters.
   const { city } = useLocalSearchParams();
-  const cityData = city
-    ? JSON.parse(city as string)
-    : { name: "", places: [], foods: [] };
+  const cityData = city ? JSON.parse(city as string) : { name: "", places: [], foods: [] };
 
   const router = useRouter();
 
@@ -97,9 +95,9 @@ export default function HomeScreen() {
   // Active tab: "touristSpots", "hotels", "food", or "carRentals"
   const [activeTab, setActiveTab] = useState("touristSpots");
 
-  const WEATHER_API = "IrcewJS0mpnHD8YvYx0F21aMGnqdlwLx";
+  const WEATHER_API = process.env.EXPO_PUBLIC_ACCUWEATHER_API_KEY || "";
 
-  const GOOGLE_API_KEY = "AIzaSyBe77YcJr7PbqKRbJZqiZJ760m6US1FXeI";
+  const GOOGLE_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_API_KEY || "";
   const hasFetchedWeather = useRef(false);
 
   // Load email from AsyncStorage
@@ -112,7 +110,7 @@ export default function HomeScreen() {
     }
   };
 
-const fetchCarRentals = async (cityName) => {
+const fetchCarRentals = async (cityName: string) => {
   setCarRentalsLoading(true);
   try {
 
@@ -199,7 +197,7 @@ useEffect(() => {
       }
 
       // Map the API results to match your schema (name, description, image)
-      const spots = placesResponse.data.results.map((spot) => ({
+      const spots = placesResponse.data.results.map((spot: any) => ({
         name: spot.name,
         description: spot.vicinity || "No description available",
         image:
@@ -210,7 +208,7 @@ useEffect(() => {
       }));
 
       // Structure the state similar to before, if your rendering code expects touristSpots.touristSpots
-      setTouristSpots({ touristSpots: spots });
+      setTouristSpots(spots);
     } catch (error) {
       console.error("Error fetching tourist spots:", error);
     } finally {
@@ -456,7 +454,7 @@ useEffect(() => {
       return (
         <View>
           <FlatList
-            data={touristSpots.touristSpots}
+            data={touristSpots}
             horizontal
             keyExtractor={(item) =>
               item._id ? item._id.toString() : item.name
@@ -634,7 +632,7 @@ useEffect(() => {
               <View style={styles.card}>
                 <Text style={styles.hotelPlaceName}>{item.name}</Text>
                 <Text style={styles.hotelDetails}>{item.location.address}, {item.location.city}</Text>
-                <Text style={styles.hotelDetails}>Available Cars: {item.cars?.filter(car => car.available).length || 0}</Text>
+                <Text style={styles.hotelDetails}>Available Cars: {item.cars?.filter((car: any) => car.available).length || 0}</Text>
                 <View style={styles.buttonsContainer}>
                   
                   <TouchableOpacity

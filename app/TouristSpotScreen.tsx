@@ -12,7 +12,7 @@ import {
 import { useRouter, useLocalSearchParams } from "expo-router";
 import axios from "axios";
 
-const GOOGLE_API_KEY = "AIzaSyBe77YcJr7PbqKRbJZqiZJ760m6US1FXeI";
+const GOOGLE_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_API_KEY || "";
 
 const TouristSpotScreen = () => {
   const router = useRouter();
@@ -85,7 +85,7 @@ const TouristSpotScreen = () => {
         const prompt = `Provide a 3-4 line engaging description about ${spotName} in ${city} for tourists. Focus on its historical/cultural significance, unique features, and visitor experience.`;
         
         const geminiResponse = await fetch(
-          "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyBkgLBRXEfnqb0IFKf7On2tY3bpK-DEc_g",
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.EXPO_PUBLIC_GEMINI_API_KEY || ""}`,
           {
             method: "POST",
             headers: {
